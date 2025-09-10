@@ -18,8 +18,12 @@ Route::get('/', fn () => view('welcome'))->name('welcome');
 // =========================
 // 👤 USER AUTH & DASHBOARD
 // =========================
-Route::get('/login', [BiometricController::class, 'login'])->name('login');
-Route::post('/login', [BiometricController::class, 'loginPost']);
+Route::get('/login', [BiometricController::class, 'showLoginForm'])->name('login');
+
+// Handle login submit (POST)
+Route::post('/login', [BiometricController::class, 'login'])->name('login.post');
+
+
 Route::post('/logout', [BiometricController::class, 'logout'])->name('logout');
 
 Route::match(['get', 'post'], '/register/step1', [BiometricController::class, 'step1'])->name('register.step1');
@@ -201,3 +205,7 @@ Route::post('/admin/alerts/{alert}/notify', [App\Http\Controllers\AdminControlle
     ->name('admin.alerts.notify');
 
 
+// Login Page
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');

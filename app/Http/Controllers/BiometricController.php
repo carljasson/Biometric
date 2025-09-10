@@ -7,28 +7,67 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Announcement;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
+
 
 class BiometricController extends Controller
 {
     // Show login form
-    public function login()
-    {
-        return view('auth.login');
+// Show login form
+public function showLoginForm()
+{
+    return view('login'); // resources/views/login.blade.php
+}
+
+// Handle login POST
+
+
+// In BiometricController
+
+// Handle login POST
+public function login(Request $request)
+{
+   if ($response = $this->ensureIsNotRateLimited($request)) {
+    return $response; // return redirect if locked
+}
+
+
+    $credentials = $request->only('email', 'password');
+
+    if (auth()->attempt($credentials)) {
+        RateLimiter::clear($this->throttleKey($request)); // reset counter
+        return redirect()->intended('/dashboard');
     }
 
-    // Handle login
-    public function loginPost(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+    // failed login → increase attempts
+    RateLimiter::hit($this->throttleKey($request), 60); // block for 60s
 
-        if (Auth::attempt($credentials)) {
-            return redirect()->intended('/dashboard');
-        }
+    return back()->withErrors([
+        'email' => 'Invalid credentials. Please try again.',
+    ]);
+}
 
-        return back()->withErrors([
-            'email' => 'Invalid credentials.',
-        ]);
+protected function ensureIsNotRateLimited(Request $request)
+{
+    if (! RateLimiter::tooManyAttempts($this->throttleKey($request), 3)) {
+        return;
     }
+
+    $seconds = RateLimiter::availableIn($this->throttleKey($request));
+
+    return redirect()->back()->with([
+        'lockout' => $seconds,
+        'error'   => "⛔ Too many login attempts. Please try again in {$seconds} seconds."
+    ]);
+}
+
+
+protected function throttleKey(Request $request)
+{
+    return strtolower($request->input('email')).'|'.$request->ip();
+}
 
     // Handle logout
     public function logout()
