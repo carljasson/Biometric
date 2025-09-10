@@ -8,7 +8,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\ResponderController;
-
+use App\Http\Controllers\FingerprintController;
 
 // =========================
 // 🌐 GENERAL
@@ -209,3 +209,7 @@ Route::post('/admin/alerts/{alert}/notify', [App\Http\Controllers\AdminControlle
 Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
+
+Route::post('/register/step2', [FingerprintController::class, 'store']);
+Route::post('/fingerprint/capture', [App\Http\Controllers\FingerprintController::class, 'capture'])->name('fingerprint.capture');
+Route::post('/fingerprint-register', [FingerprintController::class, 'register']);

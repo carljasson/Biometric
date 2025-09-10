@@ -311,6 +311,37 @@ public function checkPhone(Request $request)
     return response()->json(['exists' => $exists]);
 }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'fingerprint_data' => 'required|string',
+        ]);
 
+        // Example: store fingerprint data in biometric_system table
+        $record = BiometricSystem::create([
+            'name' => 'Test User', // replace with actual user info
+            'fingerprint_registered' => $request->fingerprint_data,
+        ]);
+
+        return redirect('/register/step3')->with('success', 'Fingerprint saved!');
+    }
+
+ public function capture(Request $request)
+    {
+        $user = Auth::user();
+
+        // This will come from scanner service (see below)
+        $fingerprintData = $request->input('fingerprint_data');
+
+        if (!$fingerprintData) {
+            return response()->json(['success' => false, 'message' => 'No fingerprint data received.']);
+        }
+
+        // Save into DB
+        $user->fingerprints = $fingerprintData;
+        $user->save();
+
+        return response()->json(['success' => true, 'message' => 'Fingerprint saved successfully.']);
+    }
 
 }

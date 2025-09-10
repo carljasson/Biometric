@@ -46,9 +46,7 @@
             transition: transform 0.3s;
         }
 
-        .fingerprint-box:hover {
-            transform: scale(1.05);
-        }
+        .fingerprint-box:hover { transform: scale(1.05); }
 
         .fingerprint-icon {
             width: 70px;
@@ -73,9 +71,7 @@
             transition: 0.3s;
         }
 
-        button:hover {
-            background-color: #ffffff33;
-        }
+        button:hover { background-color: #ffffff33; }
 
         .note {
             font-size: 12px;
@@ -107,86 +103,47 @@ function skipStep() {
     window.location.href = "{{ url('/register/step3') }}";
 }
 
+// 🔹 Start scan by asking C# local API
 async function startFingerprintScan() {
-    if (!window.PublicKeyCredential || !PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
-        console.warn("WebAuthn not supported or not available. Using fallback.");
-        return fallbackFingerprint();
-    }
-
-    const isAvailable = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-    if (!isAvailable) {
-        console.warn("Platform authenticator not available.");
-        Swal.fire({
-            icon: 'error',
-            title: 'Not Supported',
-            text: 'This device/browser does not support fingerprint scanning.',
-        });
-        return fallbackFingerprint();
-    }
+    Swal.fire({
+        title: 'Scanning...',
+        text: 'Please place your finger on the scanner.',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
 
     try {
-        const challenge = new Uint8Array(32);
-        window.crypto.getRandomValues(challenge);
+        // Call your C# local app (running as HTTP server on port 5000)
+        const res = await fetch("http://127.0.0.1:5000/capture");
+        if (!res.ok) throw new Error("Failed to connect to scanner app");
 
-        const publicKey = {
-            challenge,
-            rp: { name: "Biometric Medical Access" },
-            user: {
-                id: Uint8Array.from("1234567890", c => c.charCodeAt(0)),
-                name: "user@example.com",
-                displayName: "User"
-            },
-            pubKeyCredParams: [{ type: "public-key", alg: -7 }],
-            authenticatorSelection: {
-                authenticatorAttachment: "platform",
-                userVerification: "required"
-            },
-            timeout: 60000,
-            attestation: "none"
-        };
+        const data = await res.json();
+        console.log("C# App Response:", data);
 
-        const credential = await navigator.credentials.create({ publicKey });
+        if (data.success) {
+            document.getElementById("fingerprint_data").value = data.fingerprint;
 
-        if (!credential) throw new Error("No credential returned");
+            Swal.fire({
+                icon: 'success',
+                title: 'Fingerprint captured!',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                document.getElementById("fingerprintForm").submit();
+            });
+        } else {
+            throw new Error("Scanner returned error");
+        }
 
-        const encoded = btoa(JSON.stringify(credential));
-        document.getElementById("fingerprint_data").value = encoded;
-
+    } catch (err) {
+        console.error("Error:", err);
         Swal.fire({
-            icon: 'success',
-            title: 'Fingerprint scan successful!',
-            showConfirmButton: false,
-            timer: 1500
-        }).then(() => {
-            document.getElementById("fingerprintForm").submit();
-        });
-
-    } catch (error) {
-        console.warn("Fingerprint scan failed:", error);
-        Swal.fire({
-            icon: 'warning',
+            icon: 'error',
             title: 'Scan Failed',
-            text: 'Falling back to simulated fingerprint.',
-            showConfirmButton: false,
-            timer: 1500
-        }).then(() => {
-            fallbackFingerprint();
+            text: 'Please ensure the fingerprint app is running.',
         });
     }
 }
-
-function fallbackFingerprint() {
-    const simulated = "simulated-" + Date.now();
-    document.getElementById("fingerprint_data").value = btoa(simulated);
-
-    Swal.fire({
-        icon: 'info',
-        title: 'Simulated Fingerprint',
-        text: 'Real scanner not available. Using fallback fingerprint.',
-        showConfirmButton: false,
-        timer: 1500
-    }).then(() => {
-        document.getElementById("fingerprintForm").submit();
-    });
-}
 </script>
+</body>
+</html>
