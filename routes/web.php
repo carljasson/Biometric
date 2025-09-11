@@ -213,5 +213,6 @@ Route::get('/login', function () {
 Route::post('/fingerprint/capture', [App\Http\Controllers\FingerprintController::class, 'capture'])->name('fingerprint.capture');
 Route::post('/fingerprint-register', [FingerprintController::class, 'register']);
 
-Route::post('/check-email', [CheckController::class, 'checkEmail']);
-Route::post('/check-phone', [CheckController::class, 'checkPhone'])->name('check.phone');
+Route::post('/register/step1', [BiometricController::class, 'store'])->name('register.step1');
+Route::post('/check-phone', [BiometricController::class, 'checkPhone'])->name('check.phone');
+Route::post('/check-email', [BiometricController::class, 'checkEmail'])->name('check.email');

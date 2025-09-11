@@ -316,20 +316,20 @@ public function submitScan(Request $request)
 }
 
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'fingerprint_data' => 'required|string',
-        ]);
+   public function storeBiometric(Request $request)
+{
+    $request->validate([
+        'fingerprint_data' => 'required|string',
+    ]);
 
-        // Example: store fingerprint data in biometric_system table
-        $record = BiometricSystem::create([
-            'name' => 'Test User', // replace with actual user info
-            'fingerprint_registered' => $request->fingerprint_data,
-        ]);
+    $record = BiometricSystem::create([
+        'name' => 'Test User',
+        'fingerprint_registered' => $request->fingerprint_data,
+    ]);
 
-        return redirect('/register/step3')->with('success', 'Fingerprint saved!');
-    }
+    return redirect('/register/step3')->with('success', 'Fingerprint saved!');
+}
+
 
  public function capture(Request $request)
     {
@@ -348,5 +348,19 @@ public function submitScan(Request $request)
 
         return response()->json(['success' => true, 'message' => 'Fingerprint saved successfully.']);
     }
+
+// AJAX: check if phone exists
+public function checkPhone(Request $request)
+{
+    $exists = User::where('phone', $request->phone)->exists();
+    return response()->json(['exists' => $exists]);
+}
+
+// AJAX: check if email exists
+public function checkEmail(Request $request)
+{
+    $exists = User::where('email', $request->email)->exists();
+    return response()->json(['exists' => $exists]);
+}
 
 }
