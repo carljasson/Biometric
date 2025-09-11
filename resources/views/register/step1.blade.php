@@ -48,193 +48,214 @@
     </style>
 </head>
 <body>
-<div class="progress-container">
-    <div class="progress-bar" id="progressBar"></div>
-    <div class="progress-percentage" id="progressPercentage">0%</div>
-</div>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="progress-percentage" id="progressPercentage">0%</div>
+    </div>
 
-<a href="#" class="top-left-back" id="topBackBtn">&larr; Back</a>
+    <a href="#" class="top-left-back" id="topBackBtn">&larr; Back</a>
 
-<div class="form-container">
-    <h2>Step 1: Registration</h2>
-    <form method="POST" action="{{ url('/register/step1') }}">
-        @csrf
-        <div class="form-step active">
-            <input type="text" name="firstname" placeholder="First Name" required oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-            <input type="text" name="middlename" placeholder="Middle Name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-            <input type="text" name="lastname" placeholder="Last Name" required oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-        </div>
-        <div class="form-step">
-            <input type="date" name="birthday" id="birthday" required>
-            <input type="number" name="age" id="age" placeholder="Age" readonly required>
-        </div>
-        <div class="form-step">
-            <select name="gender" required>
-                <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-            </select>
-            <select name="status" required>
-                <option value="">Select Civil Status</option>
-                <option value="Single">Single</option>
-                <option value="Married">Married</option>
-                <option value="Widowed">Widowed</option>
-                <option value="Separated">Separated</option>
-            </select>
-        </div>
-        <div class="form-step">
-            <input type="text" name="phone" id="phone" placeholder="Phone Number (e.g. 09123456789)" maxlength="11" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-            <input type="text" name="address" placeholder="Address" required>
-        </div>
-        <div class="form-step">
-            <input type="text" name="contact_name" placeholder="Emergency Contact Name" required oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
-            <input type="text" name="contact_number" id="contact_number" placeholder="Contact Number (e.g. 09123456789)" maxlength="11" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-        </div>
-        <div class="form-step">
-            <input type="email" name="email" id="email" placeholder="Email" required>
-            <div>
-                <input type="password" name="password" id="password" placeholder="Password" minlength="8" maxlength="16" required>
-                <label class="toggle-label" onclick="togglePassword('password', this)">Show Password</label>
+    <div class="form-container">
+        <h2>Step 1: Registration</h2>
+        <form method="POST" action="{{ url('/register/step1') }}">
+            @csrf
+            <div class="form-step active">
+                <input type="text" name="firstname" placeholder="First Name" required oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
+                <input type="text" name="middlename" placeholder="Middle Name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
+                <input type="text" name="lastname" placeholder="Last Name" required oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
             </div>
-            <div>
-                <input type="password" name="password_confirmation" id="confirm_password" placeholder="Confirm Password" minlength="8" maxlength="16" required>
-                <label class="toggle-label" onclick="togglePassword('confirm_password', this)">Show Password</label>
+            <div class="form-step">
+                <input type="date" name="birthday" id="birthday" required>
+                <input type="number" name="age" id="age" placeholder="Age" readonly required>
             </div>
-        </div>
-        <div class="btn-group">
-            <button type="button" id="nextBtn">Next</button>
-            <button type="submit" id="submitBtn" style="display:none;">Submit</button>
-        </div>
-    </form>
-</div>
+            <div class="form-step">
+                <select name="gender" required>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+                <select name="status" required>
+                    <option value="">Select Civil Status</option>
+                    <option value="Single">Single</option>
+                    <option value="Married">Married</option>
+                    <option value="Widowed">Widowed</option>
+                    <option value="Separated">Separated</option>
+                </select>
+            </div>
+            <div class="form-step">
+                <input type="text" name="phone" id="phone" placeholder="Phone Number (e.g. 09123456789)" maxlength="11" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input type="text" name="address" placeholder="Address" required>
+            </div>
+            <div class="form-step">
+                <input type="text" name="contact_name" placeholder="Emergency Contact Name" required oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
+                <input type="text" name="contact_number" id="contact_number" placeholder="Contact Number (e.g. 09123456789)" maxlength="11" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            </div>
+            <div class="form-step">
+                <input type="email" name="email" id="email" placeholder="Email" required>
+                <div>
+                    <input type="password" name="password" id="password" placeholder="Password" minlength="8" maxlength="16" required>
+                    <label class="toggle-label" onclick="togglePassword('password', this)">Show Password</label>
+                </div>
+                <div>
+                    <input type="password" name="password_confirmation" id="confirm_password" placeholder="Confirm Password" minlength="8" maxlength="16" required>
+                    <label class="toggle-label" onclick="togglePassword('confirm_password', this)">Show Password</label>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" id="nextBtn">Next</button>
+                <button type="button" id="submitBtn" style="display:none;">Submit</button>
+            </div>
+        </form>
+    </div>
 
 <script>
-const steps = document.querySelectorAll('.form-step');
-const nextBtn = document.getElementById('nextBtn');
-const submitBtn = document.getElementById('submitBtn');
-const topBackBtn = document.getElementById('topBackBtn');
-const progressBar = document.getElementById('progressBar');
-const progressPercentage = document.getElementById('progressPercentage');
-let currentStep = 0;
+    const steps = document.querySelectorAll('.form-step');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const topBackBtn = document.getElementById('topBackBtn');
+    const progressBar = document.getElementById('progressBar');
+    const progressPercentage = document.getElementById('progressPercentage');
+    let currentStep = 0;
 
-function showStep(step) {
-    steps.forEach((s, i) => s.classList.toggle('active', i === step));
-    nextBtn.style.display = step < steps.length - 1 ? 'inline-block' : 'none';
-    submitBtn.style.display = step === steps.length - 1 ? 'inline-block' : 'none';
-    const percent = Math.round(((step + 1) / steps.length) * 100);
-    progressBar.style.width = percent + '%';
-    progressPercentage.textContent = percent + '%';
-}
-
-// Next button with phone check
-nextBtn.addEventListener('click', () => {
-    const inputs = steps[currentStep].querySelectorAll('input, select');
-    let valid = true;
-
-    // 1️⃣ Required field validation
-    inputs.forEach(input => {
-        if (input.hasAttribute('required') && input.value.trim() === '') {
-            valid = false;
-            input.style.borderColor = 'red';
-        } else {
-            input.style.borderColor = '#ccc';
-        }
-    });
-
-    if (!valid) {
-        Swal.fire({ icon: 'error', title: 'Oops...', text: 'Please complete all required fields!' });
-        return;
+    function showStep(step) {
+        steps.forEach((s, i) => s.classList.toggle('active', i === step));
+        nextBtn.style.display = step < steps.length - 1 ? 'inline-block' : 'none';
+        submitBtn.style.display = step === steps.length - 1 ? 'inline-block' : 'none';
+        const percent = Math.round(((step + 1) / steps.length) * 100);
+        progressBar.style.width = percent + '%';
+        progressPercentage.textContent = percent + '%';
     }
 
-    // 2️⃣ Phone number check if exists
-    const phoneInput = steps[currentStep].querySelector('#phone');
-    if (phoneInput) {
-        const phone = phoneInput.value.trim();
-        if (phone.length === 11) {
-            fetch("{{ route('check.phone') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({ phone })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.exists) {
-                    Swal.fire({ icon: 'error', title: 'Oops...', text: 'Phone number already exists!' });
-                } else {
-                    Swal.fire({ icon: 'success', title: 'Good!', text: 'Phone number is available.' }).then(() => {
-                        currentStep++;
-                        showStep(currentStep);
-                    });
-                }
-            })
-            .catch(err => console.error(err));
+    nextBtn.addEventListener('click', () => {
+        const inputs = steps[currentStep].querySelectorAll('input, select');
+        let valid = true;
+
+        inputs.forEach(input => {
+            if (input.hasAttribute('required') && input.value.trim() === '') {
+                valid = false;
+                input.style.borderColor = 'red';
+            } else {
+                input.style.borderColor = '#ccc';
+            }
+        });
+
+        if (!valid) {
+            Swal.fire({ icon: 'error', title: 'Oops...', text: 'Please complete all required fields!' });
             return;
         }
-    } else {
-        // No phone field, just next step
+
+        // Phone number validation (Step 3)
+        if (currentStep === 3) {
+            const phone = document.getElementById('phone').value.trim();
+            if (!/^09\d{9}$/.test(phone)) {
+                Swal.fire({ icon: 'error', title: 'Invalid Phone Number', text: 'Must start with 09 and be 11 digits.' });
+                return;
+            }
+        }
+
+        // Move to next step
         if (currentStep < steps.length - 1) {
             currentStep++;
             showStep(currentStep);
         }
+    });
+
+    submitBtn.addEventListener('click', async () => {
+        const email = document.getElementById('email').value.trim();
+        const pw = document.getElementById('password').value;
+        const confirm = document.getElementById('confirm_password').value;
+
+        // Password validation
+        if (pw.length < 8 || pw.length > 16) {
+            Swal.fire({ icon: 'error', title: 'Password Error', text: 'Password must be 8–16 characters.' });
+            return;
+        }
+
+        if (!/[A-Za-z]/.test(pw) || !/[0-9]/.test(pw)) {
+            Swal.fire({ icon: 'error', title: 'Weak Password', text: 'Password must contain at least one letter and one number.' });
+            return;
+        }
+
+        if (pw !== confirm) {
+            Swal.fire({ icon: 'error', title: 'Mismatch', text: 'Passwords do not match.' });
+            return;
+        }
+
+        // Server-side validation for email and phone
+        const phone = document.getElementById('phone').value.trim();
+        const contactNumber = document.getElementById('contact_number').value.trim();
+
+        try {
+            // Handle server-side phone and email check
+            const res = await fetch('/register/validate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ phone, email, contact_number: contactNumber })
+            });
+
+            const data = await res.json();
+
+            if (data.phoneExists) {
+                Swal.fire({ icon: 'error', title: 'Duplicate Phone', text: 'This phone number is already registered.' });
+                return;
+            }
+
+            if (data.emailExists) {
+                Swal.fire({ icon: 'error', title: 'Duplicate Email', text: 'This email is already in use.' });
+                return;
+            }
+
+            // If no issues, proceed with the registration
+            Swal.fire({
+                icon: 'success',
+                title: 'Registration Complete!',
+                text: 'Your information is now saved. Please proceed to scan your fingerprint.',
+                confirmButtonText: 'Scan Fingerprint'
+            }).then(() => {
+                document.querySelector('form').submit(); // Submit form after success
+            });
+
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({ icon: 'error', title: 'Error', text: 'An error occurred while validating your details. Please try again.' });
+        }
+    });
+
+    topBackBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentStep === 0) window.location.href = '/';
+        else {
+            currentStep--;
+            showStep(currentStep);
+        }
+    });
+
+    document.getElementById('birthday').addEventListener('change', function () {
+        const birthdate = new Date(this.value);
+        const today = new Date();
+        let age = today.getFullYear() - birthdate.getFullYear();
+        const m = today.getMonth() - birthdate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthdate.getDate())) age--;
+        document.getElementById('age').value = age > 0 ? age : '';
+    });
+
+    // Set max birthday date
+    const now = new Date();
+    document.getElementById('birthday').setAttribute('max',
+        `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+    );
+
+    function togglePassword(id, label) {
+        const input = document.getElementById(id);
+        input.type = input.type === 'password' ? 'text' : 'password';
+        label.textContent = input.type === 'text' ? 'Hide Password' : 'Show Password';
     }
-});
 
-topBackBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (currentStep === 0) window.location.href = '/';
-    else {
-        currentStep--;
-        showStep(currentStep);
-    }
-});
-
-// Birthday -> Age
-document.getElementById('birthday').addEventListener('change', function () {
-    const birthdate = new Date(this.value);
-    const today = new Date();
-    let age = today.getFullYear() - birthdate.getFullYear();
-    const m = today.getMonth() - birthdate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthdate.getDate())) age--;
-    document.getElementById('age').value = age > 0 ? age : '';
-});
-const now = new Date();
-document.getElementById('birthday').setAttribute('max',
-    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`
-);
-
-function togglePassword(id, label) {
-    const input = document.getElementById(id);
-    input.type = input.type === 'password' ? 'text' : 'password';
-    label.textContent = input.type === 'text' ? 'Hide Password' : 'Show Password';
-}
-
-showStep(currentStep);
+    showStep(currentStep);
 </script>
-
-{{-- SweetAlert flash/error messages --}}
-@if ($errors->any())
-<script>
-Swal.fire({
-    icon: 'error',
-    title: 'Validation Error',
-    html: `{!! implode('<br>', $errors->all()) !!}`
-});
-</script>
-@endif
-
-@if (session('success'))
-<script>
-Swal.fire({
-    icon: 'success',
-    title: 'Success',
-    text: "{{ session('success') }}",
-    confirmButtonText: 'Scan Fingerprint'
-}).then(()=>{ window.location.href="/fingerprint-scan"; });
-</script>
-@endif
 
 </body>
 </html>

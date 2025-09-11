@@ -93,52 +93,63 @@ protected function throttleKey(Request $request)
     }
 
     // Step 1: Personal Info
-// Step 1: Personal Info
-public function Step1(Request $request)
-{
-    if ($request->isMethod('post')) {
-        $validated = $request->validate([
-            'firstname'       => 'required|string|max:255',
-            'middlename'      => 'nullable|string|max:255',
+    public function Step1(Request $request)
+    {
+        if ($request->isMethod('post')) {
+            // Validate incoming data
+            $validated = $request->validate([
+                'firstname'       => 'required|string|max:255',
+                'middlename'      => 'nullable|string|max:255',
+                'lastname'        => 'required|string|max:255',
+                'birthday'        => 'required|date',
+                'age'             => 'required|integer|min:1',
+                'gender'          => 'required',
+                'status'          => 'required',
+                'phone'           => 'required|digits:11',
+                'address'         => 'required|string|max:255',
+                'contact_name'    => 'required|string|max:255',
+                'contact_number'  => 'required|digits:11',
+                'email'           => 'required|email',
+                'password'        => 'required|string|min:8|max:16|confirmed',
+            ]);
 
-            'lastname'        => 'required|string|max:255',
-            'birthday'        => 'required|date',
-            'age'             => 'required|integer|min:1',
-            'gender'          => 'required',
-            'status'          => 'required',
-            'phone'           => 'required|digits:11|unique:users,phone',
-            'address'         => 'required|string|max:255',
-            'contact_name'    => 'required|string|max:255',
-            'contact_number'  => 'required|digits:11',
-            'email'           => 'required|email|unique:users,email',
-            'password'        => 'required|string|min:8|max:16|confirmed',
-        ]);
+            // Check if the phone or email already exists in the database
+            $phoneExists = User::where('phone', $validated['phone'])->exists();
+            $emailExists = User::where('email', $validated['email'])->exists();
 
-        $user = User::create([
-            'firstname'       => $validated['firstname'],
-            'middlename'     => $validated['middlename'] ?? null,
+            if ($phoneExists || $emailExists) {
+                return back()->withErrors([
+                    'phone' => $phoneExists ? 'Phone number already exists.' : null,
+                    'email' => $emailExists ? 'Email already exists.' : null,
+                ]);
+            }
 
-            'lastname'        => $validated['lastname'],
-            'birthday'        => $validated['birthday'],
-            'age'             => $validated['age'],
-            'gender'          => $validated['gender'],
-            'status'          => $validated['status'],
-            'phone'           => $validated['phone'],
-            'address'         => $validated['address'],
-            'contact_name'    => $validated['contact_name'],
-            'contact_number'  => $validated['contact_number'],
-            'email'           => $validated['email'],
-            'password'        => bcrypt($validated['password']),
-        ]);
+            // Proceed to create user
+            $user = User::create([
+                'firstname'       => $validated['firstname'],
+                'middlename'      => $validated['middlename'] ?? null,
+                'lastname'        => $validated['lastname'],
+                'birthday'        => $validated['birthday'],
+                'age'             => $validated['age'],
+                'gender'          => $validated['gender'],
+                'status'          => $validated['status'],
+                'phone'           => $validated['phone'],
+                'address'         => $validated['address'],
+                'contact_name'    => $validated['contact_name'],
+                'contact_number'  => $validated['contact_number'],
+                'email'           => $validated['email'],
+                'password'        => bcrypt($validated['password']),
+            ]);
 
-        session(['user_id' => $user->id]);
+            // Store the user ID in session for step 2
+            session(['user_id' => $user->id]);
 
-        return redirect()->route('register.step2')->with('success', 'Step 1 completed successfully!');
+            // Redirect to the next step
+            return redirect()->route('register.step2')->with('success', 'Step 1 completed successfully!');
+        }
+
+        return view('register.step1');
     }
-
-    return view('register.step1');
-}
-
 // Step 2: Fingerprint
 public function step2(Request $request)
 {
@@ -349,18 +360,22 @@ public function submitScan(Request $request)
         return response()->json(['success' => true, 'message' => 'Fingerprint saved successfully.']);
     }
 
-// AJAX: check if phone exists
-public function checkPhone(Request $request)
-{
-    $exists = User::where('phone', $request->phone)->exists();
-    return response()->json(['exists' => $exists]);
+  // AJAX: check if phone exists
+    public function checkPhone(Request $request)
+    {
+        $exists = User::where('phone', $request->phone)->exists();
+        return response()->json(['exists' => $exists]);
+    }
+
+    // AJAX: check if email exists
+    public function checkEmail(Request $request)
+    {
+        $exists = User::where('email', $request->email)->exists();
+        return response()->json(['exists' => $exists]);
+    }
+
+    // Other methods remain unchanged...
+
 }
 
-// AJAX: check if email exists
-public function checkEmail(Request $request)
-{
-    $exists = User::where('email', $request->email)->exists();
-    return response()->json(['exists' => $exists]);
-}
 
-}
