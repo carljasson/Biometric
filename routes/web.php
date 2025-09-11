@@ -9,6 +9,10 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\ResponderController;
 use App\Http\Controllers\FingerprintController;
+use Illuminate\Http\Request;
+use App\Models\User;
+use App\Http\Controllers\CheckController;
+use App\Http\Controllers\RegisterController;
 
 // =========================
 // 🌐 GENERAL
@@ -171,13 +175,8 @@ Route::get('/responder/scan', [ResponderController::class, 'showScanPage'])->nam
 Route::post('/scan/submit', [BiometricController::class, 'submitScan'])->name('scan.submit');
 Route::get('/responder/scan/face', [ResponderController::class, 'faceScan'])->name('responder.scan.face');
 
-Route::post('/check-phone', [App\Http\Controllers\Auth\BiometricController::class, 'checkPhone']);
-Route::post('/check-email', [App\Http\Controllers\Auth\BiometricController::class, 'checkEmail']);
-
-use App\Http\Controllers\CheckController;
-
-Route::post('/check-phone', [CheckController::class, 'checkPhone']);
-Route::post('/check-email', [CheckController::class, 'checkEmail']);
+Route::post('/check-phone', [BiometricController::class, 'checkPhone']);
+Route::post('/check-email', [BiometricController::class, 'checkEmail']);
 
 
 Route::get('/admin/alerts', [AdminController::class, 'showAlerts'])->name('admin.alerts');
@@ -210,6 +209,9 @@ Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
-Route::post('/register/step2', [FingerprintController::class, 'store']);
+
 Route::post('/fingerprint/capture', [App\Http\Controllers\FingerprintController::class, 'capture'])->name('fingerprint.capture');
 Route::post('/fingerprint-register', [FingerprintController::class, 'register']);
+
+Route::post('/check-email', [CheckController::class, 'checkEmail']);
+Route::post('/check-phone', [CheckController::class, 'checkPhone'])->name('check.phone');

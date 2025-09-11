@@ -93,40 +93,51 @@ protected function throttleKey(Request $request)
     }
 
     // Step 1: Personal Info
-    public function step1(Request $request)
-    {
-        if ($request->isMethod('post')) {
-            $validated = $request->validate([
-                'firstname' => 'required',
-                'middlename' => 'nullable',
-                'lastname' => 'required',
-                'email' => 'required|email|unique:users',
-                'password' => 'required|min:6|confirmed',
-                'phone' => ['required', 'regex:/^(09|\+639)\d{9}$/'],
-                'address' => 'required',
-                'birthday' => 'required|date',
-                'age' => 'required|numeric',
-                'gender' => 'required|string',
-                'status' => 'required|string',
-                'contact_name' => 'required',
-                'contact_number' => ['required', 'regex:/^(09|\+639)\d{9}$/'],
-            ]);
+// Step 1: Personal Info
+public function Step1(Request $request)
+{
+    if ($request->isMethod('post')) {
+        $validated = $request->validate([
+            'firstname'       => 'required|string|max:255',
+            'middlename'      => 'nullable|string|max:255',
 
-            $middle = $validated['middlename'] ? ' ' . $validated['middlename'] : '';
-            $validated['name'] = $validated['firstname'] . $middle . ' ' . $validated['lastname'];
+            'lastname'        => 'required|string|max:255',
+            'birthday'        => 'required|date',
+            'age'             => 'required|integer|min:1',
+            'gender'          => 'required',
+            'status'          => 'required',
+            'phone'           => 'required|digits:11|unique:users,phone',
+            'address'         => 'required|string|max:255',
+            'contact_name'    => 'required|string|max:255',
+            'contact_number'  => 'required|digits:11',
+            'email'           => 'required|email|unique:users,email',
+            'password'        => 'required|string|min:8|max:16|confirmed',
+        ]);
 
-            $validated['password'] = bcrypt($validated['password']);
+        $user = User::create([
+            'firstname'       => $validated['firstname'],
+            'middlename'     => $validated['middlename'] ?? null,
 
-            $user = User::create($validated);
+            'lastname'        => $validated['lastname'],
+            'birthday'        => $validated['birthday'],
+            'age'             => $validated['age'],
+            'gender'          => $validated['gender'],
+            'status'          => $validated['status'],
+            'phone'           => $validated['phone'],
+            'address'         => $validated['address'],
+            'contact_name'    => $validated['contact_name'],
+            'contact_number'  => $validated['contact_number'],
+            'email'           => $validated['email'],
+            'password'        => bcrypt($validated['password']),
+        ]);
 
-            session(['user_id' => $user->id]);
+        session(['user_id' => $user->id]);
 
-return redirect()->route('register.step2');
-        }
-
-        return view('register.step1');
+        return redirect()->route('register.step2')->with('success', 'Step 1 completed successfully!');
     }
 
+    return view('register.step1');
+}
 
 // Step 2: Fingerprint
 public function step2(Request $request)
@@ -304,12 +315,6 @@ public function submitScan(Request $request)
     }
 }
 
-
-public function checkPhone(Request $request)
-{
-    $exists = User::where('phone', $request->phone)->exists();
-    return response()->json(['exists' => $exists]);
-}
 
     public function store(Request $request)
     {
