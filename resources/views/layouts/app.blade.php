@@ -98,21 +98,13 @@
     <a href="{{ route('admin.users') }}" class="text-white px-4 py-2 d-block text-decoration-none {{ request()->routeIs('admin.users') ? 'bg-secondary fw-bold' : '' }}">
         <i class="bi bi-people-fill me-2"></i> Manage Users
     </a>
-    <a href="{{ route('admin.patients') }}" class="text-white px-4 py-2 d-block text-decoration-none {{ request()->routeIs('admin.patients') ? 'bg-secondary fw-bold' : '' }}">
-        <i class="bi bi-folder2-open me-2"></i> Patient Management
-    </a>
-    <a href="{{ route('admin.records') }}" class="text-white px-4 py-2 d-block text-decoration-none">
-        <i class="bi bi-folder2-open me-2"></i> Medical Records Access
-    </a>
     <a href="{{ route('admin.alerts') }}" class="text-white px-4 py-2 d-block text-decoration-none">
         <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> Emergency Alerts
     </a>
     <a href="{{ route('admin.admin-users') }}" class="text-white px-4 py-2 d-block text-decoration-none {{ request()->routeIs('admin.admin-users') ? 'bg-secondary fw-bold' : '' }}">
         <i class="bi bi-shield-lock-fill me-2"></i> Admin User Management
     </a>
-    <a href="{{ route('export.page') }}" class="text-white px-4 py-2 d-block text-decoration-none">
-        <i class="bi bi-bar-chart-line-fill me-2"></i> Data Export
-    </a>
+    
     <a href="#" data-bs-toggle="modal" data-bs-target="#broadcastModal" class="text-white px-4 py-2 d-block text-decoration-none">
         <i class="bi bi-megaphone-fill me-2"></i> Broadcast Messages
     </a>

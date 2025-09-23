@@ -89,9 +89,23 @@
     <form method="POST" action="{{ url('/register/step2') }}" id="fingerprintForm">
         @csrf
         <input type="hidden" name="fingerprint_data" id="fingerprint_data">
-        <div class="fingerprint-box" onclick="startFingerprintScan()">
-            <img src="https://cdn-icons-png.flaticon.com/512/483/483361.png" class="fingerprint-icon" alt="Fingerprint Icon">
-        </div>
+
+        <!-- Fingerprint trigger -->
+<a href="#" id="launchApp">
+    <div class="fingerprint-box">
+        <img src="https://cdn-icons-png.flaticon.com/512/483/483361.png"
+             class="fingerprint-icon" alt="Fingerprint Icon">
+    </div>
+</a>
+
+<script>
+document.getElementById("launchApp").addEventListener("click", function(e) {
+    e.preventDefault();
+    // Launch C# app with the user_id
+   
+});
+</script>
+
     </form>
 
     <button type="button" onclick="skipStep()">Skip Fingerprint</button>
@@ -99,51 +113,16 @@
 </div>
 
 <script>
+document.getElementById("launchApp").addEventListener("click", function(e) {
+    e.preventDefault();
+    // Launch custom protocol
+    window.location.href = "myfingerprint://start";
+});
+
 function skipStep() {
     window.location.href = "{{ url('/register/step3') }}";
 }
-
-// 🔹 Start scan by asking C# local API
-async function startFingerprintScan() {
-    Swal.fire({
-        title: 'Scanning...',
-        text: 'Please place your finger on the scanner.',
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
-    });
-
-    try {
-        // Call your C# local app (running as HTTP server on port 5000)
-        const res = await fetch("http://127.0.0.1:5000/capture");
-        if (!res.ok) throw new Error("Failed to connect to scanner app");
-
-        const data = await res.json();
-        console.log("C# App Response:", data);
-
-        if (data.success) {
-            document.getElementById("fingerprint_data").value = data.fingerprint;
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Fingerprint captured!',
-                showConfirmButton: false,
-                timer: 1500
-            }).then(() => {
-                document.getElementById("fingerprintForm").submit();
-            });
-        } else {
-            throw new Error("Scanner returned error");
-        }
-
-    } catch (err) {
-        console.error("Error:", err);
-        Swal.fire({
-            icon: 'error',
-            title: 'Scan Failed',
-            text: 'Please ensure the fingerprint app is running.',
-        });
-    }
-}
 </script>
+
 </body>
 </html>

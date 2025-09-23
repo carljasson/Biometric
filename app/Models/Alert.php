@@ -14,6 +14,9 @@ class Alert extends Model
         'latitude',
         'longitude',
         'patient_id',
+        'address',
+        'destination',
+        'photo',
     ];
 
     public function patient()

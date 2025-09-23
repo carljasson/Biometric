@@ -19,8 +19,8 @@
 
     <!-- Emergency Modal -->
     <div class="modal fade" id="emergencyModal" tabindex="-1" aria-labelledby="emergencyModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form id="alertForm" action="{{ route('patient.sendAlert') }}" method="POST">
+        <div class="modal-dialog modal-lg">
+            <form id="alertForm" action="{{ route('patient.sendAlert') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-content">
                     <div class="modal-header bg-danger text-white">
@@ -28,6 +28,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
+
                         <!-- Select Emergency Type -->
                         <div class="mb-3">
                             <label for="type" class="form-label">Type of Emergency</label>
@@ -40,6 +41,20 @@
                             </select>
                         </div>
 
+                        <!-- Camera Preview & Capture -->
+                        <div class="mb-3">
+                            <label class="form-label">📸 Capture Photo</label>
+                            <div class="text-center">
+                                <video id="camera" autoplay playsinline width="100%" class="rounded border"></video>
+                                <canvas id="snapshot" style="display:none;"></canvas>
+                                <input type="hidden" name="photo" id="photo">
+                                <button type="button" class="btn btn-secondary mt-2" onclick="takeSnapshot()">Capture</button>
+                            </div>
+                            <div id="previewContainer" class="text-center mt-2" style="display:none;">
+                                <img id="preview" class="img-fluid rounded border" />
+                            </div>
+                        </div>
+
                         <!-- Hidden location fields -->
                         <input type="hidden" name="latitude" id="latitude">
                         <input type="hidden" name="longitude" id="longitude">
@@ -47,8 +62,16 @@
 
                         <div class="alert alert-info p-2 small" id="locationStatus">📍 Getting your location...</div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-danger">Send Alert</button>
+                    <div class="modal-footer d-flex justify-content-between">
+                        <button type="submit" name="destination" value="Santa Fe" class="btn btn-danger">
+                            🚨 Send to Santa Fe
+                        </button>
+                        <button type="submit" name="destination" value="Madridejos" class="btn btn-danger">
+                            🚨 Send to Madridejos
+                        </button>
+                        <button type="submit" name="destination" value="Bantayan" class="btn btn-danger">
+                            🚨 Send to Bantayan
+                        </button>
                     </div>
                 </div>
             </form>
@@ -60,9 +83,10 @@
 <!-- SweetAlert + Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // ===== Location =====
     async function getUserLocation() {
         if (!navigator.geolocation) {
-            document.getElementById('locationStatus').innerText = '❌ Geolocation is not supported by your browser.';
+            document.getElementById('locationStatus').innerText = '❌ Geolocation not supported.';
             return;
         }
 
@@ -73,8 +97,7 @@
             document.getElementById('latitude').value = lat;
             document.getElementById('longitude').value = lon;
 
-            // 🔑 Replace with your actual OpenCage API key
-            const apiKey = '45c8795c3e094eb8994cc238f809c663';
+            const apiKey = '45c8795c3e094eb8994cc238f809c663'; // 🔑 Replace with your actual OpenCage API key
             const apiUrl = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${apiKey}&language=en`;
 
             try {
@@ -89,34 +112,65 @@
                     document.getElementById('locationStatus').innerText = '⚠️ Unable to retrieve address.';
                 }
             } catch (error) {
-                console.error(error);
                 document.getElementById('locationStatus').innerText = '❌ Failed to get address.';
             }
-
-        }, (error) => {
-            console.error(error);
-            document.getElementById('locationStatus').innerText = '⚠️ Location access denied or unavailable.';
+        }, () => {
+            document.getElementById('locationStatus').innerText = '⚠️ Location denied or unavailable.';
         });
     }
 
-    // Trigger on modal show
+    // ===== Camera =====
+    let video = document.getElementById('camera');
+    let canvas = document.getElementById('snapshot');
+    let preview = document.getElementById('preview');
+    let previewContainer = document.getElementById('previewContainer');
+
+    async function startCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+        } catch (err) {
+            Swal.fire('Camera Error', 'Unable to access your camera.', 'error');
+        }
+    }
+
+    function takeSnapshot() {
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const dataUrl = canvas.toDataURL('image/png');
+        document.getElementById('photo').value = dataUrl;
+
+        preview.src = dataUrl;
+        previewContainer.style.display = "block";
+    }
+
+    // ===== Modal Events =====
     var emergencyModal = document.getElementById('emergencyModal');
     emergencyModal.addEventListener('shown.bs.modal', function () {
         getUserLocation();
+        startCamera();
     });
 
-    // Confirm before sending alert
+    // ===== Confirm before sending =====
     document.getElementById('alertForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const type = document.getElementById('type').value;
+        const destination = e.submitter.value; // which button clicked
 
         if (!type) {
             Swal.fire('Select Emergency Type', 'Please choose an emergency type.', 'warning');
             return;
         }
+        if (!document.getElementById('photo').value) {
+            Swal.fire('Capture Required', 'Please capture a photo before sending.', 'warning');
+            return;
+        }
 
         Swal.fire({
-            title: `Send ${type} Alert?`,
+            title: `Send ${type} Alert to ${destination}?`,
             text: "Are you sure you want to send this emergency alert?",
             icon: 'warning',
             showCancelButton: true,
@@ -125,12 +179,12 @@
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                setTimeout(() => this.submit(), 800); // Wait to ensure address is set
+                this.submit();
             }
         });
     });
 
-    // Toast success message
+    // ===== Success Toast =====
     @if(session('success'))
     Swal.fire({
         icon: 'success',

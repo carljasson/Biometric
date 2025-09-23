@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Controllers\CheckController;
 use App\Http\Controllers\RegisterController;
+use App\Models\Alert;
 
 // =========================
 // 🌐 GENERAL
@@ -213,6 +214,52 @@ Route::get('/login', function () {
 Route::post('/fingerprint/capture', [App\Http\Controllers\FingerprintController::class, 'capture'])->name('fingerprint.capture');
 Route::post('/fingerprint-register', [FingerprintController::class, 'register']);
 
-Route::post('/register/step1', [BiometricController::class, 'store'])->name('register.step1');
-Route::post('/check-phone', [BiometricController::class, 'checkPhone'])->name('check.phone');
+Route::post('/register/step1', [BiometricController::class, 'step1'])->name('register.step1');
+
+
+
+// web.php
+Route::get('/fingerprint/latest', [FingerprintController::class, 'latestScan']);
+
+Route::post('/fingerprint-register', [FingerprintController::class, 'registerFingerprint']);
+
+
+Route::get('/register/step2', [BiometricController::class, 'step2'])->name('register.step2'); // Step 2 page
+
+
 Route::post('/check-email', [BiometricController::class, 'checkEmail'])->name('check.email');
+Route::post('/check-phone', [BiometricController::class, 'checkPhone'])->name('check.phone');
+
+Route::get('/register/step3', [BiometricController::class,'step3'])->name('register.step3');
+Route::post('/register/step3', [BiometricController::class,'registerStep3'])->name('register.step3.post');
+
+Route::get('/responder/alerts/check', function () {
+    $responder = Auth::guard('responder')->user();
+
+    $alerts = Alert::with('user')  // 🔑 load the user, not patient
+        ->where('destination', $responder->location)
+        ->latest()
+        ->take(5)
+        ->get()
+        ->map(function ($alert) {
+            $u = $alert->user;  // The related user record
+            $fullname = trim(
+                ($u->firstname ?? '') . ' ' .
+                ($u->middlename ?? '') . ' ' .
+                ($u->lastname ?? '')
+            );
+
+            return [
+                'type'         => $alert->type,
+                'latitude'     => $alert->latitude,
+                'longitude'    => $alert->longitude,
+                'destination'  => $alert->destination,
+                'photo'        => $alert->photo,
+                'sender_name'  => $fullname ?: 'Unknown',
+                'sender_email' => $u->email ?? 'N/A',
+                'sender_phone' => $u->phone ?? 'N/A',
+            ];
+        });
+
+    return response()->json($alerts);
+})->middleware('auth:responder')->name('responder.alerts.check');

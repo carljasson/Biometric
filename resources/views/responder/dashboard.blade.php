@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setInterval(checkEmergencyAlerts, 10000);
 
     function checkEmergencyAlerts() {
-        fetch("{{ route('responder.alerts.check') }}") // Returns JSON of new alerts
+        fetch("{{ route('responder.alerts.check') }}") // Returns JSON of new alerts filtered by destination
             .then(response => response.json())
             .then(data => {
                 if(data && data.length > 0) {
@@ -111,12 +111,17 @@ document.addEventListener('DOMContentLoaded', function () {
                         Swal.fire({
                             title: '🚨 Emergency Alert!',
                             html: `
+                                <strong>Type:</strong> ${alert.type}<br>
                                 <strong>Sender:</strong> ${alert.sender_name}<br>
+                                <strong>Email:</strong> ${alert.sender_email}<br>
                                 <strong>Phone:</strong> ${alert.sender_phone}<br>
-                                <strong>Location:</strong> <a href="https://www.google.com/maps?q=${alert.latitude},${alert.longitude}" target="_blank">View on Map</a>
+                                <strong>Destination:</strong> ${alert.destination}<br>
+                                <strong>Location:</strong> 
+                                    <a href="https://www.google.com/maps?q=${alert.latitude},${alert.longitude}" target="_blank">📍 View on Map</a><br><br>
+                                ${alert.photo ? `<img src="/storage/${alert.photo}" alt="Emergency Photo" style="max-width:100%; border-radius:8px; border:1px solid #ccc;">` : ''}
                             `,
                             icon: 'warning',
-                            timer: 15000,
+                            timer: 20000,
                             timerProgressBar: true,
                             showConfirmButton: true
                         });

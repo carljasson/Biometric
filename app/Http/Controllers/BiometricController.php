@@ -93,63 +93,52 @@ protected function throttleKey(Request $request)
     }
 
     // Step 1: Personal Info
-    public function Step1(Request $request)
-    {
-        if ($request->isMethod('post')) {
-            // Validate incoming data
-            $validated = $request->validate([
-                'firstname'       => 'required|string|max:255',
-                'middlename'      => 'nullable|string|max:255',
-                'lastname'        => 'required|string|max:255',
-                'birthday'        => 'required|date',
-                'age'             => 'required|integer|min:1',
-                'gender'          => 'required',
-                'status'          => 'required',
-                'phone'           => 'required|digits:11',
-                'address'         => 'required|string|max:255',
-                'contact_name'    => 'required|string|max:255',
-                'contact_number'  => 'required|digits:11',
-                'email'           => 'required|email',
-                'password'        => 'required|string|min:8|max:16|confirmed',
-            ]);
+   public function Step1(Request $request)
+{
+    if ($request->isMethod('post')) {
+        // Validate all fields at once
+        $validated = $request->validate([
+            'firstname'       => 'required|string|max:255',
+            'middlename'      => 'nullable|string|max:255',
+            'lastname'        => 'required|string|max:255',
+            'birthday'        => 'required|date',
+            'age'             => 'required|integer|min:1',
+            'gender'          => 'required',
+            'status'          => 'required',
+            'phone'           => 'required|digits:11',
+            'address'         => 'required|string|max:255',
+            'contact_name'    => 'required|string|max:255',
+            'contact_number'  => 'required|digits:11',
+            'email'           => 'required|email',
+            'password'        => 'required|string|min:8|max:16|confirmed',
+        ]);
 
-            // Check if the phone or email already exists in the database
-            $phoneExists = User::where('phone', $validated['phone'])->exists();
-            $emailExists = User::where('email', $validated['email'])->exists();
+        // Save user only when submit button clicked
+        $user = User::create([
+            'firstname'       => $validated['firstname'],
+            'middlename'      => $validated['middlename'] ?? null,
+            'lastname'        => $validated['lastname'],
+            'birthday'        => $validated['birthday'],
+            'age'             => $validated['age'],
+            'gender'          => $validated['gender'],
+            'status'          => $validated['status'],
+            'phone'           => $validated['phone'],
+            'address'         => $validated['address'],
+            'contact_name'    => $validated['contact_name'],
+            'contact_number'  => $validated['contact_number'],
+            'email'           => $validated['email'],
+            'password'        => bcrypt($validated['password']),
+        ]);
 
-            if ($phoneExists || $emailExists) {
-                return back()->withErrors([
-                    'phone' => $phoneExists ? 'Phone number already exists.' : null,
-                    'email' => $emailExists ? 'Email already exists.' : null,
-                ]);
-            }
+        session(['user_id' => $user->id]);
+        exec('start "" "C:\\Users\\admin\\Downloads\\zkfingerprint\\ZKFingerSDK_Windows_Standard\\ZKFinger Standard SDK 5.3.0.33\\x64\\Debug\\scan.exe" ' . $user->id);
 
-            // Proceed to create user
-            $user = User::create([
-                'firstname'       => $validated['firstname'],
-                'middlename'      => $validated['middlename'] ?? null,
-                'lastname'        => $validated['lastname'],
-                'birthday'        => $validated['birthday'],
-                'age'             => $validated['age'],
-                'gender'          => $validated['gender'],
-                'status'          => $validated['status'],
-                'phone'           => $validated['phone'],
-                'address'         => $validated['address'],
-                'contact_name'    => $validated['contact_name'],
-                'contact_number'  => $validated['contact_number'],
-                'email'           => $validated['email'],
-                'password'        => bcrypt($validated['password']),
-            ]);
-
-            // Store the user ID in session for step 2
-            session(['user_id' => $user->id]);
-
-            // Redirect to the next step
-            return redirect()->route('register.step2')->with('success', 'Step 1 completed successfully!');
-        }
-
-        return view('register.step1');
+        return redirect()->route('register.step2')->with('success', 'Step 1 completed!');
     }
+
+    return view('register.step1');
+}
+
 // Step 2: Fingerprint
 public function step2(Request $request)
 {
@@ -327,19 +316,7 @@ public function submitScan(Request $request)
 }
 
 
-   public function storeBiometric(Request $request)
-{
-    $request->validate([
-        'fingerprint_data' => 'required|string',
-    ]);
-
-    $record = BiometricSystem::create([
-        'name' => 'Test User',
-        'fingerprint_registered' => $request->fingerprint_data,
-    ]);
-
-    return redirect('/register/step3')->with('success', 'Fingerprint saved!');
-}
+   
 
 
  public function capture(Request $request)
@@ -368,13 +345,38 @@ public function submitScan(Request $request)
     }
 
     // AJAX: check if email exists
-    public function checkEmail(Request $request)
-    {
-        $exists = User::where('email', $request->email)->exists();
-        return response()->json(['exists' => $exists]);
-    }
+public function checkEmail(Request $request)
+{
+    // Make sure to validate input
+    $request->validate(['email' => 'required|email']);
+
+    // Check if email exists
+    $exists = \App\Models\User::where('email', $request->email)->exists();
+
+    // Return JSON
+    return response()->json(['exists' => $exists]);
+}
 
     // Other methods remain unchanged...
+
+    public function step2View() {
+    return view('step2'); // Fingerprint registration
+}
+public function checkFingerprintStatus(Request $request)
+{
+    // Get the user ID from session set during Step1
+    $userId = session('user_id');
+
+    if (!$userId) {
+        return response()->json(['status' => 0]);
+    }
+
+    $user = \App\Models\User::find($userId);
+
+    return response()->json([
+        'status' => $user?->fingerprint_registered ?? 0
+    ]);
+}
 
 }
 

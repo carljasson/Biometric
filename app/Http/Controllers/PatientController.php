@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\Responder;               
 use Illuminate\Http\Request;
 use App\Models\Patient;
 use App\Models\Alert;
+use Illuminate\Support\Facades\Storage;
 use App\Models\EmergencyAlert;
 class PatientController extends Controller
 {
@@ -46,25 +47,27 @@ class PatientController extends Controller
 
 
 
+
+
 public function sendAlert(Request $request)
 {
-    $request->validate([
-        'type' => 'required|string',
-        'latitude' => 'required|numeric',
-        'longitude' => 'required|numeric',
-        'address' => 'nullable|string',
-    ]);
+    // ⚠️ Temporarily remove validation to debug
+    // $request->validate([...]);
 
-    $patientId = Auth::id(); // assuming the logged-in user is a patient
+    // TEST ONLY: log what we receive
+    \Log::info('Alert request', $request->all());
 
     Alert::create([
-        'patient_id' => $patientId,
-        'type' => $request->type,
-        'latitude' => $request->latitude,
-        'longitude' => $request->longitude,
-        'address' => $request->address,
+        'patient_id' => auth()->id(),
+        'type'       => $request->type,
+        'latitude'   => $request->latitude,
+        'longitude'  => $request->longitude,
+        'address'    => $request->address,
+        'destination'=> $request->destination,
+        'photo'      => $request->photo,
     ]);
 
-    return redirect()->back()->with('success', 'Emergency alert sent successfully!');
+    return redirect()->back()->with('success', 'Emergency Alert Sent!');
 }
+
 }
