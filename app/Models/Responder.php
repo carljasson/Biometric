@@ -8,6 +8,6 @@ use Illuminate\Notifications\Notifiable;
 class Responder extends Authenticatable
 {
     protected $table = 'responders'; // This must match your DB table
-    protected $fillable = ['name', 'email', 'password'];
+    protected $fillable = ['name', 'email', 'password', 'location'];
 }
 
