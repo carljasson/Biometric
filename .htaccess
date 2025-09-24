@@ -25,11 +25,9 @@
 </IfModule>
 
 # ===== SECURITY BLOCKS =====
-# Deny direct access to .env and other hidden files
 <FilesMatch "^\.">
     Order allow,deny
     Deny from all
 </FilesMatch>
 
-# Deny access to core Laravel folders
 RedirectMatch 403 ^/(vendor|storage|bootstrap|config|database|resources|routes|tests)(.*)$
