@@ -1,9 +1,8 @@
 <?php
 
+die(__DIR__);
+
 define('LARAVEL_START', microtime(true));
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
 // If app is in maintenance mode...
 if (file_exists(__DIR__.'/storage/framework/maintenance.php')) {
