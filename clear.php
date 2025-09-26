@@ -11,6 +11,7 @@ try {
     $kernel->call('config:clear');
     $kernel->call('cache:clear');
     $kernel->call('config:cache');
+    
     echo "✅ Laravel cache & config cleared!";
 } catch (Throwable $e) {
     echo "❌ Error: " . $e->getMessage();
