@@ -1,7 +1,5 @@
 <?php
 
-die(__DIR__);
-
 define('LARAVEL_START', microtime(true));
 
 // If app is in maintenance mode...
