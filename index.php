@@ -2,12 +2,16 @@
 
 define('LARAVEL_START', microtime(true));
 
-// If app is in maintenance mode...
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Maintenance mode check
 if (file_exists(__DIR__.'/storage/framework/maintenance.php')) {
     require __DIR__.'/storage/framework/maintenance.php';
 }
 
-// Load Composer
+// Composer autoload
 require __DIR__.'/vendor/autoload.php';
 
 // Bootstrap Laravel
