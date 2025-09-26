@@ -1,7 +1,17 @@
 <?php
+define('LARAVEL_START', microtime(true));
+
 require __DIR__.'/vendor/autoload.php';
+
 $app = require_once __DIR__.'/bootstrap/app.php';
-$app->make(Illuminate\Contracts\Console\Kernel::class)->call('config:clear');
-$app->make(Illuminate\Contracts\Console\Kernel::class)->call('cache:clear');
-$app->make(Illuminate\Contracts\Console\Kernel::class)->call('config:cache');
-echo "Cache cleared!";
+
+$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+
+try {
+    $kernel->call('config:clear');
+    $kernel->call('cache:clear');
+    $kernel->call('config:cache');
+    echo "✅ Laravel cache & config cleared!";
+} catch (Throwable $e) {
+    echo "❌ Error: " . $e->getMessage();
+}
