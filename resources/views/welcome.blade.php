@@ -44,7 +44,9 @@
 
         body {
             background-image: url('{{ asset('images/background.png') }}');
-            background-size: cover;          /* Always fill the screen */
+            background-size: contain;
+background-color: #000; /* optional background behind the image */
+/* Always fill the screen */
             background-position: center;     /* Keep it centered */
             background-repeat: no-repeat;    /* No tiling */
             background-attachment: fixed;    /* Fixed on desktop */
