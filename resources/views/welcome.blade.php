@@ -194,7 +194,7 @@
             <div class="modal-body">
                 <p>
                     This system helps <strong>accident victims</strong> quickly alert emergency responders
-                    in the municipalities of <strong>Bantayan</strong>, <strong>Santa Fe</strong>, and
+                    in the municipalities of <strong>Bantayan</strong>, <strong>Santa Fe</strong> and
                     <strong>Madridejos</strong> without needing to call phone numbers.
                 </p>
                 <ul class="mb-0">
