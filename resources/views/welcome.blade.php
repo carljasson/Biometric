@@ -35,17 +35,31 @@
           crossorigin="anonymous"
           referrerpolicy="no-referrer">
 
+    {{-- ✅ Responsive Background --}}
     <style nonce="{{ $cspNonce }}">
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
         body {
             background-image: url('{{ asset('images/background.png') }}');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            height: 100vh;
-            margin: 0;
+            background-size: cover;          /* Always fill the screen */
+            background-position: center;     /* Keep it centered */
+            background-repeat: no-repeat;    /* No tiling */
+            background-attachment: fixed;    /* Fixed on desktop */
             color: white;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
         }
+
+        /* ✅ Mobile tweak: allow scroll for better performance */
+        @media (max-width: 768px) {
+            body {
+                background-attachment: scroll;
+                background-position: center top;
+            }
+        }
+
         .top-left-logo { position: absolute; top: 5px; left: 20px; }
         .top-left-logo img { max-width: 180px; width: 100%; height: auto; }
         .top-right-icons { position: absolute; top: 20px; right: 20px; display: flex; gap: 15px; align-items: center; }
@@ -138,7 +152,6 @@
                         Please visit the <strong>MDRRMO office</strong> to complete your registration.
                     </p>
                 </div>
-
             </div>
         </div>
     </div>
