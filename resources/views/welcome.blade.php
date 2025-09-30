@@ -35,48 +35,65 @@
           crossorigin="anonymous"
           referrerpolicy="no-referrer">
 
-    {{-- ✅ Responsive Background --}}
+    {{-- ✅ Fullscreen scalable background --}}
     <style nonce="{{ $cspNonce }}">
         html, body {
             height: 100%;
             margin: 0;
         }
 
-        body {
-            background-image: url('{{ asset('images/background.png') }}');
-            background-size: contain;
-background-color: #000; /* optional background behind the image */
-/* Always fill the screen */
-            background-position: center;     /* Keep it centered */
-            background-repeat: no-repeat;    /* No tiling */
-            background-attachment: fixed;    /* Fixed on desktop */
-            color: white;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        /* background container behind everything */
+        .bg-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;             /* keep it behind all content */
+            background: #000;         /* fallback color */
         }
 
-        /* ✅ Mobile tweak: allow scroll for better performance */
-        @media (max-width: 768px) {
-            body {
-                background-attachment: scroll;
-                background-position: center top;
-            }
+        /* responsive image that always shows the full picture */
+        .bg-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;      /* ✅ entire image always visible */
+        }
+
+        body {
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
         }
 
         .top-left-logo { position: absolute; top: 5px; left: 20px; }
         .top-left-logo img { max-width: 180px; width: 100%; height: auto; }
-        .top-right-icons { position: absolute; top: 20px; right: 20px; display: flex; gap: 15px; align-items: center; }
+
+        .top-right-icons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
         .top-right-icons a,
         .top-right-icons .dropdown-toggle {
-            color: white; font-size: 1.5rem;
+            color: white;
+            font-size: 1.5rem;
             background-color: rgba(0, 0, 0, 0.5);
-            padding: 10px; border-radius: 50%;
+            padding: 10px;
+            border-radius: 50%;
             transition: background-color 0.3s ease;
             text-decoration: none;
         }
         .top-right-icons a:hover,
-        .top-right-icons .dropdown-toggle:hover { background-color: rgba(255, 255, 255, 0.2); }
+        .top-right-icons .dropdown-toggle:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
         .dropdown-menu-dark { background-color: #343a40; }
         .alert { margin: 1rem auto; width: 90%; max-width: 500px; }
+
         .modal-backdrop { opacity: 0.8; }
         .modal-content {
             background-color: rgba(0, 0, 0, 0.9);
@@ -92,13 +109,19 @@ background-color: #000; /* optional background behind the image */
             background-color: #ff4747;
             color: white;
             border-radius: 50%;
-            width: 35px; height: 35px;
+            width: 35px;
+            height: 35px;
         }
         .btn-close:hover { background-color: #ff0000; }
     </style>
 </head>
 
 <body>
+    {{-- ✅ Fullscreen background image --}}
+    <div class="bg-wrapper">
+        <img src="{{ asset('images/background.png') }}" alt="Biometric Medical Access Background" loading="lazy" decoding="async">
+    </div>
+
     {{-- Top Left Logo --}}
     <div class="top-left-logo">
         <img src="{{ asset('images/logo.png') }}" alt="Biometric Medical Access Logo" loading="lazy" decoding="async">
@@ -106,7 +129,9 @@ background-color: #000; /* optional background behind the image */
 
     {{-- Top Right Icons --}}
     <div class="top-right-icons">
-        <a href="/" title="Home" rel="noopener noreferrer" referrerpolicy="no-referrer"><i class="fas fa-home"></i></a>
+        <a href="/" title="Home" rel="noopener noreferrer" referrerpolicy="no-referrer">
+            <i class="fas fa-home"></i>
+        </a>
 
         {{-- Login Dropdown --}}
         <div class="dropdown">
