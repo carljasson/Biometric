@@ -183,25 +183,33 @@
         </div>
     </div>
 
-    {{-- Tips Modal --}}
-    <div class="modal" id="tipsModal" tabindex="-1" aria-labelledby="tipsModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="tipsModalLabel">Helpful Tips</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <ul>
-                        <li><strong>Tip 1:</strong> Keep your medical records updated for better access.</li>
-                        <li><strong>Tip 2:</strong> Use biometric authentication for quick login.</li>
-                        <li><strong>Tip 3:</strong> Make sure your device is secure to protect sensitive health data.</li>
-                    </ul>
-                </div>
-                <div class="modal-footer"></div>
+{{-- Tips Modal --}}
+<div class="modal" id="tipsModal" tabindex="-1" aria-labelledby="tipsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tipsModalLabel">About This Website</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    This system helps <strong>accident victims</strong> quickly alert emergency responders
+                    in the municipalities of <strong>Bantayan</strong>, <strong>Santa Fe</strong>, and
+                    <strong>Madridejos</strong> without needing to call phone numbers.
+                </p>
+                <ul class="mb-0">
+                    <li>Report an accident and choose the municipality where it happened.</li>
+                    <li>The selected responder team receives the report instantly and can confirm the incident.</li>
+                    <li>Once on scene, responders can <strong>scan the victim’s fingerprint</strong>
+                        to immediately view their full name, address, and emergency contact details.</li>
+                    <li>This allows responders to provide faster assistance and notify the victim’s
+                        emergency contact without delay.</li>
+                </ul>
             </div>
         </div>
     </div>
+</div>
+
 
     {{-- Bootstrap JS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
