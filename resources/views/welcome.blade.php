@@ -42,22 +42,15 @@
             margin: 0;
         }
 
-        /* background container behind everything */
+        /* Full-screen background that always covers */
         .bg-wrapper {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;             /* keep it behind all content */
-            background: #000;         /* fallback color */
-        }
-
-        /* responsive image that always shows the full picture */
-        .bg-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;      /* ✅ entire image always visible */
+            z-index: -1; /* behind everything */
+            background: url('{{ asset('images/background.png') }}') center center / cover no-repeat;
         }
 
         body {
@@ -117,10 +110,8 @@
 </head>
 
 <body>
-    {{-- ✅ Fullscreen background image --}}
-    <div class="bg-wrapper">
-        <img src="{{ asset('images/background.png') }}" alt="Biometric Medical Access Background" loading="lazy" decoding="async">
-    </div>
+    {{-- ✅ Fullscreen background --}}
+    <div class="bg-wrapper"></div>
 
     {{-- Top Left Logo --}}
     <div class="top-left-logo">
@@ -183,33 +174,32 @@
         </div>
     </div>
 
-{{-- Tips Modal --}}
-<div class="modal" id="tipsModal" tabindex="-1" aria-labelledby="tipsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="tipsModalLabel">About This Website</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>
-                    This system helps <strong>accident victims</strong> quickly alert emergency responders
-                    in the municipalities of <strong>Bantayan</strong>, <strong>Santa Fe</strong> and
-                    <strong>Madridejos</strong> without needing to call phone numbers.
-                </p>
-                <ul class="mb-0">
-                    <li>Report an accident and choose the municipality where it happened.</li>
-                    <li>The selected responder team receives the report instantly and can confirm the incident.</li>
-                    <li>Once on scene, responders can <strong>scan the victim’s fingerprint</strong>
-                        to immediately view their full name, address, and emergency contact details.</li>
-                    <li>This allows responders to provide faster assistance and notify the victim’s
-                        emergency contact without delay.</li>
-                </ul>
+    {{-- Tips Modal --}}
+    <div class="modal" id="tipsModal" tabindex="-1" aria-labelledby="tipsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tipsModalLabel">About This Website</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        This system helps <strong>accident victims</strong> quickly alert emergency responders
+                        in the municipalities of <strong>Bantayan</strong>, <strong>Santa Fe</strong> and
+                        <strong>Madridejos</strong> without needing to call phone numbers.
+                    </p>
+                    <ul class="mb-0">
+                        <li>Report an accident and choose the municipality where it happened.</li>
+                        <li>The selected responder team receives the report instantly and can confirm the incident.</li>
+                        <li>Once on scene, responders can <strong>scan the victim’s fingerprint</strong>
+                            to immediately view their full name, address, and emergency contact details.</li>
+                        <li>This allows responders to provide faster assistance and notify the victim’s
+                            emergency contact without delay.</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
 
     {{-- Bootstrap JS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
