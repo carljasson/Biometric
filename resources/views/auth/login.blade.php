@@ -16,11 +16,12 @@
         object-src 'none';
         frame-ancestors 'none';
         upgrade-insecure-requests;
-        script-src 'self' https://cdn.jsdelivr.net 'nonce-{{ $cspNonce }}';
+        script-src 'self' https://cdn.jsdelivr.net https://challenges.cloudflare.com 'nonce-{{ $cspNonce }}';
         style-src  'self' https://cdn.jsdelivr.net 'nonce-{{ $cspNonce }}';
         img-src 'self' data:;
         font-src 'self' https://cdn.jsdelivr.net;
         connect-src 'self';
+        frame-src https://challenges.cloudflare.com;
     ">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
@@ -90,7 +91,7 @@
             font-size: 0.9rem;
         }
 
-        .register-link {
+        .extra-links {
             font-size: 0.95rem;
         }
     </style>
@@ -143,12 +144,15 @@
                        required
                        autocomplete="current-password">
             </div>
+
+            {{-- 🌐 Cloudflare Turnstile --}}
+            <div class="cf-turnstile mb-3" data-sitekey="your-site-key-here"></div>
+
             <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>
 
-        <div class="mt-3 text-center register-link">
-            Don't have an account?
-            <a href="{{ url('/register/step1') }}" rel="noopener noreferrer">Register here</a>
+        <div class="mt-3 text-center extra-links">
+            <a href="{{ url('/password/reset') }}" rel="noopener noreferrer">Forgot password?</a>
         </div>
     </div>
 
@@ -166,6 +170,9 @@
 
     {{-- 🚨 SweetAlert2 Lockout --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" nonce="{{ $cspNonce }}"></script>
+
+    {{-- 🌐 Cloudflare Turnstile script --}}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
     @if(session('lockout'))
     <script nonce="{{ $cspNonce }}">
