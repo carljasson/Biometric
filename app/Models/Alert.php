@@ -17,6 +17,8 @@ class Alert extends Model
         'address',
         'destination',
         'photo',
+        'user_id',
+        'status',
     ];
 
     public function patient()
