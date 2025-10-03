@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Announcement;
+use App\Models\Alert;
 
 
 
@@ -45,12 +46,8 @@ public function showLoginForm()
         return redirect()->route('responder.login');
     }
 
-    // Dashboard
- public function dashboard()
-{
-    $announcements = Announcement::where('active', true)->latest()->get(); // optional: only active ones
-    return view('responder.dashboard', compact('announcements'));
-}
+    
+ 
 
     // Optional: Insert a responder (for testing)
    public function insertDemoResponder()
@@ -132,26 +129,32 @@ public function profile()
     return view('responder.profile', compact('responder'));
 }
 
+public function dashboard()
+{
+    $announcements = Announcement::where('active', true)->latest()->get();
+    
+    // Show all active alerts (not resolved)
+    $alerts = Alert::where('status', '!=', 'Resolved')
+                ->with('patient') // if you have relation set in Alert model
+                ->latest()
+                ->get();
+
+    $responder = Auth::guard('responder')->user();
+
+    return view('responder.dashboard', compact('announcements', 'alerts', 'responder'));
+}
+
 public function checkAlerts()
 {
-    // Get new/unseen emergency alerts for responders
-    $alerts = EmergencyAlert::where('status', '!=', 'Resolved')
-        ->where('notified_responder', false) // optional flag
-        ->with('user')
+    $alerts = Alert::where('status', '!=', 'Resolved')
+        ->with('patient') // assuming relation Alert belongsTo Patient
         ->get();
 
-    // Mark as notified to prevent repeated alerts
-    foreach($alerts as $alert) {
-        $alert->notified_responder = true;
-        $alert->save();
-    }
-
-    // Return JSON
     return response()->json($alerts->map(function($alert){
         return [
             'id' => $alert->id,
-            'sender_name' => $alert->user->firstname . ' ' . $alert->user->lastname,
-            'sender_phone' => $alert->user->phone,
+            'sender_name' => $alert->patient->firstname . ' ' . $alert->patient->lastname,
+            'sender_phone' => $alert->patient->phone,
             'latitude' => $alert->latitude,
             'longitude' => $alert->longitude,
         ];
