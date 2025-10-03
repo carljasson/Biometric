@@ -49,25 +49,6 @@ class PatientController extends Controller
 
 
 
-public function sendAlert(Request $request)
-{
-    // ⚠️ Temporarily remove validation to debug
-    // $request->validate([...]);
 
-    // TEST ONLY: log what we receive
-    \Log::info('Alert request', $request->all());
-
-    Alert::create([
-        'patient_id' => auth()->id(),
-        'type'       => $request->type,
-        'latitude'   => $request->latitude,
-        'longitude'  => $request->longitude,
-        'address'    => $request->address,
-        'destination'=> $request->destination,
-        'photo'      => $request->photo,
-    ]);
-
-    return redirect()->back()->with('success', 'Emergency Alert Sent!');
-}
 
 }

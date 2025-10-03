@@ -146,7 +146,10 @@
             </div>
 
             {{-- 🌐 Cloudflare Turnstile --}}
-            <div class="cf-turnstile mb-3" data-sitekey="your-site-key-here"></div>
+            <div class="cf-turnstile mb-3" data-sitekey="{{ config('services.turnstile.sitekey') }}"></div>
+            @error('captcha')
+                <div class="alert alert-danger mt-2">{{ $message }}</div>
+            @enderror
 
             <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>

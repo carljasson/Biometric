@@ -15,68 +15,53 @@ use Illuminate\Foundation\Auth\ThrottlesLogins;
 class BiometricController extends Controller
 {
     // Show login form
-// Show login form
-public function showLoginForm()
-{
-    return view('login'); // resources/views/login.blade.php
-}
-
-// Handle login POST
-
-
-// In BiometricController
-
-// Handle login POST
-public function login(Request $request)
-{
-   if ($response = $this->ensureIsNotRateLimited($request)) {
-    return $response; // return redirect if locked
-}
-
-
-    $credentials = $request->only('email', 'password');
-
-    if (auth()->attempt($credentials)) {
-        RateLimiter::clear($this->throttleKey($request)); // reset counter
-        return redirect()->intended('/dashboard');
+    public function showLoginForm()
+    {
+        return view('auth.login');
     }
 
-    // failed login → increase attempts
-    RateLimiter::hit($this->throttleKey($request), 60); // block for 60s
+    public function login(Request $request)
+    {
+        // ✅ Validate form inputs
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
+            'cf-turnstile-response' => 'required', // Turnstile token
+        ]);
 
-    return back()->withErrors([
-        'email' => 'Invalid credentials. Please try again.',
-    ]);
-}
+        // ✅ Verify Turnstile with Cloudflare
+        $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+            'secret'   => config('services.turnstile.secret'),
+            'response' => $request->input('cf-turnstile-response'),
+            'remoteip' => $request->ip(),
+        ]);
 
-protected function ensureIsNotRateLimited(Request $request)
-{
-    if (! RateLimiter::tooManyAttempts($this->throttleKey($request), 3)) {
-        return;
+        $data = $response->json();
+
+        if (!($data['success'] ?? false)) {
+            return back()->withErrors([
+                'captcha' => 'Cloudflare verification failed. Please try again.',
+            ])->withInput();
+        }
+
+        // ✅ Attempt login
+        if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->intended('/dashboard'); // or your intended route
+        }
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->withInput();
     }
 
-    $seconds = RateLimiter::availableIn($this->throttleKey($request));
-
-    return redirect()->back()->with([
-        'lockout' => $seconds,
-        'error'   => "⛔ Too many login attempts. Please try again in {$seconds} seconds."
-    ]);
-}
-
-
-protected function throttleKey(Request $request)
-{
-    return strtolower($request->input('email')).'|'.$request->ip();
-}
-
-    // Handle logout
-    public function logout()
-{
-    Auth::logout(); // properly log out the user
-    session()->flush(); // clear all session data
-
-    return redirect('/')->with('success', 'Logged out successfully.');
-}
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
+    }
 
 
     // Show dashboard
