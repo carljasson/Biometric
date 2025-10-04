@@ -12,6 +12,10 @@ class EmergencyAlert extends Model
         'longitude',
         'status',
          'patient_id',
+         'address',
+        'destination',
+        'photo',
+
     ];
 
     public function user()

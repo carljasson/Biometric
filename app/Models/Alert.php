@@ -13,7 +13,6 @@ class Alert extends Model
         'type',
         'latitude',
         'longitude',
-        'patient_id',
         'address',
         'destination',
         'photo',
@@ -21,10 +20,7 @@ class Alert extends Model
         'status',
     ];
 
-    public function patient()
-    {
-        return $this->belongsTo(User::class, 'patient_id');
-    }
+
     public function user()
 {
     return $this->belongsTo(User::class, 'patient_id');
