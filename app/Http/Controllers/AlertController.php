@@ -20,7 +20,7 @@ class AlertController extends Controller
 
         // Save alert to DB
         Alert::create([
-            'patient_id'  => Auth::id(), // ⚠️ make sure this matches your patients table
+            'user_id'  => Auth::id(), // ⚠️ make sure this matches your patients table
             'type'        => $request->type,
             'destination' => $request->destination,
             'photo'       => $request->photo,
