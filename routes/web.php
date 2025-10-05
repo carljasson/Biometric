@@ -270,6 +270,6 @@ Route::get('/db-test', function () {
         \DB::connection()->getPdo();
         return "✅ DB Connected: " . \DB::connection()->getDatabaseName();
     } catch (\Exception $e) {
-        return "❌ DB Error: " . $e->getMessage();
+        return "❌ DB Erro: " . $e->getMessage();
     }
 });
