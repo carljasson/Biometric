@@ -79,10 +79,9 @@ class BiometricController extends Controller
     }
 
     // Step 1: Personal Info
-   public function Step1(Request $request)
+public function Step1(Request $request)
 {
     if ($request->isMethod('post')) {
-        // Validate all fields at once
         $validated = $request->validate([
             'firstname'       => 'required|string|max:255',
             'middlename'      => 'nullable|string|max:255',
@@ -99,7 +98,7 @@ class BiometricController extends Controller
             'password'        => 'required|string|min:8|max:16|confirmed',
         ]);
 
-        // Save user only when submit button clicked
+        // Save user
         $user = User::create([
             'firstname'       => $validated['firstname'],
             'middlename'      => $validated['middlename'] ?? null,
@@ -117,9 +116,10 @@ class BiometricController extends Controller
         ]);
 
         session(['user_id' => $user->id]);
-        exec('start "" "C:\\Users\\admin\\Downloads\\zkfingerprint\\ZKFingerSDK_Windows_Standard\\ZKFinger Standard SDK 5.3.0.33\\x64\\Debug\\scan.exe" ' . $user->id);
 
-        return redirect()->route('register.step2')->with('success', 'Step 1 completed!');
+        // ✅ Instead of exec, redirect to fingerprint page
+        return redirect()->route('register.fingerprint', ['id' => $user->id])
+                         ->with('success', 'Step 1 completed! Please scan your fingerprint.');
     }
 
     return view('register.step1');

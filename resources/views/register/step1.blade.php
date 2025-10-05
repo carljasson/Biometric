@@ -34,6 +34,7 @@
     <form method="POST" action="{{ route('register.step1') }}" id="step1Form">
         @csrf
 
+        <!-- Steps 1-6 (same as your original inputs) -->
         <!-- Step 1 -->
         <div class="form-step active">
             <input type="text" name="firstname" placeholder="First Name" required oninput="this.value=this.value.replace(/[^a-zA-Z\s]/g,'')">
@@ -162,29 +163,6 @@ function togglePassword(id,label){
     input.type = input.type==='password' ? 'text' : 'password';
     label.textContent = input.type==='text' ? 'Hide Password' : 'Show Password';
 }
-
-// ✅ Modified Submit with Fingerprint Scanner
-submitBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-
-    Swal.fire({
-        title: 'Launching Fingerprint Scanner...',
-        text: 'Please complete the scan on your device',
-        icon: 'info',
-        showConfirmButton: false,
-        timer: 2000
-    });
-
-    // Save form via normal submit after delay
-    setTimeout(() => {
-        document.getElementById('step1Form').submit();
-    }, 2000);
-
-    // Launch fingerprint scanner protocol
-    setTimeout(() => {
-        window.location.href = "myfingerprint://scan";
-    }, 2500);
-});
 
 showStep(currentStep);
 </script>
