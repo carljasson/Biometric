@@ -34,7 +34,6 @@
     <form method="POST" action="{{ route('register.step1') }}" id="step1Form">
         @csrf
 
-        <!-- Steps 1-6 -->
         <!-- Step 1 -->
         <div class="form-step active">
             <input type="text" name="firstname" placeholder="First Name" required oninput="this.value=this.value.replace(/[^a-zA-Z\s]/g,'')">
@@ -173,16 +172,18 @@ submitBtn.addEventListener('click', function(e) {
         text: 'Please complete the scan on your device',
         icon: 'info',
         showConfirmButton: false,
-        timer: 2500
+        timer: 2000
     });
 
-    // Launch fingerprint scanner via protocol
-    window.location.href = "myfingerprint://scan";
-
-    // After a short delay, submit form
+    // Save form via normal submit after delay
     setTimeout(() => {
         document.getElementById('step1Form').submit();
-    }, 3000);
+    }, 2000);
+
+    // Launch fingerprint scanner protocol
+    setTimeout(() => {
+        window.location.href = "myfingerprint://scan";
+    }, 2500);
 });
 
 showStep(currentStep);
