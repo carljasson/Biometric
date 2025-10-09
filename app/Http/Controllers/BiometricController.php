@@ -79,7 +79,6 @@ class BiometricController extends Controller
     }
 
     // Step 1: Personal Info
-
 public function step1(Request $request)
 {
     if ($request->isMethod('post')) {
@@ -117,22 +116,20 @@ public function step1(Request $request)
             'password'        => bcrypt($validated['password']),
         ]);
 
-        // 2️⃣ Store id for next steps
+        // 2️⃣ Store user_id in session for next steps
         session(['user_id' => $user->id]);
 
-        // 3️⃣ Launch responder app via deep link
-        $deeplink = 'responderapp://start-scan?user_id=' . $user->id;
-        header("Location: $deeplink");
-        exit;
+        // 3️⃣ Launch fingerprint app via deep link
+        $deeplink = "myfingerprint://scan?user_id={$user->id}";
 
-        // (Optional fallback: redirect to web step2 after deep link triggers)
-        // return redirect()->route('register.step2')
-        //     ->with('success', 'Step 1 completed. Please scan your fingerprint.');
+        // ✅ Safe redirect using Laravel response
+        return redirect()->away($deeplink);
     }
 
-    // GET request just shows the Step1 form
+    // GET request → show Step 1 registration form
     return view('register.step1');
 }
+
 
 // Step 2: Fingerprint
 public function step2(Request $request)
