@@ -81,49 +81,25 @@ class BiometricController extends Controller
     // Step 1: Personal Info
 public function step1(Request $request)
 {
-    if ($request->isMethod('post')) {
+    try {
+        if ($request->isMethod('post')) {
+            $validated = $request->validate([
+                // your validation rules...
+            ]);
 
-        $validated = $request->validate([
-            'firstname'       => 'required|string|max:255',
-            'middlename'      => 'nullable|string|max:255',
-            'lastname'        => 'required|string|max:255',
-            'birthday'        => 'required|date',
-            'age'             => 'required|integer|min:1',
-            'gender'          => 'required',
-            'status'          => 'required',
-            'phone'           => 'required|digits:11',
-            'address'         => 'required|string|max:255',
-            'contact_name'    => 'required|string|max:255',
-            'contact_number'  => 'required|digits:11',
-            'email'           => 'required|email|unique:users,email',
-            'password'        => 'required|string|min:8|max:16|confirmed',
-        ]);
+            $user = User::create([
+                // your save logic...
+            ]);
 
-        // 1️⃣ Save new user
-        $user = User::create([
-            'firstname'       => $validated['firstname'],
-            'middlename'      => $validated['middlename'] ?? null,
-            'lastname'        => $validated['lastname'],
-            'birthday'        => $validated['birthday'],
-            'age'             => $validated['age'],
-            'gender'          => $validated['gender'],
-            'status'          => $validated['status'],
-            'phone'           => $validated['phone'],
-            'address'         => $validated['address'],
-            'contact_name'    => $validated['contact_name'],
-            'contact_number'  => $validated['contact_number'],
-            'email'           => $validated['email'],
-            'password'        => bcrypt($validated['password']),
-        ]);
+            session(['user_id' => $user->id]);
 
-   session(['user_id' => $user->id]);
+            return view('register.open-fingerprint');
+        }
 
-        // Redirect or show fingerprint launch view
-        return view('register.open-fingerprint');
+        return view('register.step1');
+    } catch (\Throwable $e) {
+        return '<pre>' . $e->getMessage() . "\n\n" . $e->getTraceAsString() . '</pre>';
     }
-
-  return 'Step 1 is loading!';
-
 }
 
 
