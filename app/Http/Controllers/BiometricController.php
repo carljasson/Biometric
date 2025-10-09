@@ -122,8 +122,8 @@ public function step1(Request $request)
         return view('register.open-fingerprint');
     }
 
-    // 🟢 For GET request (first page load)
-    return view('register.step1');
+  return 'Step 1 is loading!';
+
 }
 
 
