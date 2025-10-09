@@ -117,17 +117,14 @@ public function step1(Request $request)
         ]);
 
         // 2️⃣ Store user_id in session for next steps
-        session(['user_id' => $user->id]);
+      // After saving the user
+session(['user_id' => $user->id]);
 
-        // 3️⃣ Launch fingerprint app via deep link
-        $deeplink = "myfingerprint://scan?user_id={$user->id}";
+// Go to a launch page that triggers the fingerprint app
+return view('register.launch-fingerprint', [
+    'deeplink' => "myfingerprint://scan?user_id={$user->id}",
+]);
 
-        // ✅ Safe redirect using Laravel response
-        return redirect()->away($deeplink);
-    }
-
-    // GET request → show Step 1 registration form
-    return view('register.step1');
 }
 
 
