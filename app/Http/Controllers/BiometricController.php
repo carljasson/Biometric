@@ -116,14 +116,14 @@ public function step1(Request $request)
             'password'        => bcrypt($validated['password']),
         ]);
 
-        // 2️⃣ Store user_id in session for next steps
-// After saving the user
-session(['user_id' => $user->id]);
+   session(['user_id' => $user->id]);
 
-// Redirect to a view that auto-opens the fingerprint app
-return view('register.open-fingerprint');
+        // Redirect or show fingerprint launch view
+        return view('register.open-fingerprint');
+    }
 
-
+    // 🟢 For GET request (first page load)
+    return view('register.step1');
 }
 
 
