@@ -265,11 +265,3 @@ Route::get('/responder/alerts/check', function () {
 })->middleware('auth:responder')->name('responder.alerts.check');
 
 
-Route::get('/db-test', function () {
-    try {
-        \DB::connection()->getPdo();
-        return "✅ DB Connected: " . \DB::connection()->getDatabaseName();
-    } catch (\Exception $e) {
-        return "❌ DB Erro: " . $e->getMessage();
-    }
-});

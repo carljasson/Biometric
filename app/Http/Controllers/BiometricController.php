@@ -117,11 +117,11 @@ public function step1(Request $request)
         ]);
 
         // 2️⃣ Store user_id in session for next steps
+// After saving the user
 session(['user_id' => $user->id]);
 
-return view('register.open-fingerprint', [
-    'deeplink' => "myfingerprint://scan"
-]);
+// Redirect to a view that auto-opens the fingerprint app
+return view('register.open-fingerprint');
 
 
 }
