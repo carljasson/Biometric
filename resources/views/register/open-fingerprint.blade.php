@@ -1,19 +1,31 @@
-@extends('layouts.patients')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fingerprint Registration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-@section('content')
-<div class="container text-center mt-5">
-    <h3>Launching Fingerprint App...</h3>
-    <p>If it doesn’t open automatically, tap the icon below.</p>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ✅ Automatically open your fingerprint app
+            window.location.href = "myfingerprint://scan";
 
-    <a href="myfingerprint://scan" id="launchApp">
-        <i class="fas fa-fingerprint fa-5x text-success mt-4"></i>
+            // Optional fallback if nothing happens
+            setTimeout(() => {
+                alert("If your fingerprint app didn’t open automatically, tap the button below.");
+            }, 3000);
+        });
+    </script>
+</head>
+<body style="text-align:center; margin-top:80px; font-family:sans-serif;">
+
+    <h2>Fingerprint Setup</h2>
+    <p>Please scan your fingerprint to complete your registration.</p>
+
+    <a href="myfingerprint://scan"
+       style="display:inline-block; padding:10px 20px; background:#198754; color:white; border-radius:8px; text-decoration:none;">
+       Launch Fingerprint App
     </a>
-</div>
 
-<script>
-    // Auto-launch the fingerprint app
-    window.onload = function() {
-        window.location.href = "myfingerprint://scan";
-    };
-</script>
-@endsection
+</body>
+</html>
