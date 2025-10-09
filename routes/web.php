@@ -265,3 +265,10 @@ Route::get('/responder/alerts/check', function () {
 })->middleware('auth:responder')->name('responder.alerts.check');
 
 
+Route::get('/debug-error', function () {
+    try {
+        return view('register.step1');
+    } catch (\Throwable $e) {
+        return '<pre>' . $e->getMessage() . "\n\n" . $e->getTraceAsString() . '</pre>';
+    }
+});
