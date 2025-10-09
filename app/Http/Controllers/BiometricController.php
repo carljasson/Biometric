@@ -79,9 +79,11 @@ class BiometricController extends Controller
     }
 
     // Step 1: Personal Info
-public function Step1(Request $request)
+
+public function step1(Request $request)
 {
     if ($request->isMethod('post')) {
+
         $validated = $request->validate([
             'firstname'       => 'required|string|max:255',
             'middlename'      => 'nullable|string|max:255',
@@ -94,11 +96,11 @@ public function Step1(Request $request)
             'address'         => 'required|string|max:255',
             'contact_name'    => 'required|string|max:255',
             'contact_number'  => 'required|digits:11',
-            'email'           => 'required|email',
+            'email'           => 'required|email|unique:users,email',
             'password'        => 'required|string|min:8|max:16|confirmed',
         ]);
 
-        // Save user
+        // 1️⃣ Save new user
         $user = User::create([
             'firstname'       => $validated['firstname'],
             'middlename'      => $validated['middlename'] ?? null,
@@ -115,13 +117,20 @@ public function Step1(Request $request)
             'password'        => bcrypt($validated['password']),
         ]);
 
+        // 2️⃣ Store id for next steps
         session(['user_id' => $user->id]);
 
-        // ✅ Instead of exec, redirect to fingerprint page
-        return redirect()->route('register.fingerprint', ['id' => $user->id])
-                         ->with('success', 'Step 1 completed! Please scan your fingerprint.');
+        // 3️⃣ Launch responder app via deep link
+        $deeplink = 'responderapp://start-scan?user_id=' . $user->id;
+        header("Location: $deeplink");
+        exit;
+
+        // (Optional fallback: redirect to web step2 after deep link triggers)
+        // return redirect()->route('register.step2')
+        //     ->with('success', 'Step 1 completed. Please scan your fingerprint.');
     }
 
+    // GET request just shows the Step1 form
     return view('register.step1');
 }
 
@@ -362,6 +371,12 @@ public function checkFingerprintStatus(Request $request)
     return response()->json([
         'status' => $user?->fingerprint_registered ?? 0
     ]);
+}
+
+public function fingerprintPage($id)
+{
+    $user = User::findOrFail($id);
+    return view('register.fingerprint', compact('user'));
 }
 
 }
