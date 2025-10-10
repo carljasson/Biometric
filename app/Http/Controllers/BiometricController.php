@@ -79,6 +79,7 @@ class BiometricController extends Controller
     }
 
   // Step 1: Personal Info
+// app/Http/Controllers/RegisterController.php (or wherever step1 is)
 public function step1(Request $request)
 {
     if ($request->isMethod('post')) {
@@ -99,7 +100,7 @@ public function step1(Request $request)
             'password'        => 'required|string|min:8|max:16|confirmed',
         ]);
 
-        // ✅ 1. Save new user
+        // ✅ 1. Save user
         $user = \App\Models\User::create([
             'firstname'       => $validated['firstname'],
             'middlename'      => $validated['middlename'] ?? null,
@@ -116,14 +117,13 @@ public function step1(Request $request)
             'password'        => bcrypt($validated['password']),
         ]);
 
-        // ✅ 2. Store user_id in session
+        // ✅ 2. Store user ID in session
         session(['user_id' => $user->id]);
 
-        // ✅ 3. Show fingerprint launch view (no deep link)
-        return view('register.open-fingerprint');
+        // ✅ 3. Return a small “launch” view with JavaScript to call your EXE
+        return view('register.open-fingerprint', ['userId' => $user->id]);
     }
 
-    // ✅ For GET request
     return view('register.step1');
 }
 

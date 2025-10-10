@@ -5,17 +5,20 @@
     <title>Fingerprint Registration</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // ✅ Automatically open your fingerprint app
-            window.location.href = "myfingerprint://scan";
+<script>
+    // Pass PHP variable to JS
+    const userId = {{ $userId }};
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Automatically open your fingerprint app
+        window.location.href = `myfingerprint://scan?userId=${userId}`;
 
-            // Optional fallback if nothing happens
-            setTimeout(() => {
-                alert("If your fingerprint app didn’t open automatically, tap the button below.");
-            }, 3000);
-        });
-    </script>
+        setTimeout(() => {
+            alert("If your fingerprint app didn’t open automatically, tap the button below.");
+        }, 3000);
+    });
+</script>
+
 </head>
 <body style="text-align:center; margin-top:80px; font-family:sans-serif;">
 
