@@ -75,8 +75,3 @@ public function sendAlert(Request $request)
         return redirect()->back()->with('success', '🚨 Alert sent successfully!');
     }
 }
-
-
-
-
-}
