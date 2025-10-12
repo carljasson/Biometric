@@ -267,3 +267,6 @@ Route::get('/responder/alerts/check', function () {
 
 
 
+Route::get('/debug-alerts', function () {
+    return Alert::latest()->take(5)->get();
+});
