@@ -178,22 +178,35 @@
             confirmButtonText: 'Yes, send it!',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-            if (result.isConfirmed) {
-                this.submit();
-            }
-        });
-    });
+if (result.isConfirmed) {
+    const formData = new FormData(this);
 
-    // ===== Success Toast =====
-    @if(session('success'))
-    Swal.fire({
-        icon: 'success',
-        title: '{{ session('success') }}',
-        toast: true,
-        position: 'top-end',
-        timer: 3000,
-        showConfirmButton: false
+    fetch("{{ route('patient.sendAlert') }}", {
+        method: "POST",
+        body: formData,
+        headers: {
+            "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: "success",
+                title: data.message,
+                timer: 2500,
+                showConfirmButton: false
+            });
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('emergencyModal'));
+            modal.hide();
+        } else {
+            Swal.fire("Error", data.message, "error");
+        }
+    })
+    .catch(() => {
+        Swal.fire("Error", "Failed to send alert. Please try again.", "error");
     });
-    @endif
+}
 </script>
 @endsection
