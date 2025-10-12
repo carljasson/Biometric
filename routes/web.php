@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ScanController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\AlertController;
 use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\ResponderController;
 use App\Http\Controllers\FingerprintController;
