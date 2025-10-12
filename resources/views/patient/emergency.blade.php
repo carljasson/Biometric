@@ -192,6 +192,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 const formData = new FormData(this);
+formData.append('destination', destination); // ✅ manually include
 
                 fetch("{{ route('patient.sendAlert') }}", {
                     method: "POST",
