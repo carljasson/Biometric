@@ -47,6 +47,34 @@ class PatientController extends Controller
 
 
 
+public function sendAlert(Request $request)
+    {
+        // Validate input
+        $request->validate([
+            'type' => 'required|string|max:255',
+            'photo' => 'nullable|string',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'address' => 'required|string',
+        ]);
+
+        // Save alert to database
+        $alert = new Alert();
+        $alert->user_id = Auth::id(); // assuming patient is logged in
+        $alert->type = $request->type;
+        $alert->photo = $request->photo;
+        $alert->latitude = $request->latitude;
+        $alert->longitude = $request->longitude;
+        $alert->address = $request->address;
+        $alert->status = 'pending';
+        $alert->save();
+
+        // Optionally send notification or broadcast
+        // event(new AlertSent($alert));
+
+        return redirect()->back()->with('success', '🚨 Alert sent successfully!');
+    }
+}
 
 
 

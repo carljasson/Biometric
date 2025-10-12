@@ -184,7 +184,7 @@ Route::get('/admin/alerts', [AdminController::class, 'showAlerts'])->name('admin
 
 Route::post('/admin/alerts/{id}/resolve', [AdminController::class, 'resolveAlert'])->name('alerts.resolve');
 
-Route::post('/patient/send-alert', [PatientController::class, 'sendAlert'])->name('patient.sendAlert');
+Route::post('/patient/send-alert', [AlertController::class, 'sendAlert'])->name('patient.sendAlert');
 
 Route::get('/admin/alerts', [AdminController::class, 'showAlerts'])->name('admin.alerts');
 Route::post('/admin/alerts/{id}/resolve', [AdminController::class, 'resolveAlert'])->name('admin.alerts.resolve');
@@ -263,5 +263,6 @@ Route::get('/responder/alerts/check', function () {
 
     return response()->json($alerts);
 })->middleware('auth:responder')->name('responder.alerts.check');
+
 
 
