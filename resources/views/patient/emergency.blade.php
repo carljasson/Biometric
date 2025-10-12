@@ -62,6 +62,7 @@
 
                         <div class="alert alert-info p-2 small" id="locationStatus">📍 Getting your location...</div>
                     </div>
+
                     <div class="modal-footer d-flex justify-content-between">
                         <button type="submit" name="destination" value="Santa Fe" class="btn btn-danger">
                             🚨 Send to Santa Fe
@@ -97,7 +98,7 @@
             document.getElementById('latitude').value = lat;
             document.getElementById('longitude').value = lon;
 
-            const apiKey = '45c8795c3e094eb8994cc238f809c663'; // 🔑 Replace with your actual OpenCage API key
+            const apiKey = '45c8795c3e094eb8994cc238f809c663'; // OpenCage API key
             const apiUrl = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${apiKey}&language=en`;
 
             try {
@@ -124,13 +125,20 @@
     let canvas = document.getElementById('snapshot');
     let preview = document.getElementById('preview');
     let previewContainer = document.getElementById('previewContainer');
+    let stream = null;
 
     async function startCamera() {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
             video.srcObject = stream;
         } catch (err) {
             Swal.fire('Camera Error', 'Unable to access your camera.', 'error');
+        }
+    }
+
+    function stopCamera() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
         }
     }
 
@@ -148,17 +156,21 @@
     }
 
     // ===== Modal Events =====
-    var emergencyModal = document.getElementById('emergencyModal');
+    const emergencyModal = document.getElementById('emergencyModal');
     emergencyModal.addEventListener('shown.bs.modal', function () {
         getUserLocation();
         startCamera();
+    });
+    emergencyModal.addEventListener('hidden.bs.modal', function () {
+        stopCamera();
     });
 
     // ===== Confirm before sending =====
     document.getElementById('alertForm').addEventListener('submit', function(e) {
         e.preventDefault();
+
         const type = document.getElementById('type').value;
-        const destination = e.submitter.value; // which button clicked
+        const destination = e.submitter.value;
 
         if (!type) {
             Swal.fire('Select Emergency Type', 'Please choose an emergency type.', 'warning');
@@ -178,35 +190,36 @@
             confirmButtonText: 'Yes, send it!',
             cancelButtonText: 'Cancel'
         }).then((result) => {
-if (result.isConfirmed) {
-    const formData = new FormData(this);
+            if (result.isConfirmed) {
+                const formData = new FormData(this);
 
-    fetch("{{ route('patient.sendAlert') }}", {
-        method: "POST",
-        body: formData,
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
-        }
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            Swal.fire({
-                icon: "success",
-                title: data.message,
-                timer: 2500,
-                showConfirmButton: false
-            });
-            // Close modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('emergencyModal'));
-            modal.hide();
-        } else {
-            Swal.fire("Error", data.message, "error");
-        }
-    })
-    .catch(() => {
-        Swal.fire("Error", "Failed to send alert. Please try again.", "error");
+                fetch("{{ route('patient.sendAlert') }}", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('input[name=\"_token\"]').value
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: data.message,
+                            timer: 2500,
+                            showConfirmButton: false
+                        });
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('emergencyModal'));
+                        modal.hide();
+                    } else {
+                        Swal.fire("Error", data.message, "error");
+                    }
+                })
+                .catch(() => {
+                    Swal.fire("Error", "Failed to send alert. Please try again.", "error");
+                });
+            }
+        });
     });
-}
 </script>
 @endsection
