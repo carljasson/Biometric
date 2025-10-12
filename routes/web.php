@@ -185,7 +185,6 @@ Route::get('/admin/alerts', [AdminController::class, 'showAlerts'])->name('admin
 
 Route::post('/admin/alerts/{id}/resolve', [AdminController::class, 'resolveAlert'])->name('alerts.resolve');
 
-Route::post('/patient/send-alert', [AlertController::class, 'sendAlert'])->name('patient.sendAlert');
 
 Route::get('/admin/alerts', [AdminController::class, 'showAlerts'])->name('admin.alerts');
 Route::post('/admin/alerts/{id}/resolve', [AdminController::class, 'resolveAlert'])->name('admin.alerts.resolve');
@@ -270,3 +269,5 @@ Route::get('/responder/alerts/check', function () {
 Route::get('/debug-alerts', function () {
     return Alert::latest()->take(5)->get();
 });
+
+Route::post('/patient/send-alert', [App\Http\Controllers\AlertController::class, 'sendAlert'])->name('patient.sendAlert');
