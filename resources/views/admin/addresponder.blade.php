@@ -82,7 +82,15 @@
             <div class="modal-body">
                 <input name="name" class="form-control mb-2" placeholder="Full Name" required>
                 <input name="email" type="email" class="form-control mb-2" placeholder="Email" required>
-                <input name="location" class="form-control mb-2" placeholder="Location" required>
+
+                <!-- Location Dropdown -->
+                <select name="location" class="form-control mb-2" required>
+                    <option value="">-- Select Location --</option>
+                    <option value="Santa Fe">Santa Fe</option>
+                    <option value="Madridejos">Madridejos</option>
+                    <option value="Bantayan">Bantayan</option>
+                </select>
+
                 <input name="password" type="password" class="form-control mb-2" placeholder="Password" required>
             </div>
             <div class="modal-footer">
@@ -107,7 +115,14 @@
             <div class="modal-body">
                 <input name="name" value="{{ $responder->name }}" class="form-control mb-2" required>
                 <input name="email" value="{{ $responder->email }}" class="form-control mb-2" required>
-                <input name="location" value="{{ $responder->location }}" class="form-control mb-2" required>
+
+                <!-- Location Dropdown -->
+                <select name="location" class="form-control mb-2" required>
+                    <option value="Santa Fe" {{ $responder->location == 'Santa Fe' ? 'selected' : '' }}>Santa Fe</option>
+                    <option value="Madridejos" {{ $responder->location == 'Madridejos' ? 'selected' : '' }}>Madridejos</option>
+                    <option value="Bantayan" {{ $responder->location == 'Bantayan' ? 'selected' : '' }}>Bantayan</option>
+                </select>
+
                 <input name="password" type="password" class="form-control mb-2" placeholder="New Password (optional)">
             </div>
             <div class="modal-footer">
