@@ -370,4 +370,9 @@ public function markAlertRead(Request $request)
     return response()->json(['success' => true]);
 }
 
+public function addResponder()
+{
+    return view('admin.addresponder');  // Blade file: resources/views/addresponder.blade.php
+}
+
 }

@@ -285,3 +285,7 @@ Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showRese
 Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 Route::resource('responders', ResponderController::class);
+
+// Add this inside your admin routes group
+Route::get('/admin/add-responder', [App\Http\Controllers\AdminController::class, 'addResponder'])
+    ->name('admin.add-responder');
