@@ -289,3 +289,4 @@ Route::resource('responders', ResponderController::class);
 Route::middleware(['admin.auth'])->group(function () {
     Route::get('/admin/add-responder', [ResponderController::class, 'index'])
         ->name('admin.add-responder');
+}); 
