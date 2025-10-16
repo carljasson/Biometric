@@ -105,6 +105,11 @@
         <i class="bi bi-shield-lock-fill me-2"></i> Admin User Management
     </a>
     
+    <a href="{{ route('admin.add-responder') }}" 
+   class="text-white px-4 py-2 d-block text-decoration-none {{ request()->routeIs('admin.add-responder') ? 'bg-secondary fw-bold' : '' }}">
+    <i class="bi bi-plus-circle-fill me-2"></i> Add Responder
+</a>
+
     <a href="#" data-bs-toggle="modal" data-bs-target="#broadcastModal" class="text-white px-4 py-2 d-block text-decoration-none">
         <i class="bi bi-megaphone-fill me-2"></i> Broadcast Messages
     </a>

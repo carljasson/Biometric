@@ -271,3 +271,17 @@ Route::get('/debug-alerts', function () {
 });
 
 Route::post('/patient/send-alert', [App\Http\Controllers\AlertController::class, 'sendAlert'])->name('patient.sendAlert');
+
+// Forgot Password Request Form
+Route::get('/password/forgot', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+
+// Send Reset Link Email
+Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+// Reset Password Form
+Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+
+// Submit New Password
+Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+Route::resource('responders', ResponderController::class);

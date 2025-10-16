@@ -157,5 +157,66 @@ public function checkAlerts()
         ];
     }));
 }
+// Display all responders
+    public function index()
+    {
+        $responders = Responder::all();
+        return view('addresponder', compact('responders'));
+    }
 
+    // Store new responder
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:responders,email',
+            'location' => 'required|string|max:255',
+            'password' => 'required|min:6'
+        ]);
+
+        Responder::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'location' => $request->location,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->back()->with('success', 'Responder added successfully!');
+    }
+
+    // Update responder
+    public function update(Request $request, $id)
+    {
+        $responder = Responder::findOrFail($id);
+
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => "required|email|unique:responders,email,{$id}",
+            'location' => 'required|string|max:255',
+            'password' => 'nullable|min:6'
+        ]);
+
+        $responder->name     = $request->name;
+        $responder->email    = $request->email;
+        $responder->location = $request->location;
+
+        // Only update password if provided
+        if ($request->password) {
+            $responder->password = Hash::make($request->password);
+        }
+
+        $responder->save();
+
+        return redirect()->back()->with('success', 'Responder updated successfully!');
+    }
+
+    // Delete responder
+    public function destroy($id)
+    {
+        $responder = Responder::findOrFail($id);
+        $responder->delete();
+
+        return redirect()->back()->with('success', 'Responder deleted successfully!');
+    }
 }
+
