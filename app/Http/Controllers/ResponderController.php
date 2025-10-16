@@ -161,7 +161,7 @@ public function checkAlerts()
     public function index()
     {
         $responders = Responder::all();
-        return view('addresponder', compact('responders'));
+        return view('admin.addresponder', compact('responders'));
     }
 
     // Store new responder
