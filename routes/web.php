@@ -286,6 +286,6 @@ Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name(
 
 Route::resource('responders', ResponderController::class);
 
-// Add this inside your admin routes group
-Route::get('/admin/add-responder', [App\Http\Controllers\AdminController::class, 'addResponder'])
-    ->name('admin.add-responder');
+Route::middleware(['admin.auth'])->group(function () {
+    Route::get('/admin/add-responder', [ResponderController::class, 'index'])
+        ->name('admin.add-responder');
