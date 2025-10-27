@@ -131,8 +131,7 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="loginDropdown">
                 <li><a class="dropdown-item" href="{{ route('login') }}">Login as User</a></li>
-{{-- <li><a class="dropdown-item" href="{{ route('responder.login') }}">Login as Responder</a></li> --}}
-
+                <li><a class="dropdown-item" href="{{ route('responder.login') }}">Login as Responder</a></li>
             </ul>
         </div>
 
