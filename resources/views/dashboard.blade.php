@@ -47,7 +47,8 @@
     <!-- Dashboard Card -->
     <div class="card shadow mt-3">
         <div class="card-header bg-primary text-white">
-            <h4>Welcome, {{ $patient->firstname }}!</h4>
+Welcome, {{ auth()->user()->name }}!
+
 
             @if($announcements && $announcements->count())
                 <div class="mt-3">
@@ -168,6 +169,15 @@
             alert.remove();
         }
     }, 3000);
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('bg-dark');
+        document.body.classList.toggle('text-light');
+    }
+</script>
+
+</body>
+</html>
 
     function toggleDarkMode() {
         document.body.classList.toggle('bg-dark');
