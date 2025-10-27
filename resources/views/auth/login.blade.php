@@ -175,7 +175,8 @@
         </form>
 
         <div class="mt-3 text-center extra-links">
-            <a href="{{ url('/password/reset') }}">Forgot password?</a>
+<a href="{{ route('password.request') }}">Forgot password?</a>
+
         </div>
     </div>
 
