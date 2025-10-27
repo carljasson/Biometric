@@ -47,8 +47,7 @@
     <!-- Dashboard Card -->
     <div class="card shadow mt-3">
         <div class="card-header bg-primary text-white">
-Welcome, {{ auth()->user()->name }}!
-
+            <h4>Welcome, {{ $patient->firstname }}!</h4>
 
             @if($announcements && $announcements->count())
                 <div class="mt-3">
