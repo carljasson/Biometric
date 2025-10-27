@@ -26,10 +26,7 @@
     </style>
 <div class="container mt-4">
 
-    <!-- Back Button -->
-    <div class="mb-3">
-        <a href="{{ route('dashboard') }}" class="btn btn-primary">← Back</a>
-    </div>
+    
 
     <h2 class="text-center text-danger mb-4">🚨 Emergency Contacts</h2>
 
@@ -42,7 +39,7 @@
 
     <!-- Bottom Navigation -->
 <div class="bottom-nav">
-    <a href="#"><i class="fas fa-home"></i><br>Home</a>
+    <a href=="{{ route('dashboard') }}"><i class="fas fa-home"></i><br>Home</a>
         <a href="{{ route('emergency') }}"><i class="fas fa-phone-alt text-danger"></i><br>Emergency</a>
     <a href="#" data-bs-toggle="modal" data-bs-target="#profileModal"><i class="fas fa-user-circle"></i><br>My Profile</a>
 
