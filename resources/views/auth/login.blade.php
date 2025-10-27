@@ -17,9 +17,9 @@
         frame-ancestors 'none';
         upgrade-insecure-requests;
         script-src 'self' https://cdn.jsdelivr.net https://challenges.cloudflare.com 'nonce-{{ $cspNonce }}';
-        style-src  'self' https://cdn.jsdelivr.net 'nonce-{{ $cspNonce }}';
-        img-src 'self' data:;
-        font-src 'self' https://cdn.jsdelivr.net;
+        style-src  'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'nonce-{{ $cspNonce }}';
+        img-src 'self' data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
+        font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net data:;
         connect-src 'self';
         frame-src https://challenges.cloudflare.com;
     ">
@@ -30,6 +30,12 @@
 
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer">
+
+    {{-- ✅ Font Awesome added --}}
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
           crossorigin="anonymous"
           referrerpolicy="no-referrer">
 
@@ -45,27 +51,35 @@
             justify-content: center;
         }
 
-        .back-button {
+        /* ✅ Top-right icons */
+        .top-right-icons {
             position: absolute;
             top: 20px;
-            left: 20px;
-            background-color: #007bff;
+            right: 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 999;
+        }
+        .top-right-icons a,
+        .top-right-icons .dropdown-toggle {
             color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            transition: 0.3s;
             text-decoration: none;
-            font-size: 1rem;
-            transition: background-color 0.3s;
-            z-index: 10;
+        }
+        .top-right-icons a:hover,
+        .top-right-icons .dropdown-toggle:hover {
+            background-color: rgba(255,255,255,0.25);
         }
 
-        .back-button:hover {
-            background-color: #0056b3;
-        }
+        .dropdown-menu-dark { background-color: #343a40; }
 
         .login-card {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 16px;
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
             padding: 30px;
             width: 100%;
@@ -78,28 +92,45 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .login-card h4 {
-            font-weight: bold;
-            color: #333;
-        }
+        .login-card h4 { font-weight: bold; color: #333; }
 
-        .form-label {
-            font-weight: 500;
-        }
+        .form-label { font-weight: 500; }
 
-        .alert {
-            font-size: 0.9rem;
-        }
+        .alert { font-size: 0.9rem; }
 
-        .extra-links {
-            font-size: 0.95rem;
-        }
+        .extra-links { font-size: 0.95rem; }
     </style>
 </head>
+
 <body>
-    {{-- 🔙 Back Button --}}
-    <a href="javascript:void(0)" onclick="window.history.back(); return false;"
-       class="back-button" rel="noopener noreferrer">← Back</a>
+
+    {{-- ✅ Top-right functional icons --}}
+    <div class="top-right-icons">
+
+        <a href="/" title="Home"><i class="fas fa-home"></i></a>
+
+        {{-- ✅ Login Dropdown --}}
+        <div class="dropdown">
+            <a class="dropdown-toggle" href="#" role="button" id="loginDropdown"
+               data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-sign-in-alt"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="loginDropdown">
+                <li><a class="dropdown-item" href="{{ route('login') }}">Login as User</a></li>
+                <li><a class="dropdown-item" href="{{ route('responder.login') }}">Login as Responder</a></li>
+            </ul>
+        </div>
+
+        {{-- ✅ Register Modal Trigger --}}
+        <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" title="Signup">
+            <i class="fas fa-user-plus"></i>
+        </a>
+
+        {{-- ✅ Tips Modal Trigger --}}
+        <a href="#" data-bs-toggle="modal" data-bs-target="#tipsModal" title="Tips">
+            <i class="fas fa-lightbulb"></i>
+        </a>
+    </div>
 
     <div class="login-card">
         <div class="text-center mb-4">
@@ -108,14 +139,12 @@
 
         {{-- ✅ Flash messages --}}
         @if(session('success'))
-            <div class="alert alert-success text-center" role="status" aria-live="polite">
-                {{ session('success') }}
-            </div>
+            <div class="alert alert-success text-center">{{ session('success') }}</div>
         @endif
 
         {{-- ❌ Error messages --}}
         @if($errors->any())
-            <div class="alert alert-danger" role="alert">
+            <div class="alert alert-danger">
                 <ul class="mb-0">
                     @foreach($errors->all() as $error)
                         <li>{{ e($error) }}</li>
@@ -124,25 +153,16 @@
             </div>
         @endif
 
-        {{-- 🔐 Login form with CSRF --}}
+        {{-- 🔐 Login form --}}
         <form method="POST" action="{{ url('/login') }}" autocomplete="off">
             @csrf
             <div class="mb-3">
                 <label class="form-label">Email</label>
-                <input type="email"
-                       name="email"
-                       class="form-control"
-                       required
-                       autocomplete="username"
-                       inputmode="email">
+                <input type="email" name="email" class="form-control" required inputmode="email" autocomplete="username">
             </div>
             <div class="mb-3">
                 <label class="form-label">Password</label>
-                <input type="password"
-                       name="password"
-                       class="form-control"
-                       required
-                       autocomplete="current-password">
+                <input type="password" name="password" class="form-control" required autocomplete="current-password">
             </div>
 
             {{-- 🌐 Cloudflare Turnstile --}}
@@ -155,59 +175,62 @@
         </form>
 
         <div class="mt-3 text-center extra-links">
-            <a href="{{ url('/password/reset') }}" rel="noopener noreferrer">Forgot password?</a>
+            <a href="{{ url('/password/reset') }}">Forgot password?</a>
         </div>
     </div>
 
+
+    {{-- ✅ Popups (same as Home) --}}
+    <div class="modal fade" id="registerModal">
+        <div class="modal-dialog"><div class="modal-content p-3">
+            🚫 Registration is only available **at the MDRRMO office**
+        </div></div>
+    </div>
+
+    <div class="modal fade" id="tipsModal">
+        <div class="modal-dialog"><div class="modal-content p-3">
+            🚑 This system alerts the nearest responders & provides victim info!
+        </div></div>
+    </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-            nonce="{{ $cspNonce }}"
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"></script>
+            nonce="{{ $cspNonce }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"
+            nonce="{{ $cspNonce }}"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+            async defer></script>
 
-    {{-- 🔒 Frame busting --}}
+    {{-- 🚫 Prevent iframe embedding --}}
     <script nonce="{{ $cspNonce }}">
-        if (window.top !== window.self) {
-            window.top.location = window.self.location;
-        }
+        if (window.top !== window.self) window.top.location = window.self.location;
     </script>
-
-    {{-- 🚨 SweetAlert2 Lockout --}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" nonce="{{ $cspNonce }}"></script>
-
-    {{-- 🌐 Cloudflare Turnstile script --}}
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
     @if(session('lockout'))
     <script nonce="{{ $cspNonce }}">
-    document.addEventListener("DOMContentLoaded", function () {
-        let seconds = {{ session('lockout') }};
-        let form = document.querySelector(".login-card form");
+        document.addEventListener("DOMContentLoaded", () => {
+            let seconds = {{ session('lockout') }};
+            let form = document.querySelector(".login-card form");
+            if (form) form.style.display = "none";
 
-        if (form) {
-            form.style.display = "none"; // hide login form
-        }
+            Swal.fire({
+                icon: 'error',
+                title: 'Too Many Attempts',
+                html: `Wait <b>${seconds}</b> seconds.`,
+                allowOutsideClick: false,
+                showConfirmButton: false
+            });
 
-        Swal.fire({
-            icon: 'error',
-            title: 'Too Many Attempts',
-            html: 'You have failed 3 login attempts.<br>Please try again in <b><span id="countdown"></span></b> seconds.',
-            allowOutsideClick: false,
-            showConfirmButton: false
+            const timer = setInterval(() => {
+                seconds--;
+                if (seconds <= 0) {
+                    clearInterval(timer);
+                    window.location.reload();
+                }
+            }, 1000);
         });
-
-        const countdownEl = document.getElementById("countdown");
-        countdownEl.innerText = seconds;
-
-        const timer = setInterval(() => {
-            seconds--;
-            countdownEl.innerText = seconds;
-            if (seconds <= 0) {
-                clearInterval(timer);
-                window.location.reload(); // reload page when cooldown ends
-            }
-        }, 1000);
-    });
     </script>
     @endif
+
 </body>
 </html>

@@ -8,14 +8,19 @@ use App\Models\Announcement;
 use App\Models\Patient;
 use App\Models\Admin;
 use App\Models\Alert;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Hash;
 use App\Models\MedicalRecord;
 use Carbon\Carbon;
-
+use Illuminate\Support\Str; 
 
 class AdminController extends Controller
 {
+    protected $maxAttempts = 3;        // 3 wrong tries allowed
+    protected $decaySeconds = 3600;    // 1 hour lockout (3600 seconds)
+
     // ✅ Show the login form
     public function showLoginForm()
     {
@@ -23,21 +28,52 @@ class AdminController extends Controller
     }
 
     // ✅ Process the login form
+
+
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
+            'email' => 'required|email|max:255',
+            'password' => 'required|string|min:8',
         ]);
 
-        $admin = Admin::where('email', $request->email)->first();
+        $key = $this->throttleKey($request);
 
-        if (!$admin || !Hash::check($request->password, $admin->password)) {
-            return back()->withErrors(['email' => 'Invalid credentials.']);
+        // 🚫 If locked out already
+        if (RateLimiter::tooManyAttempts($key, $this->maxAttempts)) {
+            $seconds = RateLimiter::availableIn($key);
+            $message = 'Too many failed login attempts. Please wait ' . gmdate('H:i:s', $seconds) . ' before trying again.';
+            return back()
+                ->withInput($request->only('email'))
+                ->with('lockout', $message)
+                ->with('lockout_seconds', $seconds);
         }
 
-        session(['admin_id' => $admin->id]);
-        return redirect()->route('admin.dashboard');
+        // ✅ Attempt login
+        if (Auth::attempt($request->only('email', 'password'))) {
+            RateLimiter::clear($key); // clear attempts on success
+            return redirect()->intended('/admin/dashboard')->with('success', 'Welcome back, Admin!');
+        }
+
+        // ❌ Failed login → increment attempt count
+        RateLimiter::hit($key, $this->decaySeconds);
+
+        $attemptsLeft = RateLimiter::remaining($key, $this->maxAttempts);
+        $error = $attemptsLeft > 0
+            ? "Invalid credentials. You have {$attemptsLeft} attempt(s) remaining."
+            : "Account locked. Please wait 1 hour before trying again.";
+
+        return back()
+            ->withInput($request->only('email'))
+            ->withErrors(['email' => $error]);
+    }
+
+    /**
+     * Generate a unique key for throttling based on user email + IP
+     */
+    protected function throttleKey(Request $request)
+    {
+        return Str::lower($request->input('email')) . '|' . $request->ip();
     }
 
     // ✅ Admin dashboard

@@ -158,12 +158,7 @@ public function step2(Request $request)
 
 
 
-public function step3()
-{
-    return view('register.step3'); // Blade file: resources/views/register/step3.blade.php
-}
-
-public function registerStep3(Request $request)
+public function Step3(Request $request)
 {
     $user = User::find(session('user_id')) ?? auth()->user();
 
@@ -171,29 +166,29 @@ public function registerStep3(Request $request)
         return redirect('/register/step1')->with('error', 'User session not found.');
     }
 
-    // Check if the user clicked "Skip"
+    // If user clicked skip
     if ($request->input('action') === 'skip') {
-        return redirect('/')->with('info', 'You skipped face scan. Welcome!');
+        return redirect('/welcome')->with('info', 'You skipped the face scan.');
     }
 
-    // User clicked "Complete Face Scan"
-    if ($request->input('action') === 'scan') {
-        $descriptor = json_decode($request->face_descriptor, true);
-
-        if (is_array($descriptor) && count($descriptor) === 128) {
-            $user->face_descriptor = json_encode($descriptor);
-            $user->save();
-
-            return redirect('/')->with('success', 'Face scan saved! Welcome to the system.');
-        } else {
-            return redirect()->back()->with('error', 'Face scan failed. Please align your face properly.');
-        }
+    // Validate face scan data exists
+    if (!$request->face_descriptor || !$request->face_image) {
+        return redirect()->back()->with('error', 'Face scan failed. Please try again.');
     }
 
-    // Fallback
-    return redirect('/register/step3')->with('error', 'Invalid action.');
+    // ✅ Save both descriptor + image
+    $descriptor = json_decode($request->face_descriptor, true);
+
+    if (is_array($descriptor) && count($descriptor) === 128) {
+        $user->face_descriptor = json_encode($descriptor);
+        $user->face_image = $request->face_image; // ✅ Save Base64 image
+        $user->save();
+
+        return redirect('/welcome')->with('success', 'Face scan saved successfully!');
+    }
+
+    return redirect()->back()->with('error', 'Invalid face data.');
 }
-
 
 public function scanFingerprint(Request $request)
 {

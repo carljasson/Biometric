@@ -290,3 +290,6 @@ Route::middleware(['admin.auth'])->group(function () {
     Route::get('/admin/add-responder', [ResponderController::class, 'index'])
         ->name('admin.add-responder');
 }); 
+
+// Handle login submission
+Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.post');
