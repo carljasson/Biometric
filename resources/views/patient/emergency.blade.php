@@ -1,6 +1,29 @@
 @extends('layouts.patients')
 
 @section('content')
+    <style>
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #fff;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+        .bottom-nav a {
+            color: #333;
+            text-align: center;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .bottom-nav a i {
+            font-size: 20px;
+            display: block;
+        }
+    </style>
 <div class="container mt-4">
 
     <!-- Back Button -->
