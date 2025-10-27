@@ -25,10 +25,10 @@
     <h2>Fingerprint Setup</h2>
     <p>Please scan your fingerprint to complete your registration.</p>
 
-    <a href="myfingerprint://scan"
-       style="display:inline-block; padding:10px 20px; background:#198754; color:white; border-radius:8px; text-decoration:none;">
-       Launch Fingerprint App
-    </a>
+<a href="myfingerprint://scan?userId={{ $userId }}"
+   style="display:inline-block; padding:10px 20px; background:#198754; color:white; border-radius:8px; text-decoration:none;">
+   Launch Fingerprint App
+</a>
 
 </body>
 </html>
