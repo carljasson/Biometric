@@ -37,12 +37,17 @@
         </button>
     </div>
 
-    <!-- Bottom Navigation -->
+<!-- ✅ Bottom Navigation (same function as in dashboard.blade.php) -->
 <div class="bottom-nav">
-    <a href=="{{ route('dashboard') }}"><i class="fas fa-home"></i><br>Home</a>
-        <a href="{{ route('emergency') }}"><i class="fas fa-phone-alt text-danger"></i><br>Emergency</a>
-    <a href="#" data-bs-toggle="modal" data-bs-target="#profileModal"><i class="fas fa-user-circle"></i><br>My Profile</a>
-
+    <a href="{{ route('dashboard') }}">
+        <i class="fas fa-home"></i><br>Home
+    </a>
+    <a href="{{ route('emergency') }}">
+        <i class="fas fa-phone-alt text-danger"></i><br>Emergency
+    </a>
+    <a href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+        <i class="fas fa-user-circle"></i><br>My Profile
+    </a>
 </div>
 
     <!-- Emergency Modal -->
