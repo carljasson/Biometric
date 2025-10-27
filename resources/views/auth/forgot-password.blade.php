@@ -37,7 +37,11 @@
             max-width: 450px;
             animation: fadeIn 0.6s ease-in-out;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         .form-label { font-weight: 500; }
         .alert { font-size: 0.9rem; }
@@ -79,9 +83,6 @@
                        required autofocus autocomplete="email">
             </div>
 
-            {{-- ✅ Cloudflare Turnstile --}}
-            <div class="cf-turnstile mb-3" data-sitekey="{{ config('services.turnstile.sitekey') }}"></div>
-
             <button type="submit" class="btn btn-primary w-100">
                 Send Password Reset Link
             </button>
@@ -95,8 +96,6 @@
     {{-- ✅ Scripts --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
             nonce="{{ $cspNonce }}"></script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-            async defer></script>
 </body>
 
 </html>
