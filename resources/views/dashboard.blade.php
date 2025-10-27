@@ -83,9 +83,9 @@
 <!-- Bottom Navigation -->
 <div class="bottom-nav">
     <a href="#"><i class="fas fa-home"></i><br>Home</a>
+        <a href="{{ route('emergency') }}"><i class="fas fa-phone-alt text-danger"></i><br>Emergency</a>
     <a href="#" data-bs-toggle="modal" data-bs-target="#profileModal"><i class="fas fa-user-circle"></i><br>My Profile</a>
-    <a href="{{ route('emergency') }}"><i class="fas fa-phone-alt text-danger"></i><br>Emergency</a>
-    <a href="{{ route('scan.page') }}"><i class="fas fa-fingerprint"></i><br>Scan</a>
+
 </div>
 
 <!-- Personal Info Modal -->
@@ -134,15 +134,13 @@
             <li class="list-group-item" data-bs-toggle="modal" data-bs-target="#personalInfoModal" data-bs-dismiss="modal" style="cursor: pointer;">
                 <i class="fas fa-user"></i> Personal Info
             </li>
-            <li class="list-group-item" style="cursor: pointer;" onclick="window.location.href='{{ $medicalRoute }}'">
-                <i class="fas fa-notes-medical"></i> My Medical Records
-            </li>
+            
+
             <li class="list-group-item list-group-item-action" style="cursor: pointer;" onclick="window.location.href='{{ route('about') }}'">
                 <i class="fas fa-info-circle"></i> About This App
             </li>
-            <li class="list-group-item list-group-item-action" style="cursor: pointer;" onclick="toggleDarkMode()">
-                <i class="fas fa-moon"></i> Toggle Dark Mode
-            </li>
+            
+
             <form action="{{ route('logout') }}" method="POST" class="list-group-item p-0 m-0">
                 @csrf
                 <button class="btn w-100 text-start" style="cursor: pointer;">
