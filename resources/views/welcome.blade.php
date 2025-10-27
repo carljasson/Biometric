@@ -120,7 +120,7 @@
 
     {{-- Top Right Icons --}}
     <div class="top-right-icons">
-        <a href="/" title="Home" rel="noopener noreferrer" referrerpolicy="no-referrer">
+        <a href="/" title="Dashboard" rel="noopener noreferrer" referrerpolicy="no-referrer">
             <i class="fas fa-home"></i>
         </a>
 
