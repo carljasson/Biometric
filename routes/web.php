@@ -18,3 +18,7 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('/responder/login', function () {
+    return view('auth.responder-login'); // create your custom view
+})->name('responder.login');
