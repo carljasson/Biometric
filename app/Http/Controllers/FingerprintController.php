@@ -36,6 +36,34 @@ class FingerprintController extends Controller
         ]);
     }
 
+        // ✅ Identify user by fingerprint
+    public function identify(Request $request)
+    {
+        $request->validate([
+            'fingerprint_template' => 'required|string'
+        ]);
+
+        $inputTemplate = $request->fingerprint_template;
+
+        // Simplified matching (exact match for demo)
+        $user = User::where('fingerprint_template', $inputTemplate)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'No match found'], 404);
+        }
+
+        return response()->json([
+            'firstname' => $user->firstname,
+            'middlename' => $user->middlename,
+            'lastname' => $user->lastname,
+            'age' => $user->age,
+            'birthday' => $user->birthday,
+            'contact_name' => $user->contact_name,
+            'contact_number' => $user->contact_number,
+            'address' => $user->address,
+        ]);
+    }
+
     /**
      * 🔍 Match fingerprint for identification
      * POST /api/match-fingerprint
