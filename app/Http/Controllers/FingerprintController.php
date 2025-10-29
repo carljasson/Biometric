@@ -24,9 +24,9 @@ class FingerprintController extends Controller
             return response()->json(['success' => false, 'message' => 'User not found'], 404);
         }
 
-        // Decode base64 fingerprint data from C#
+        // ✅ Keep as base64 (do NOT decode)
         $user->fingerprint_registered = 1;
-        $user->fingerprint_template = base64_decode($validated['fingerprint_template']);
+        $user->fingerprint_template = $validated['fingerprint_template'];
         $user->save();
 
         return response()->json([
@@ -36,7 +36,10 @@ class FingerprintController extends Controller
         ]);
     }
 
-        // ✅ Identify user by fingerprint
+    /**
+     * 🔍 Identify user by fingerprint
+     * POST /api/identify-fingerprint
+     */
     public function identify(Request $request)
     {
         $request->validate([
@@ -45,14 +48,15 @@ class FingerprintController extends Controller
 
         $inputTemplate = $request->fingerprint_template;
 
-        // Simplified matching (exact match for demo)
+        // ✅ Compare base64 strings directly
         $user = User::where('fingerprint_template', $inputTemplate)->first();
 
         if (!$user) {
-            return response()->json(['message' => 'No match found'], 404);
+            return response()->json(['success' => false, 'message' => 'No match found'], 404);
         }
 
         return response()->json([
+            'success' => true,
             'firstname' => $user->firstname,
             'middlename' => $user->middlename,
             'lastname' => $user->lastname,
@@ -62,28 +66,5 @@ class FingerprintController extends Controller
             'contact_number' => $user->contact_number,
             'address' => $user->address,
         ]);
-    }
-
-    /**
-     * 🔍 Match fingerprint for identification
-     * POST /api/match-fingerprint
-     */
-    public function matchFingerprint(Request $request)
-    {
-        $validated = $request->validate([
-            'fingerprint_template' => 'required|string',
-        ]);
-
-        $fingerprintBinary = base64_decode($validated['fingerprint_template']);
-        $user = User::where('fingerprint_template', $fingerprintBinary)->first();
-
-        if ($user) {
-            return response()->json([
-                'success' => true,
-                'user' => $user,
-            ]);
-        }
-
-        return response()->json(['success' => false, 'message' => 'No match found']);
     }
 }
