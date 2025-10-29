@@ -22,22 +22,31 @@
     <a href="#" onclick="showDashboard()" class="text-white px-4 py-2 d-block text-decoration-none">
         <i class="bi bi-house-door-fill me-2"></i> Home
     </a>
-    <a href="{{ route('admin.users') }}" class="text-white px-4 py-2 d-block text-decoration-none {{ request()->routeIs('admin.users') ? 'bg-secondary fw-bold' : '' }}">
+
+    <a href="{{ route('admin.users') }}" 
+       class="text-white px-4 py-2 d-block text-decoration-none {{ request()->routeIs('admin.users') ? 'bg-secondary fw-bold' : '' }}">
         <i class="bi bi-people-fill me-2"></i> Manage Users
     </a>
-   
+
     <a href="{{ route('admin.alerts') }}" class="text-white px-4 py-2 d-block text-decoration-none">
         <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> Emergency Alerts
     </a>
-    <a href="{{ route('admin.admin-users') }}"
+
+    <a href="{{ route('admin.admin-users') }}" 
        class="text-white px-4 py-2 d-block text-decoration-none {{ request()->routeIs('admin.admin-users') ? 'bg-secondary fw-bold' : '' }}">
         <i class="bi bi-shield-lock-fill me-2"></i> Admin User Management
     </a>
-   
+
     <a href="{{ route('admin.add-responder') }}" 
-   class="text-white px-4 py-2 d-block text-decoration-none {{ request()->routeIs('admin.add-responder') ? 'bg-secondary fw-bold' : '' }}">
-    <i class="bi bi-plus-circle-fill me-2"></i> Add Responder
-</a>
+       class="text-white px-4 py-2 d-block text-decoration-none {{ request()->routeIs('admin.add-responder') ? 'bg-secondary fw-bold' : '' }}">
+        <i class="bi bi-plus-circle-fill me-2"></i> Add Responder
+    </a>
+
+    <!-- 🕒 Login History -->
+    <a href="{{ route('admin.login-history') }}" 
+       class="text-white px-4 py-2 d-block text-decoration-none {{ request()->routeIs('admin.login-history') ? 'bg-secondary fw-bold' : '' }}">
+        <i class="bi bi-clock-history me-2"></i> Login History
+    </a>
 
     <a href="#" data-bs-toggle="modal" data-bs-target="#broadcastModal" class="text-white px-4 py-2 d-block text-decoration-none">
         <i class="bi bi-megaphone-fill me-2"></i> Broadcast Messages
@@ -50,6 +59,7 @@
         </button>
     </form>
 </div>
+
 
 <!-- Main Content -->
 <div id="main" class="main-content" style="margin-left: 0; transition: margin-left 0.3s;">

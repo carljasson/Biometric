@@ -299,3 +299,7 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::middleware(['auth','can:viewLoginHistory'])->prefix('admin')->group(function () {
+    Route::get('login-history', [\App\Http\Controllers\Admin\LoginHistoryController::class, 'index'])->name('admin.login-history.index');
+});
