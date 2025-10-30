@@ -8,8 +8,7 @@ use App\Models\User;
 
 
 
-Route::post('/register/web', [BiometricController::class, 'store']);
-Route::post('/register/api', [ApiRegisterController::class, 'store']);
+
 
 // api.php
 Route::post('/save-fingerprint', [FingerprintController::class, 'store']);
