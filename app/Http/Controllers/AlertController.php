@@ -20,11 +20,19 @@ class AlertController extends Controller
         ]);
 
         try {
-            $user = auth()->user();
+            $user = Auth::user(); // 👈 get logged-in user
 
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated.',
+                ], 401);
+            }
+
+            // 👇 Save alert with both user_id and patient_id as same user
             $alert = Alert::create([
-                'user_id'     => $user ? $user->id : null,   // ✅ Logged-in user
-                'patient_id'  => $user ? $user->id : null,   // ✅ Same as user_id
+                'user_id'     => $user->id,
+                'patient_id'  => $user->id,   // ✅ same as user_id
                 'type'        => $request->type,
                 'destination' => $request->destination,
                 'photo'       => $request->photo,

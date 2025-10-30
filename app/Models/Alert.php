@@ -9,16 +9,17 @@ class Alert extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'type',
-        'latitude',
-        'longitude',
-        'address',
-        'destination',
-        'photo',
-        'user_id',
-        'status',
-    ];
+protected $fillable = [
+    'type',
+    'latitude',
+    'longitude',
+    'address',
+    'destination',
+    'photo',
+    'user_id',
+    'patient_id',   // ✅ add this line
+    'status',
+];
 
 
     public function user()
