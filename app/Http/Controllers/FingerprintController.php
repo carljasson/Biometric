@@ -67,4 +67,30 @@ class FingerprintController extends Controller
             'address' => $user->address,
         ]);
     }
+    public function matchFingerprint(Request $request)
+{
+    $inputTemplate = $request->input('fingerprint_template');
+
+    // 🧠 Convert Base64 → raw bytes
+    $decoded = base64_decode($inputTemplate);
+
+    // Example: compare with stored fingerprints
+    $users = User::whereNotNull('fingerprint_template')->get();
+
+    foreach ($users as $user) {
+        if ($this->fingerprintsMatch($decoded, base64_decode($user->fingerprint_template))) {
+            return response()->json(['exists' => true, 'user_id' => $user->id]);
+        }
+    }
+
+    return response()->json(['exists' => false]);
+}
+
+private function fingerprintsMatch($template1, $template2)
+{
+    // 🔧 Simplified: In production, use zkfp matching algorithm or your stored match API
+    // For now, assume identical data = match
+    return $template1 === $template2;
+}
+
 }
