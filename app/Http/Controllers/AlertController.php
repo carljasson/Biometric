@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AlertController extends Controller
 {
-    public function sendAlert(Request $request)
+public function sendAlert(Request $request)
 {
     $request->validate([
         'type' => 'required|string',
@@ -19,10 +19,12 @@ class AlertController extends Controller
     ]);
 
     try {
-        $userId = auth()->check() ? auth()->id() : null;
+        $user = auth()->user();
+        $patientId = \App\Models\Patient::where('user_id', $user->id)->value('id');
 
         $alert = Alert::create([
-            'user_id'     => $userId,
+            'user_id'     => $user->id,
+'patient_id' => $patientId ?? null, // ✅ FIX HERE
             'type'        => $request->type,
             'destination' => $request->destination,
             'photo'       => $request->photo,
