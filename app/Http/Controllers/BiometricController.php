@@ -365,8 +365,17 @@ public function checkFingerprintStatus(Request $request)
 public function fingerprintPage($id)
 {
     $user = User::findOrFail($id);
+
+    // Check if fingerprint is already registered
+    if ($user->fingerprint_registered) {
+        // Redirect to step 3
+        return redirect()->route('registration.step3', ['user' => $user->id]);
+    }
+
+    // Otherwise, show fingerprint registration page
     return view('register.fingerprint', compact('user'));
 }
+
 
 }
 

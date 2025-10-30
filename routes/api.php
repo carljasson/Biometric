@@ -14,8 +14,9 @@ use App\Models\User;
 Route::post('/save-fingerprint', [FingerprintController::class, 'store']);
 Route::post('/match-fingerprint', [FingerprintController::class, 'matchFingerprint']);
 
-Route::post('/identify-fingerprint', [FingerprintController::class, 'identify']);
 
 
 // routes/api.php
 Route::post('/fingerprint-match', [FingerprintController::class, 'match']);
+
+Route::post('/identify-fingerprint', [ResponderController::class, 'identifyFingerprint']);
