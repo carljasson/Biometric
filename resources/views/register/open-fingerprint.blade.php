@@ -23,7 +23,7 @@
 <body style="text-align:center; margin-top:80px; font-family:sans-serif;">
 
     <h2>Fingerprint Setup</h2>
-    <p>Please scan your fingerprint to complete your registration.</p>
+    <p>Please scan your fingerprint to complete your registratios.</p>
 
 <a href="myfingerprint://scan?userId={{ $userId }}"
    style="display:inline-block; padding:10px 20px; background:#198754; color:white; border-radius:8px; text-decoration:none;">
