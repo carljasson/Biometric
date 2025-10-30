@@ -23,7 +23,8 @@ class AlertController extends Controller
             $user = auth()->user();
 
             $alert = Alert::create([
-                'user_id'     => $user ? $user->id : null,  // ✅ Link to the user
+                'user_id'     => $user ? $user->id : null,   // ✅ Logged-in user
+                'patient_id'  => $user ? $user->id : null,   // ✅ Same as user_id
                 'type'        => $request->type,
                 'destination' => $request->destination,
                 'photo'       => $request->photo,
