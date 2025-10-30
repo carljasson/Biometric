@@ -20,7 +20,7 @@ public function sendAlert(Request $request)
 
     try {
         $user = auth()->user();
-        $patientId = \App\Models\Patient::where('user_id', $user->id)->value('id');
+        $patientId = \App\Models\users::where('user_id', $user->id)->value('id');
 
         $alert = Alert::create([
             'user_id'     => $user->id,
