@@ -32,7 +32,8 @@ Route::get('/login', [BiometricController::class, 'showLoginForm'])->name('login
 // 2️⃣ Custom login POST
 Route::post('/login', [BiometricController::class, 'login'])->name('login.post');
 
-Route::post('/login/pin', [CustomLoginController::class,'verifyPin']);
+Route::post('/login/pin', [BiometricController::class,'verifyPin'])->name('login.pin');
+
 
 
 Route::post('/logout', [BiometricController::class, 'logout'])->name('logout');
