@@ -17,6 +17,26 @@ class ResponderController extends Controller
     // Show login form
 public function login(Request $request)
 {
+    // ✅ Validate the request inputs
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+        'g-recaptcha-response' => 'required', // reCAPTCHA token
+    ]);
+
+    // ✅ Verify reCAPTCHA v3
+    $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+        'secret' => env('RECAPTCHA_SECRET'),
+        'response' => $request->input('g-recaptcha-response'),
+    ]);
+
+    $result = $response->json();
+
+    if (!($result['success'] ?? false) || ($result['score'] ?? 0) < 0.5) {
+        return back()->with('error', 'reCAPTCHA verification failed. Please try again.');
+    }
+
+    // ✅ Proceed with normal login
     $credentials = $request->only('email', 'password');
 
     $responder = Responder::where('email', $credentials['email'])->first();
@@ -29,9 +49,11 @@ public function login(Request $request)
         return back()->with('error', 'Incorrect password.');
     }
 
-    Auth::guard('responder')->login($responder); // ✅ Manually log in
+    Auth::guard('responder')->login($responder); // manually log in
+
     return redirect()->route('responder.dashboard');
 }
+
 
 public function showLoginForm()
 {

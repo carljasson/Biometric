@@ -105,7 +105,7 @@
         <div class="alert alert-danger text-center">{{ session('error') }}</div>
     @endif
 
-    <form method="POST" action="{{ route('responder.login.submit') }}">
+    <form id="responder-login-form" method="POST" action="{{ route('responder.login.submit') }}">
         @csrf
 
         <div class="mb-3">
@@ -122,9 +122,23 @@
             @enderror
         </div>
 
+        {{-- Hidden input for reCAPTCHA token --}}
+        <input type="hidden" name="g-recaptcha-response" id="recaptchaResponse">
+
         <div class="d-grid">
             <button type="submit" class="btn btn-primary">Login</button>
         </div>
     </form>
 </div>
+
+{{-- ✅ Google reCAPTCHA v3 --}}
+<script src="https://www.google.com/recaptcha/api.js?render={{ env('RECAPTCHA_SITEKEY') }}"></script>
+<script>
+    grecaptcha.ready(function() {
+        grecaptcha.execute('{{ env('RECAPTCHA_SITEKEY') }}', {action: 'login'}).then(function(token) {
+            document.getElementById('recaptchaResponse').value = token;
+        });
+    });
+</script>
+
 @endsection
