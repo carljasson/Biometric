@@ -21,40 +21,46 @@ class BiometricController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request)
-    {
-        // ✅ Validate form inputs
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required',
-            'cf-turnstile-response' => 'required', // Turnstile token
-        ]);
+    use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
-        // ✅ Verify Turnstile with Cloudflare
-        $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
-            'secret'   => config('services.turnstile.secret'),
-            'response' => $request->input('cf-turnstile-response'),
-            'remoteip' => $request->ip(),
-        ]);
+public function login(Request $request)
+{
+    // ✅ Step 1: Validate basic form inputs
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+        'g-recaptcha-response' => 'required', // Google reCAPTCHA v3 token
+    ]);
 
-        $data = $response->json();
+    // ✅ Step 2: Verify Google reCAPTCHA v3
+    $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+        'secret' => config('services.recaptcha.secret'),
+        'response' => $request->input('g-recaptcha-response'),
+        'remoteip' => $request->ip(),
+    ]);
 
-        if (!($data['success'] ?? false)) {
-            return back()->withErrors([
-                'captcha' => 'Cloudflare verification failed. Please try again.',
-            ])->withInput();
-        }
+    $data = $response->json();
 
-        // ✅ Attempt login
-        if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended('/dashboard'); // or your intended route
-        }
-
+    // ✅ Step 3: Check the verification result
+    if (empty($data['success']) || ($data['score'] ?? 0) < 0.5) {
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'g-recaptcha-response' => 'reCAPTCHA verification failed. Please try again.',
         ])->withInput();
     }
+
+    // ✅ Step 4: Attempt user authentication
+    if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
+        $request->session()->regenerate();
+        return redirect()->intended('/dashboard');
+    }
+
+    // ❌ Invalid credentials
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ])->withInput();
+}
 
     public function logout(Request $request)
     {

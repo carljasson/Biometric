@@ -5,10 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    {{-- 🔐 Generate CSP nonce --}}
     @php $cspNonce = bin2hex(random_bytes(16)); @endphp
 
-    {{-- 🔐 Security headers --}}
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         base-uri 'self';
@@ -16,12 +14,11 @@
         object-src 'none';
         frame-ancestors 'none';
         upgrade-insecure-requests;
-        script-src 'self' https://cdn.jsdelivr.net https://challenges.cloudflare.com 'nonce-{{ $cspNonce }}';
-        style-src  'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'nonce-{{ $cspNonce }}';
+        script-src 'self' https://cdn.jsdelivr.net https://www.google.com https://www.gstatic.com 'nonce-{{ $cspNonce }}';
+        style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'nonce-{{ $cspNonce }}';
         img-src 'self' data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
         font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net data:;
-        connect-src 'self';
-        frame-src https://challenges.cloudflare.com;
+        connect-src 'self' https://www.google.com https://www.gstatic.com;
     ">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
@@ -30,14 +27,11 @@
 
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-          crossorigin="anonymous"
-          referrerpolicy="no-referrer">
+          crossorigin="anonymous" referrerpolicy="no-referrer">
 
-    {{-- ✅ Font Awesome added --}}
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-          crossorigin="anonymous"
-          referrerpolicy="no-referrer">
+          crossorigin="anonymous" referrerpolicy="no-referrer">
 
     <style nonce="{{ $cspNonce }}">
         body {
@@ -51,7 +45,6 @@
             justify-content: center;
         }
 
-        /* ✅ Top-right icons */
         .top-right-icons {
             position: absolute;
             top: 20px;
@@ -104,12 +97,9 @@
 
 <body>
 
-    {{-- ✅ Top-right functional icons --}}
     <div class="top-right-icons">
-
         <a href="/" title="Home"><i class="fas fa-home"></i></a>
 
-        {{-- ✅ Login Dropdown --}}
         <div class="dropdown">
             <a class="dropdown-toggle" href="#" role="button" id="loginDropdown"
                data-bs-toggle="dropdown" aria-expanded="false">
@@ -121,12 +111,10 @@
             </ul>
         </div>
 
-        {{-- ✅ Register Modal Trigger --}}
         <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" title="Signup">
             <i class="fas fa-user-plus"></i>
         </a>
 
-        {{-- ✅ Tips Modal Trigger --}}
         <a href="#" data-bs-toggle="modal" data-bs-target="#tipsModal" title="Tips">
             <i class="fas fa-lightbulb"></i>
         </a>
@@ -137,12 +125,10 @@
             <h4>🔒 Login to Access</h4>
         </div>
 
-        {{-- ✅ Flash messages --}}
         @if(session('success'))
             <div class="alert alert-success text-center">{{ session('success') }}</div>
         @endif
 
-        {{-- ❌ Error messages --}}
         @if($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0">
@@ -153,8 +139,7 @@
             </div>
         @endif
 
-        {{-- 🔐 Login form --}}
-        <form method="POST" action="{{ url('/login') }}" autocomplete="off">
+        <form id="loginForm" method="POST" action="{{ url('/login') }}" autocomplete="off">
             @csrf
             <div class="mb-3">
                 <label class="form-label">Email</label>
@@ -165,9 +150,9 @@
                 <input type="password" name="password" class="form-control" required autocomplete="current-password">
             </div>
 
-            {{-- 🌐 Cloudflare Turnstile --}}
-            <div class="cf-turnstile mb-3" data-sitekey="{{ config('services.turnstile.sitekey') }}"></div>
-            @error('captcha')
+            {{-- 🧠 Google reCAPTCHA v3 --}}
+            <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+            @error('g-recaptcha-response')
                 <div class="alert alert-danger mt-2">{{ $message }}</div>
             @enderror
 
@@ -175,13 +160,10 @@
         </form>
 
         <div class="mt-3 text-center extra-links">
-<a href="{{ route('password.request') }}">Forgot password?</a>
-
+            <a href="{{ route('password.request') }}">Forgot password?</a>
         </div>
     </div>
 
-
-    {{-- ✅ Popups (same as Home) --}}
     <div class="modal fade" id="registerModal">
         <div class="modal-dialog"><div class="modal-content p-3">
             🚫 Registration is only available **at the MDRRMO office**
@@ -194,15 +176,26 @@
         </div></div>
     </div>
 
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
             nonce="{{ $cspNonce }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"
             nonce="{{ $cspNonce }}"></script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-            async defer></script>
 
-    {{-- 🚫 Prevent iframe embedding --}}
+    {{-- ✅ Google reCAPTCHA v3 --}}
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.sitekey') }}"
+            nonce="{{ $cspNonce }}"></script>
+    <script nonce="{{ $cspNonce }}">
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            grecaptcha.ready(function() {
+                grecaptcha.execute('{{ config('services.recaptcha.sitekey') }}', {action: 'login'}).then(function(token) {
+                    document.getElementById('g-recaptcha-response').value = token;
+                    event.target.submit();
+                });
+            });
+        });
+    </script>
+
     <script nonce="{{ $cspNonce }}">
         if (window.top !== window.self) window.top.location = window.self.location;
     </script>
