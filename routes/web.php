@@ -26,10 +26,13 @@ Route::get('/', fn () => view('welcome'))->name('welcome');
 // =========================
 // 👤 USER AUTH & DASHBOARD
 // =========================
+// 1️⃣ Custom login form
 Route::get('/login', [BiometricController::class, 'showLoginForm'])->name('login');
 
-// Handle login submit (POST)
+// 2️⃣ Custom login POST
 Route::post('/login', [BiometricController::class, 'login'])->name('login.post');
+
+Route::post('/login/pin', [CustomLoginController::class,'verifyPin']);
 
 
 Route::post('/logout', [BiometricController::class, 'logout'])->name('logout');
@@ -207,10 +210,6 @@ Route::post('/admin/alerts/{alert}/notify', [App\Http\Controllers\AdminControlle
     ->name('admin.alerts.notify');
 
 
-// Login Page
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
 
 
 Route::post('/fingerprint/capture', [App\Http\Controllers\FingerprintController::class, 'capture'])->name('fingerprint.capture');
