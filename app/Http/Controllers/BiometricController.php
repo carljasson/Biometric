@@ -73,6 +73,7 @@ return back()->with('showPinModal', true)->withInput(['email' => $request->email
 
 public function verifyPin(Request $request)
 {
+    
     $request->validate([
         'pin' => 'required|digits:6',
     ]);
