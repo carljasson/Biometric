@@ -31,7 +31,7 @@
     <br><br>
 
     <!-- Next Button -->
-    <a href="{{ route('registration.step3', ['user' => $userId]) }}"
+    <a href="{{ route('register.step3', ['user' => $userId]) }}"
        style="display:inline-block; padding:10px 20px; background:#0d6efd; color:white; border-radius:8px; text-decoration:none;">
        Next
     </a>
