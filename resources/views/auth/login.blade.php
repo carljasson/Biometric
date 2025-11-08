@@ -178,6 +178,27 @@
         </div></div>
     </div>
 
+    <!-- ✅ PIN Modal -->
+    <div class="modal fade" id="pinModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content p-4">
+                <h5 class="mb-3">Enter the PIN sent to your email</h5>
+
+                @if($errors->has('pin'))
+                    <div class="alert alert-danger">{{ $errors->first('pin') }}</div>
+                @endif
+
+                <form id="pinForm" method="POST" action="{{ url('/login/pin') }}">
+                    @csrf
+                    <div class="mb-3">
+                        <input type="text" name="pin" class="form-control" maxlength="6" required placeholder="6-digit PIN">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Verify PIN</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
             nonce="{{ $cspNonce }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"
@@ -196,6 +217,16 @@
                 });
             });
         });
+    </script>
+
+    <!-- ✅ Show PIN modal if needed -->
+    <script nonce="{{ $cspNonce }}">
+    document.addEventListener('DOMContentLoaded', () => {
+        @if(session('showPinModal'))
+            var pinModal = new bootstrap.Modal(document.getElementById('pinModal'));
+            pinModal.show();
+        @endif
+    });
     </script>
 
     <script nonce="{{ $cspNonce }}">

@@ -47,16 +47,27 @@ public function login(Request $request)
         ])->withInput();
     }
 
-    // ✅ Step 4: Attempt user authentication
-    if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
-        $request->session()->regenerate();
-        return redirect()->intended('/dashboard');
+    // ✅ Step 4: Verify credentials
+    $user = \App\Models\User::where('email', $request->email)->first();
+    if (!$user || !\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+        return back()->withErrors(['email' => 'The provided credentials do not match our records.'])
+                     ->withInput();
     }
 
-    // ❌ Invalid credentials
-    return back()->withErrors([
-        'email' => 'The provided credentials do not match our records.',
-    ])->withInput();
+    // ✅ Step 5: Generate email PIN
+    $pin = rand(100000, 999999);
+    Session::put('login_pin', $pin);
+    Session::put('login_user_id', $user->id);
+    Session::put('pin_expires', now()->addMinutes(5));
+
+    // Send PIN to user email
+    Mail::raw("Your login PIN is: $pin", function ($message) use ($user) {
+        $message->to($user->email)
+                ->subject('Your Login PIN');
+    });
+
+    // ✅ Step 6: Return back and show PIN modal
+    return back()->with('showPinModal', true)->with('email', $user->email);
 }
 
     public function logout(Request $request)
