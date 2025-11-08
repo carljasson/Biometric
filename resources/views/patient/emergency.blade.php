@@ -163,7 +163,7 @@
     let previewContainer = document.getElementById('previewContainer');
     let liveIndicator = document.getElementById('liveIndicator');
     let stream = null;
-    let useFrontCamera = true; // ✅ default front
+    let useFrontCamera = true; // default front
 
     async function startCamera() {
         try {
@@ -207,9 +207,43 @@
         startCamera();
     }
 
+    // ===== Check & Request Permissions =====
+    async function requestPermissions() {
+        // Location Permission
+        try {
+            const locationStatus = await navigator.permissions.query({ name: 'geolocation' });
+            if (locationStatus.state === 'denied') {
+                Swal.fire('Location Permission Denied', 'Please allow location access in your browser settings.', 'warning');
+            } else if (locationStatus.state === 'prompt') {
+                navigator.geolocation.getCurrentPosition(
+                    () => {}, 
+                    () => { 
+                        Swal.fire('Location Required', 'You need to allow location access to send alerts.', 'warning');
+                    }
+                );
+            }
+        } catch (err) { console.warn('Geolocation permission API not supported', err); }
+
+        // Camera Permission
+        try {
+            const cameraStatus = await navigator.permissions.query({ name: 'camera' });
+            if (cameraStatus.state === 'denied') {
+                Swal.fire('Camera Permission Denied', 'Please allow camera access in your browser settings.', 'warning');
+            } else if (cameraStatus.state === 'prompt') {
+                try {
+                    const testStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    testStream.getTracks().forEach(track => track.stop());
+                } catch {
+                    Swal.fire('Camera Required', 'You need to allow camera access to send alerts.', 'warning');
+                }
+            }
+        } catch (err) { console.warn('Camera permission API not supported', err); }
+    }
+
     // ===== Modal Events =====
     const emergencyModal = document.getElementById('emergencyModal');
-    emergencyModal.addEventListener('shown.bs.modal', function () {
+    emergencyModal.addEventListener('shown.bs.modal', async function () {
+        await requestPermissions(); // Request camera & location
         getUserLocation();
         startCamera();
     });
@@ -250,7 +284,7 @@
                     method: "POST",
                     body: formData,
                     headers: {
-                        "X-CSRF-TOKEN": document.querySelector('input[name=\"_token\"]').value
+                        "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
                     }
                 })
                 .then(res => res.json())
@@ -275,4 +309,5 @@
         });
     });
 </script>
+
 @endsection
