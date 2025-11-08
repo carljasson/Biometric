@@ -7,19 +7,21 @@
 
     @php $cspNonce = bin2hex(random_bytes(16)); @endphp
 
-    <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self';
-        base-uri 'self';
-        form-action 'self';
-        object-src 'none';
-        frame-ancestors 'none';
-        upgrade-insecure-requests;
-        script-src 'self' https://cdn.jsdelivr.net https://www.google.com https://www.gstatic.com 'nonce-{{ $cspNonce }}';
-        style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'nonce-{{ $cspNonce }}';
-        img-src 'self' data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
-        font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net data:;
-        connect-src 'self' https://www.google.com https://www.gstatic.com;
-    ">
+<meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    base-uri 'self';
+    form-action 'self';
+    object-src 'none';
+    frame-ancestors 'none';
+    upgrade-insecure-requests;
+    script-src 'self' https://cdn.jsdelivr.net https://www.google.com https://www.gstatic.com https://recaptcha.net 'nonce-{{ $cspNonce }}';
+    style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.google.com https://www.gstatic.com 'unsafe-inline' 'nonce-{{ $cspNonce }}';
+    img-src 'self' data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://www.google.com https://www.gstatic.com https://recaptcha.net;
+    font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net data:;
+    frame-src https://www.google.com https://www.gstatic.com https://recaptcha.net;
+    connect-src 'self' https://www.google.com https://www.gstatic.com https://recaptcha.net;
+">
+
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="Referrer-Policy" content="no-referrer">
