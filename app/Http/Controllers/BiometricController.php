@@ -67,8 +67,38 @@ public function login(Request $request)
     });
 
     // ✅ Step 6: Return back and show PIN modal
-    return back()->with('showPinModal', true)->with('email', $user->email);
+return back()->with('showPinModal', true)->withInput(['email' => $request->email]);
+
 }
+
+public function verifyPin(Request $request)
+{
+    $request->validate([
+        'pin' => 'required|digits:6',
+    ]);
+
+    $storedPin = session('login_pin');
+    $expiresAt = session('pin_expires');
+    $userId = session('login_user_id');
+
+    if (!$storedPin || !$userId || now()->gt($expiresAt)) {
+        return back()->withErrors(['pin' => 'PIN expired or invalid.'])->withInput();
+    }
+
+    if ($request->pin != $storedPin) {
+        return back()->withErrors(['pin' => 'Incorrect PIN'])->withInput();
+    }
+
+    // ✅ PIN verified, log the user in
+    $user = \App\Models\User::find($userId);
+    Auth::login($user);
+
+    // Clear PIN session
+    session()->forget(['login_pin', 'login_user_id', 'pin_expires', 'showPinModal']);
+
+    return redirect()->intended('/dashboard');
+}
+
 
     public function logout(Request $request)
     {
