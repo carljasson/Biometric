@@ -24,14 +24,15 @@
     <h2>Fingerprint Setup</h2>
     <p>Please scan your fingerprint to complete your registration.</p>
 
+    <!-- Launch Fingerprint App -->
     <a href="myfingerprint://scan?userId={{ $userId }}"
        style="display:inline-block; padding:10px 20px; background:#198754; color:white; border-radius:8px; text-decoration:none; margin-bottom:10px;">
        Launch Fingerprint App
     </a>
     <br><br>
 
-    <!-- Next Button -->
-    <a href="{{ route('register.step3', ['user' => $userId]) }}"
+    <!-- Next Button (goes to step3) -->
+    <a href="/register/step3/{{ $userId }}"
        style="display:inline-block; padding:10px 20px; background:#0d6efd; color:white; border-radius:8px; text-decoration:none;">
        Next
     </a>
