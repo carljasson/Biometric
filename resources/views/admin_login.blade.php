@@ -60,23 +60,35 @@
             <input id="password" type="password" name="password" class="form-control" required autocomplete="current-password">
         </div>
 
+        {{-- Google reCAPTCHA v3 token --}}
+        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+
         <div class="d-grid">
             <button id="login-btn" type="submit" class="btn btn-primary">Login</button>
         </div>
     </form>
 </div>
 
+<!-- Scripts -->
+<script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.sitekey') }}"></script>
 <script>
+document.getElementById('login-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    grecaptcha.ready(function() {
+        grecaptcha.execute('{{ config('services.recaptcha.sitekey') }}', {action: 'login'}).then(function(token) {
+            document.getElementById('g-recaptcha-response').value = token;
+            e.target.submit(); // submit form after token is set
+        });
+    });
+});
+
 (function(){
-    // If server passed lockout_seconds, use it to run a real-time countdown
     const lockoutSeconds = @json(session('lockout_seconds', null));
     const countdownEl = document.getElementById('lockout-countdown');
     const loginForm = document.getElementById('login-form');
     const inputs = loginForm ? loginForm.querySelectorAll('input, button') : [];
 
-    function disableForm(flag) {
-        inputs.forEach(el => el.disabled = flag);
-    }
+    function disableForm(flag) { inputs.forEach(el => el.disabled = flag); }
 
     function formatHHMMSS(totalSeconds) {
         totalSeconds = Math.max(0, Math.floor(totalSeconds));
@@ -87,31 +99,20 @@
     }
 
     if (lockoutSeconds !== null) {
-        // Immediately disable form
         disableForm(true);
         let remaining = Number(lockoutSeconds);
-
-        // show initial value
         if (countdownEl) countdownEl.textContent = formatHHMMSS(remaining);
-
         const tid = setInterval(() => {
             remaining--;
             if (remaining <= 0) {
                 clearInterval(tid);
                 if (countdownEl) countdownEl.textContent = '00:00';
-                // re-enable form
                 disableForm(false);
-                // optionally refresh page to clear server-side session flag, or let user try again
-                // location.reload();
             } else {
                 if (countdownEl) countdownEl.textContent = formatHHMMSS(remaining);
             }
         }, 1000);
-    } else {
-        // No lockout — ensure form enabled
-        disableForm(false);
-        if (countdownEl) countdownEl.textContent = '';
-    }
+    } else { disableForm(false); if (countdownEl) countdownEl.textContent = ''; }
 })();
 </script>
 </body>
