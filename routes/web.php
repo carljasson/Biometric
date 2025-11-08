@@ -305,12 +305,13 @@ Route::middleware(['auth','can:viewLoginHistory'])->prefix('admin')->group(funct
 });
 
 // routes/web.php
-Route::get('/fix-alert-folder', function () {
-    $path = storage_path('app/public/alerts');
-    if (!file_exists($path)) {
-        mkdir($path, 0775, true);
-        return "✅ Folder created: $path";
-    } else {
-        return "⚙️ Folder already exists: $path";
+Route::get('/fix-storage-link', function () {
+    $target = storage_path('app/public');
+    $link = public_path('storage');
+
+    if (!file_exists($link)) {
+        symlink($target, $link);
+        return "✅ Storage link created successfully.";
     }
+    return "⚙️ Storage link already exists.";
 });
