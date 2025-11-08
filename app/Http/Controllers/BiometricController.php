@@ -47,58 +47,55 @@ public function login(Request $request)
         ])->withInput();
     }
 
-    // ✅ Step 4: Verify credentials
-    $user = \App\Models\User::where('email', $request->email)->first();
-    if (!$user || !\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
-        return back()->withErrors(['email' => 'The provided credentials do not match our records.'])
-                     ->withInput();
-    }
-
-    // ✅ Step 5: Generate email PIN
-    $pin = rand(100000, 999999);
-    Session::put('login_pin', $pin);
-    Session::put('login_user_id', $user->id);
-    Session::put('pin_expires', now()->addMinutes(5));
-
-    // Send PIN to user email
-    Mail::raw("Your login PIN is: $pin", function ($message) use ($user) {
-        $message->to($user->email)
-                ->subject('Your Login PIN');
-    });
-
-    // ✅ Step 6: Return back and show PIN modal
-return back()->with('showPinModal', true)->withInput(['email' => $request->email]);
-
+// Step 4: Verify credentials manually (you already do this)
+$user = User::where('email', $request->email)->first();
+if (!$user || !Hash::check($request->password, $user->password)) {
+    return back()->withErrors(['email'=>'Invalid credentials'])->withInput();
 }
 
-public function verifyPin(Request $request)
-{
-    
-    $request->validate([
-        'pin' => 'required|digits:6',
-    ]);
+// ✅ Save PIN & session
+$pin = rand(100000,999999);
+session([
+    'login_pin' => $pin,
+    'login_user_id' => $user->id,
+    'pin_expires' => now()->addMinutes(5),
+]);
+
+// Send PIN via email
+Mail::raw("Your login PIN is $pin", function($message) use($user){
+    $message->to($user->email)->subject('Login PIN');
+});
+
+// ❌ DO NOT log the user in yet!
+// Return back and show PIN modal
+return back()->with('showPinModal', true)->withInput(['email' => $request->email]);
+
+
+public function verifyPin(Request $request) {
+    $request->validate(['pin'=>'required|digits:6']);
 
     $storedPin = session('login_pin');
-    $expiresAt = session('pin_expires');
     $userId = session('login_user_id');
+    $expiresAt = session('pin_expires');
 
     if (!$storedPin || !$userId || now()->gt($expiresAt)) {
-        return back()->withErrors(['pin' => 'PIN expired or invalid.'])->withInput();
+        return back()->withErrors(['pin'=>'PIN expired'])->withInput();
     }
 
     if ($request->pin != $storedPin) {
-        return back()->withErrors(['pin' => 'Incorrect PIN'])->withInput();
+        return back()->withErrors(['pin'=>'Incorrect PIN'])->withInput();
     }
 
-    // ✅ PIN verified, log the user in
-    $user = \App\Models\User::find($userId);
+    // ✅ PIN correct, log user in
+    $user = User::find($userId);
     Auth::login($user);
 
-    // Clear PIN session
-    session()->forget(['login_pin', 'login_user_id', 'pin_expires', 'showPinModal']);
+    // Clear session
+    session()->forget(['login_pin','login_user_id','pin_expires','showPinModal']);
 
     return redirect()->intended('/dashboard');
 }
+
 
 
     public function logout(Request $request)
