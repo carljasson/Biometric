@@ -67,7 +67,8 @@ public function login(Request $request)
     });
 
     // ✅ Step 6: Return back and show PIN modal
-    return back()->with('showPinModal', true)->with('email', $user->email);
+return back()->with('showPinModal', true)->withInput(['email' => $request->email]);
+
 }
 
     public function logout(Request $request)
