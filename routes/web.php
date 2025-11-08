@@ -303,3 +303,14 @@ require __DIR__.'/auth.php';
 Route::middleware(['auth','can:viewLoginHistory'])->prefix('admin')->group(function () {
     Route::get('login-history', [\App\Http\Controllers\Admin\LoginHistoryController::class, 'index'])->name('admin.login-history.index');
 });
+
+// routes/web.php
+Route::get('/fix-alert-folder', function () {
+    $path = storage_path('app/public/alerts');
+    if (!file_exists($path)) {
+        mkdir($path, 0775, true);
+        return "✅ Folder created: $path";
+    } else {
+        return "⚙️ Folder already exists: $path";
+    }
+});
