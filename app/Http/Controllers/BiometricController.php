@@ -21,9 +21,6 @@ class BiometricController extends Controller
         return view('auth.login');
     }
 
-    use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 
 public function login(Request $request)
 {
