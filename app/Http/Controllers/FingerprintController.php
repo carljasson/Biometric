@@ -111,7 +111,26 @@ public function allFingerprints()
         'fingerprint_template'
     ]);
 
-    return response()->json($users);
+    // Replace nulls with empty strings
+    $usersSafe = $users->map(function($u) {
+        return [
+            'id' => $u->id,
+            'firstname' => $u->firstname ?? '',
+            'middlename' => $u->middlename ?? '', // ✅ empty if null
+            'lastname' => $u->lastname ?? '',
+            'age' => $u->age ?? '',
+            'birthday' => $u->birthday ?? '',
+            'contact_name' => $u->contact_name ?? '',
+            'contact_number' => $u->contact_number ?? '',
+            'address' => $u->address ?? '',
+            'status' => $u->status ?? '',
+            'phone' => $u->phone ?? '',
+            'gender' => $u->gender ?? '',
+            'fingerprint_template' => $u->fingerprint_template ?? '',
+        ];
+    });
+
+    return response()->json($usersSafe);
 }
 
 
