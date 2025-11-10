@@ -24,14 +24,14 @@ class BiometricController extends Controller
 
 public function login(Request $request)
 {
-    // ✅ Step 1: Validate basic form inputs
+    // ✅ Step 1: Validate form input
     $request->validate([
         'email' => 'required|email',
         'password' => 'required',
-        'g-recaptcha-response' => 'required', // Google reCAPTCHA v3 token
+        'g-recaptcha-response' => 'required',
     ]);
 
-    // ✅ Step 2: Verify Google reCAPTCHA v3
+    // ✅ Step 2: reCAPTCHA v3 Verification
     $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
         'secret' => config('services.recaptcha.secret'),
         'response' => $request->input('g-recaptcha-response'),
@@ -40,35 +40,52 @@ public function login(Request $request)
 
     $data = $response->json();
 
-    // ✅ Step 3: Check the verification result
     if (empty($data['success']) || ($data['score'] ?? 0) < 0.5) {
         return back()->withErrors([
             'g-recaptcha-response' => 'reCAPTCHA verification failed. Please try again.',
         ])->withInput();
     }
 
-// Step 4: Verify credentials manually (you already do this)
-$user = User::where('email', $request->email)->first();
-if (!$user || !Hash::check($request->password, $user->password)) {
-    return back()->withErrors(['email'=>'Invalid credentials'])->withInput();
-}
+    // ✅ Step 3: Rate Limiting (3 attempts, 60s cooldown)
+    $key = Str::lower($request->email) . '|' . $request->ip();
 
-// ✅ Save PIN & session
-$pin = rand(100000,999999);
-session([
-    'login_pin' => $pin,
-    'login_user_id' => $user->id,
-    'pin_expires' => now()->addMinutes(5),
-]);
+    if (RateLimiter::tooManyAttempts($key, 3)) {
+        $seconds = RateLimiter::availableIn($key);
+        return back()
+            ->with('lockout', $seconds)
+            ->withErrors(['email' => "Too many attempts. Try again in {$seconds} seconds."]);
+    }
 
-// Send PIN via email
-Mail::raw("Your login PIN is $pin", function($message) use($user){
-    $message->to($user->email)->subject('Login PIN');
-});
+    // ✅ Step 4: Manual credential check
+    $user = User::where('email', $request->email)->first();
 
-// ❌ DO NOT log the user in yet!
-// Return back and show PIN modal
-return back()->with('showPinModal', true)->withInput(['email' => $request->email]);
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        // Count failed attempt
+        RateLimiter::hit($key, 60); // 60 seconds cooldown
+
+        return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
+    }
+
+    // ✅ Step 5: If success, clear previous failed attempts
+    RateLimiter::clear($key);
+
+    // ✅ Step 6: Generate 6-digit PIN and store in session
+    $pin = rand(100000, 999999);
+    session([
+        'login_pin' => $pin,
+        'login_user_id' => $user->id,
+        'pin_expires' => now()->addMinutes(5),
+    ]);
+
+    // ✅ Step 7: Send PIN via email
+    Mail::raw("Your login PIN is $pin", function ($message) use ($user) {
+        $message->to($user->email)->subject('Your Biometric Medical Access Login PIN');
+    });
+
+    // ✅ Step 8: Do not log in yet — show PIN modal
+    return back()
+        ->with('showPinModal', true)
+        ->withInput(['email' => $request->email]);
 }
 
 public function verifyPin(Request $request) {
