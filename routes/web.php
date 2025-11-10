@@ -304,15 +304,9 @@ require __DIR__.'/auth.php';
 Route::middleware(['auth','can:viewLoginHistory'])->prefix('admin')->group(function () {
     Route::get('login-history', [\App\Http\Controllers\Admin\LoginHistoryController::class, 'index'])->name('admin.login-history.index');
 });
+Route::prefix('admin')->middleware(['web', 'admin.auth'])->group(function () {
+    // ... your existing admin routes
 
-// routes/web.php
-Route::get('/fix-storage-link', function () {
-    $target = storage_path('app/public');
-    $link = public_path('storage');
-
-    if (!file_exists($link)) {
-        symlink($target, $link);
-        return "✅ Storage link created successfully.";
-    }
-    return "⚙️ Storage link already exists.";
+    Route::get('/login-history', [AdminController::class, 'loginHistory'])->name('admin.login-history');
 });
+
