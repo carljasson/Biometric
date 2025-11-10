@@ -50,16 +50,13 @@ class AdminController extends Controller
         }
 
         // ✅ Attempt login
-        if (Authif (Auth::guard('admin')->attempt($request->only('email', 'password'))) {
+        if (Auth::guard('admin')->attempt($request->only('email', 'password'))) {
     RateLimiter::clear($key);
     $admin = Auth::guard('admin')->user();
     session(['admin_id' => $admin->id]); // optional if your dashboard uses session('admin_id')
     return redirect()->intended('/admin/dashboard')->with('success', 'Welcome back, Admin!');
 }
-::attempt($request->only('email', 'password'))) {
-            RateLimiter::clear($key); // clear attempts on success
-            return redirect()->intended('/admin/dashboard')->with('success', 'Welcome back, Admin!');
-        }
+
 
         // ❌ Failed login → increment attempt count
         RateLimiter::hit($key, $this->decaySeconds);
