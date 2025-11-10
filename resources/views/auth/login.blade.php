@@ -61,12 +61,19 @@
             width: 100%;
             max-width: 450px;
             animation: fadeIn 0.6s ease-in-out;
+            transition: opacity 0.3s ease;
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .login-card h4 { font-weight: bold; color: #333; }
         .form-label { font-weight: 500; }
         .alert { font-size: 0.9rem; }
         .extra-links { font-size: 0.95rem; }
+
+        /* Dimming effect for disabled form */
+        .disabled-form {
+            opacity: 0.5;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -184,28 +191,38 @@ document.addEventListener('DOMContentLoaded', () => {
 if (window.top !== window.self) window.top.location = window.self.location;
 </script>
 
+{{-- ✅ Lockout handler: disable inputs + SweetAlert countdown --}}
 @if(session('lockout'))
 <script nonce="{{ $cspNonce }}">
 document.addEventListener("DOMContentLoaded", () => {
     let seconds = {{ session('lockout') }};
     let form = document.querySelector(".login-card form");
-    if (form) form.style.display = "none";
+
+    if (form) {
+        // Disable all fields
+        form.querySelectorAll('input, button').forEach(el => el.disabled = true);
+        form.classList.add('disabled-form');
+    }
 
     Swal.fire({
         icon: 'error',
         title: 'Too Many Attempts',
-        html: `Wait <b>${seconds}</b> seconds.`,
+        html: `You have been locked out.<br>Wait <b>${seconds}</b> seconds.`,
         allowOutsideClick: false,
-        showConfirmButton: false
-    });
-
-    const timer = setInterval(() => {
-        seconds--;
-        if (seconds <= 0) {
-            clearInterval(timer);
-            window.location.reload();
+        showConfirmButton: false,
+        didOpen: () => {
+            const interval = setInterval(() => {
+                seconds--;
+                Swal.update({
+                    html: `You have been locked out.<br>Wait <b>${seconds}</b> seconds.`
+                });
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    window.location.reload();
+                }
+            }, 1000);
         }
-    }, 1000);
+    });
 });
 </script>
 @endif
