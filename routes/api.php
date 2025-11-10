@@ -19,4 +19,4 @@ Route::post('/match-fingerprint', [FingerprintController::class, 'matchFingerpri
 // routes/api.php
 Route::post('/fingerprint-match', [FingerprintController::class, 'match']);
 
-Route::post('/identify-fingerprint', [ResponderController::class, 'identifyFingerprint']);
+Route::post('/identify-fingerprint', [FingerprintController::class, 'identifyFingerprint']);
