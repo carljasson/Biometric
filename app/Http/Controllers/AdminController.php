@@ -417,7 +417,7 @@ public function addResponder()
 public function loginHistory()
 {
     // Example: fetch login history from a table (adjust to your DB structure)
-    $logins = \DB::table('admin_login_history')->orderBy('created_at', 'desc')->get();
+    $logins = \DB::table('login_histories')->orderBy('created_at', 'desc')->get();
 
     // return view with data
     return view('admin.login-history', compact('logins'));
