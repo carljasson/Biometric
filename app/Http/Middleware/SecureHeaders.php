@@ -21,19 +21,19 @@ class SecureHeaders
         $response->headers->set('X-XSS-Protection', '1; mode=block');
 
         // Strong Content Security Policy
-        $response->headers->set(
-            'Content-Security-Policy',
-            "default-src 'self'; " .
-            "script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
-            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; " .
-            "font-src 'self' https://fonts.gstatic.com; " .
-            "img-src 'self' data: https:; " .
-            "object-src 'none'; " .
-            "frame-ancestors 'self'; " .
-            "base-uri 'self'; " .
-            "form-action 'self'; " .
-            "upgrade-insecure-requests;"
-        );
+$response->headers->set(
+    'Content-Security-Policy',
+    "default-src 'self'; ".
+    "script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; ".
+    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; ".
+    "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; ".
+    "img-src 'self' data: https:; ".
+    "object-src 'none'; ".
+    "frame-ancestors 'self'; ".
+    "base-uri 'self'; ".
+    "form-action 'self'; ".
+    "upgrade-insecure-requests;"
+);
 
         // HSTS only on HTTPS
         if ($request->isSecure()) {
