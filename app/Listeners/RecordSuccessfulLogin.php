@@ -8,11 +8,11 @@ use App\Models\LoginHistory;
 
 class RecordSuccessfulLogin
 {
-    public function handle(Login $event)
+   public function handle(Login $event)
 {
     $user = $event->user;
 
-    // Only log App\Models\User, not Admins
+    // Only log normal users
     if ($user instanceof \App\Models\User) {
         LoginHistory::create([
             'user_id'     => $user->id,
