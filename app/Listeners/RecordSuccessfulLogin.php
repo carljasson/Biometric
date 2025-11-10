@@ -9,13 +9,14 @@ use App\Models\LoginHistory;
 class RecordSuccessfulLogin
 {
     public function handle(Login $event)
-    {
-        $user = $event->user;
+{
+    $user = $event->user;
 
-        // store a record (truncate user-agent to avoid overly long strings)
+    // Only log App\Models\User, not Admins
+    if ($user instanceof \App\Models\User) {
         LoginHistory::create([
-            'user_id'     => $user ? $user->id : null,
-'method' => 'password', // since you log in by email/password
+            'user_id'     => $user->id,
+            'method'      => 'password',
             'device'      => substr(Request::header('User-Agent') ?? 'unknown', 0, 255),
             'ip'          => Request::ip(),
             'location'    => null,
@@ -23,4 +24,6 @@ class RecordSuccessfulLogin
             'logged_in_at'=> now(),
         ]);
     }
+}
+
 }
