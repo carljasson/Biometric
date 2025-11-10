@@ -414,4 +414,13 @@ public function addResponder()
     return view('admin.addresponder');  // Blade file: resources/views/addresponder.blade.php
 }
 
+public function loginHistory()
+{
+    // Example: fetch login history from a table (adjust to your DB structure)
+    $logins = \DB::table('admin_login_history')->orderBy('created_at', 'desc')->get();
+
+    // return view with data
+    return view('admin.login-history', compact('logins'));
+}
+
 }
