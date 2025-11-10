@@ -1,22 +1,22 @@
-<?php 
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FingerprintController;
 use App\Http\Controllers\FingerprintApiController;
 use App\Http\Controllers\Api\BiometricRegistrationController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Models\User;
 
+// ===== Fingerprint API Routes =====
 
-
-
-
-// api.php
+// Save fingerprint data
 Route::post('/save-fingerprint', [FingerprintController::class, 'store']);
+
+// Match fingerprint for verification (used during login/scan)
 Route::post('/match-fingerprint', [FingerprintController::class, 'matchFingerprint']);
 
-
-
-// routes/api.php
+// Alternate fingerprint match route (optional)
 Route::post('/fingerprint-match', [FingerprintController::class, 'match']);
 
-Route::post('/identify-fingerprint', [FingerprintController::class, 'identifyFingerprint']);
+// ✅ Add this — used by your C# app for fingerprint identification
+Route::post('/identify-fingerprint', [FingerprintController::class, 'identify']);
