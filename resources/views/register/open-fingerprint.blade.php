@@ -32,10 +32,11 @@
     <br><br>
 
     <!-- Next Button (goes to step3) -->
-    <a href="/register/step3/{{ $userId }}"
-       style="display:inline-block; padding:10px 20px; background:#0d6efd; color:white; border-radius:8px; text-decoration:none;">
-       Next
-    </a>
+    <a href="{{ route('register.step3') }}"
+   style="display:inline-block; padding:10px 20px; background:#0d6efd; color:white; border-radius:8px; text-decoration:none;">
+   Next
+</a>
+
 
 </body>
 </html>
