@@ -95,28 +95,13 @@ private function fingerprintsMatch($template1, $template2)
 
 public function allFingerprints()
 {
-    $users = User::whereNotNull('fingerprint_template')->get([
-        'id',
-        'firstname',
-        'middlename',
-        'lastname',
-        'age',
-        'birthday',
-        'contact_name',
-        'contact_number',
-        'address',
-        'status',
-        'phone',
-        'gender',
-        'fingerprint_template'
-    ]);
+    $users = User::whereNotNull('fingerprint_template')->get();
 
-    // Replace nulls with empty strings
-    $usersSafe = $users->map(function($u) {
+    $usersSafe = $users->map(function ($u) {
         return [
             'id' => $u->id,
             'firstname' => $u->firstname ?? '',
-            'middlename' => $u->middlename ?? '', // ✅ empty if null
+            'middlename' => $u->middlename ?? '',
             'lastname' => $u->lastname ?? '',
             'age' => $u->age ?? '',
             'birthday' => $u->birthday ?? '',
@@ -126,7 +111,7 @@ public function allFingerprints()
             'status' => $u->status ?? '',
             'phone' => $u->phone ?? '',
             'gender' => $u->gender ?? '',
-            'fingerprint_template' => $u->fingerprint_template ?? '',
+            'fingerprint_template' => $u->fingerprint_template ? base64_encode($u->fingerprint_template) : '',
         ];
     });
 
