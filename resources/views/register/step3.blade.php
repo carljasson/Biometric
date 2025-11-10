@@ -123,7 +123,7 @@
     let faceCaptured = false;
 
     async function loadModels() {
-        await faceapi.nets.tinyFaceDetector.loadFromUri('/models/tiny_face_detector');
+await faceapi.nets.tinyFaceDetector.loadFromUri('/models/tiny_face_detector/tiny_face_detector');
         await faceapi.nets.faceRecognitionNet.loadFromUri('/models/face_recognition');
         await faceapi.nets.faceLandmark68Net.loadFromUri('/models/face_landmark_68');
         console.log("✅ FaceAPI models loaded");
