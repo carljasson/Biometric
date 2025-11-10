@@ -92,14 +92,14 @@
 <div class="overlay"></div>
 
 <div class="controls">
-    <form method="POST" action="{{ url('/register/step3') }}" id="faceForm">
+    <form method="POST" action="{{ url('/register/step3/'.$user->id) }}" id="faceForm">
         @csrf
         <input type="hidden" name="face_descriptor" id="face_descriptor">
         <input type="hidden" name="face_image" id="face_image">
         <button type="button" onclick="toggleCamera()">🔄 Switch Camera</button>
     </form>
 
-    <form method="POST" action="{{ url('/register/step3') }}">
+    <form method="POST" action="{{ url('/register/step3/'.$user->id) }}">
         @csrf
         <button type="submit" name="action" value="skip" style="background: #999;">Skip Face Scan</button>
     </form>

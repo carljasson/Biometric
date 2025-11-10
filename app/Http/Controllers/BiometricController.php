@@ -200,36 +200,39 @@ public function step2(Request $request)
 
 
 
-// GET /register/step3/{user}
-public function Step3(User $user)
-{
-    return view('register.step3', compact('user'));
-}
-
 // POST /register/step3/{user}
 public function Step3Submit(Request $request, User $user)
 {
-    // If user clicked skip
+    // Skip face scan
     if ($request->input('action') === 'skip') {
         return redirect('/welcome')->with('info', 'You skipped the face scan.');
     }
 
-    // Validate face scan data
+    // Validate inputs
     if (!$request->face_descriptor || !$request->face_image) {
         return redirect()->back()->with('error', 'Face scan failed. Please try again.');
     }
 
     $descriptor = json_decode($request->face_descriptor, true);
-
-    if (is_array($descriptor) && count($descriptor) === 128) {
-        $user->face_descriptor = json_encode($descriptor);
-        $user->face_image = $request->face_image;
-        $user->save();
-
-        return redirect('/welcome')->with('success', 'Face scan saved successfully!');
+    if (!is_array($descriptor) || count($descriptor) !== 128) {
+        return redirect()->back()->with('error', 'Invalid face data.');
     }
 
-    return redirect()->back()->with('error', 'Invalid face data.');
+    // Save descriptor
+    $user->face_descriptor = json_encode($descriptor);
+
+    // Save face image to storage
+    $imageData = $request->face_image;
+    $imageData = str_replace('data:image/jpeg;base64,', '', $imageData);
+    $imageData = str_replace(' ', '+', $imageData);
+
+    $imageName = 'faces/' . $user->id . '_' . time() . '.jpg';
+    Storage::disk('public')->put($imageName, base64_decode($imageData));
+    $user->face_image = $imageName;
+
+    $user->save();
+
+    return redirect('/welcome')->with('success', 'Face scan saved successfully!');
 }
 
 
