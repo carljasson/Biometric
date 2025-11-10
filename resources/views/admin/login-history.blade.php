@@ -1,49 +1,78 @@
-@extends('admin.layouts.app')
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 text-secondary">
+            <i class="bi bi-clock-history me-1"></i> Login History
+        </h6>
+        <small class="text-muted">
+            Showing latest {{ $entries->count() }} entries
+        </small>
+    </div>
 
-@section('content')
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Recent Logins</h5>
-            <span class="text-muted">Showing latest {{ $entries->count() }} entries</span>
-        </div>
-
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover mb-0">
-                    <thead class="table-dark">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center" style="width: 20%;">Date & Time</th>
+                        <th style="width: 25%;">User</th>
+                        <th style="width: 15%;">Method</th>
+                        <th style="width: 15%;">IP Address</th>
+                        <th style="width: 25%;">Device</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($entries as $e)
                         <tr>
-                            <th scope="col">Time</th>
-                            <th scope="col">User</th>
-                            <th scope="col">Method</th>
-                            <th scope="col">IP Address</th>
-                            <th scope="col">Device</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($entries as $entry)
-                        <tr>
-                            <td>{{ \Carbon\Carbon::parse($entry->logged_in_at)->format('Y-m-d H:i:s') }}</td>
+                            <td class="text-center">
+                                <span class="badge bg-light text-dark fw-normal">
+                                    {{ $e->logged_in_at->format('Y-m-d H:i:s') }}
+                                </span>
+                            </td>
                             <td>
-                                @if($entry->user)
-                                    {{ $entry->user->name }} <small class="text-muted">(#{{ $entry->user->id }})</small>
+                                @if($e->user)
+                                    <strong>{{ $e->user->name }}</strong>
+                                    <small class="text-muted d-block">ID: #{{ $e->user->id }}</small>
                                 @else
-                                    Unknown
+                                    <span class="text-muted fst-italic">Unknown</span>
                                 @endif
                             </td>
-                            <td>{{ ucfirst($entry->method) }}</td>
-                            <td>{{ $entry->ip }}</td>
-                            <td>{{ \Illuminate\Support\Str::limit($entry->device, 60) }}</td>
+                            <td>
+                                <span class="badge bg-primary-subtle text-primary">
+                                    {{ ucfirst($e->method) }}
+                                </span>
+                            </td>
+                            <td><code>{{ $e->ip }}</code></td>
+                            <td>{{ \Illuminate\Support\Str::limit($e->device, 80) }}</td>
                         </tr>
-                        @empty
+                    @empty
                         <tr>
-                            <td colspan="5" class="text-center text-muted">No login entries found.</td>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="bi bi-emoji-frown me-1"></i> No login history yet.
+                            </td>
                         </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-@endsection
+
+{{-- Optional custom CSS for better polish --}}
+<style>
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa !important;
+    transition: 0.2s ease-in-out;
+}
+
+.card-header {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.badge.bg-primary-subtle {
+    background-color: #e7f1ff;
+    color: #0d6efd;
+}
+</style>
+
+{{-- Include Bootstrap Icons if not yet in layout --}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
