@@ -200,30 +200,30 @@ public function step2(Request $request)
 
 
 
-public function Step3(Request $request)
+// GET /register/step3/{user}
+public function Step3(User $user)
 {
-    $user = User::find(session('user_id')) ?? auth()->user();
+    return view('register.step3', compact('user'));
+}
 
-    if (!$user) {
-        return redirect('/register/step1')->with('error', 'User session not found.');
-    }
-
+// POST /register/step3/{user}
+public function Step3Submit(Request $request, User $user)
+{
     // If user clicked skip
     if ($request->input('action') === 'skip') {
         return redirect('/welcome')->with('info', 'You skipped the face scan.');
     }
 
-    // Validate face scan data exists
+    // Validate face scan data
     if (!$request->face_descriptor || !$request->face_image) {
         return redirect()->back()->with('error', 'Face scan failed. Please try again.');
     }
 
-    // ✅ Save both descriptor + image
     $descriptor = json_decode($request->face_descriptor, true);
 
     if (is_array($descriptor) && count($descriptor) === 128) {
         $user->face_descriptor = json_encode($descriptor);
-        $user->face_image = $request->face_image; // ✅ Save Base64 image
+        $user->face_image = $request->face_image;
         $user->save();
 
         return redirect('/welcome')->with('success', 'Face scan saved successfully!');
@@ -231,6 +231,7 @@ public function Step3(Request $request)
 
     return redirect()->back()->with('error', 'Invalid face data.');
 }
+
 
 public function scanFingerprint(Request $request)
 {

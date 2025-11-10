@@ -232,8 +232,9 @@ Route::get('/register/step2', [BiometricController::class, 'step2'])->name('regi
 Route::post('/check-email', [BiometricController::class, 'checkEmail'])->name('check.email');
 Route::post('/check-phone', [BiometricController::class, 'checkPhone'])->name('check.phone');
 
-Route::get('/register/step3', [BiometricController::class,'step3'])->name('register.step3');
-Route::post('/register/step3', [BiometricController::class,'registerStep3'])->name('register.step3.post');
+// web.php
+Route::get('/register/step3/{user}', [BiometricController::class, 'Step3'])->name('register.step3');
+Route::post('/register/step3/{user}', [BiometricController::class, 'Step3Submit']); // for form POST
 
 Route::get('/responder/alerts/check', function () {
     $responder = Auth::guard('responder')->user();
