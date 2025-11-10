@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Mail;
 
 
 class BiometricController extends Controller
