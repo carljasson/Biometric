@@ -123,7 +123,7 @@
     let faceCaptured = false;
 
     async function loadModels() {
-await faceapi.nets.tinyFaceDetector.loadFromUri('/models/tiny_face_detector');
+        await faceapi.nets.tinyFaceDetector.loadFromUri('/models/tiny_face_detector');
         await faceapi.nets.faceRecognitionNet.loadFromUri('/models/face_recognition');
         await faceapi.nets.faceLandmark68Net.loadFromUri('/models/face_landmark_68');
         console.log("✅ FaceAPI models loaded");
@@ -156,6 +156,18 @@ await faceapi.nets.tinyFaceDetector.loadFromUri('/models/tiny_face_detector');
             .withFaceLandmarks()
             .withFaceDescriptor();
 
+        // ---- Debugging logs ----
+        console.log('Detection result:', result);
+        if (result) {
+            console.log(
+                'Face width:', result.detection.box.width,
+                'Face center X:', result.detection.box.x + result.detection.box.width / 2,
+                'Face center Y:', result.detection.box.y + result.detection.box.height / 2,
+                'Descriptor length:', result.descriptor.length
+            );
+        }
+        // ------------------------
+
         if (result && result.descriptor.length === 128) {
             const { box } = result.detection;
 
@@ -169,9 +181,9 @@ await faceapi.nets.tinyFaceDetector.loadFromUri('/models/tiny_face_detector');
                 Math.pow(centerY - faceCenterY, 2)
             );
 
-            const acceptableDistance = 80;
-            const minFaceWidth = 100;
-            const maxFaceWidth = 300;
+            const acceptableDistance = 150;
+            const minFaceWidth = 50;
+            const maxFaceWidth = 400;
 
             if (distanceFromCenter > acceptableDistance || box.width < minFaceWidth || box.width > maxFaceWidth) {
                 statusText.textContent = "⚠️ Center your face in the circle.";
