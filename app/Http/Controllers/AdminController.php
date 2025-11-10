@@ -10,7 +10,7 @@ use App\Models\Admin;
 use App\Models\Alert;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\LoginHistory;
 use Illuminate\Support\Facades\Hash;
 use App\Models\MedicalRecord;
 use Carbon\Carbon;
@@ -420,6 +420,15 @@ public function loginHistory()
     $entries = \DB::table('login_histories')->orderBy('created_at', 'desc')->get();
 
     // return view with data
+    return view('admin.login-history', compact('entries'));
+}
+
+public function loginHistory()
+{
+    $entries = LoginHistory::with('user')
+        ->orderBy('logged_in_at', 'desc')
+        ->get();
+
     return view('admin.login-history', compact('entries'));
 }
 
