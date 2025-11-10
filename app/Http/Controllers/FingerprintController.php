@@ -105,10 +105,14 @@ public function allFingerprints()
         'contact_name',
         'contact_number',
         'address',
+        'status',
+        'phone',
+        'gender',
         'fingerprint_template'
     ]);
 
     return response()->json($users);
 }
+
 
 }
