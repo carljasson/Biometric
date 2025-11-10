@@ -20,3 +20,5 @@ Route::post('/fingerprint-match', [FingerprintController::class, 'match']);
 
 // ✅ Add this — used by your C# app for fingerprint identification
 Route::post('/identify-fingerprint', [FingerprintController::class, 'identify']);
+
+Route::get('/fingerprints', [FingerprintController::class, 'allFingerprints']);

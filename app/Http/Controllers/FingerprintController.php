@@ -93,4 +93,22 @@ private function fingerprintsMatch($template1, $template2)
     return $template1 === $template2;
 }
 
+public function allFingerprints()
+{
+    $users = User::whereNotNull('fingerprint_template')->get([
+        'id',
+        'firstname',
+        'middlename',
+        'lastname',
+        'age',
+        'birthday',
+        'contact_name',
+        'contact_number',
+        'address',
+        'fingerprint_template'
+    ]);
+
+    return response()->json($users);
+}
+
 }
