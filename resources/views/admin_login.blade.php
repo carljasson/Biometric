@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Login - Biometric Medical Access</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -11,37 +11,47 @@
     <style>
         body {
             margin: 0;
-            min-height: 100vh;
-            font-family: 'Segoe UI', sans-serif;
-            background: #f8f9fa;
-        }
-
-        .login-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Left side with logo or branding */
-        .login-left {
-            flex: 1;
+            height: 100vh;
             background: linear-gradient(135deg, #3498db, #8e44ad);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+
+        .login-wrapper {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.15);
+            width: 90%;
+            max-width: 850px;
+            display: flex;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        /* Left side with logo */
+        .login-left {
+            background: linear-gradient(135deg, #8e44ad, #3498db);
             color: #fff;
+            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
             padding: 40px;
+            text-align: center;
         }
 
         .login-left img {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 20px;
+            width: 100px;
+            height: 100px;
+            margin-bottom: 15px;
         }
 
         .login-left h2 {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             margin-bottom: 10px;
         }
@@ -51,51 +61,71 @@
             opacity: 0.9;
         }
 
-        /* Right side with login form */
+        /* Right side with form */
         .login-right {
             flex: 1;
+            background: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #fff;
             padding: 40px;
         }
 
         .login-card {
             width: 100%;
-            max-width: 380px;
-            background: #fff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            max-width: 320px;
+        }
+
+        .login-card h4 {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #333;
         }
 
         .form-label { font-weight: 600; }
         .countdown { font-weight: bold; }
 
+        .btn-primary {
+            background: #3498db;
+            border: none;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
         @media (max-width: 768px) {
-            .login-container {
+            .login-wrapper {
                 flex-direction: column;
+                max-width: 400px;
             }
             .login-left {
-                padding: 50px 20px;
+                padding: 30px 20px;
             }
+        }
+
+        /* Disable text selection & zoom */
+        * {
+            touch-action: manipulation;
+            user-select: none;
         }
     </style>
 </head>
 <body>
-<div class="login-container">
+<div class="login-wrapper">
     <!-- LEFT SIDE -->
     <div class="login-left">
         <img src="{{ asset('images/logo.png') }}" alt="App Logo">
         <h2>Biometric Medical Access</h2>
-        <p>Secure and seamless access for healthcare administrators.</p>
+        <p>Secure Admin Portal for Authorized Personnel</p>
     </div>
 
     <!-- RIGHT SIDE -->
     <div class="login-right">
         <div class="login-card">
-            <h4 class="text-center mb-3">Admin Login</h4>
+            <h4>Admin Login</h4>
 
             @if(session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
@@ -150,7 +180,7 @@
         inputs.forEach(el => el.disabled = flag);
     }
 
-    function formatHHMMSS(totalSeconds) {
+    function formatMMSS(totalSeconds) {
         totalSeconds = Math.max(0, Math.floor(totalSeconds));
         const m = Math.floor(totalSeconds / 60).toString().padStart(2,'0');
         const s = (totalSeconds % 60).toString().padStart(2,'0');
@@ -160,7 +190,7 @@
     if (lockoutSeconds !== null) {
         disableForm(true);
         let remaining = Number(lockoutSeconds);
-        if (countdownEl) countdownEl.textContent = formatHHMMSS(remaining);
+        if (countdownEl) countdownEl.textContent = formatMMSS(remaining);
 
         const tid = setInterval(() => {
             remaining--;
@@ -169,7 +199,7 @@
                 if (countdownEl) countdownEl.textContent = '00:00';
                 disableForm(false);
             } else {
-                if (countdownEl) countdownEl.textContent = formatHHMMSS(remaining);
+                if (countdownEl) countdownEl.textContent = formatMMSS(remaining);
             }
         }, 1000);
     } else {
