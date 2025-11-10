@@ -198,7 +198,10 @@ public function step2(Request $request)
     return view('register.step2');
 }
 
-
+public function Step3(User $user)
+    {
+        return view('register.step3', compact('user'));
+    }
 
 // POST /register/step3/{user}
 public function Step3Submit(Request $request, User $user)
