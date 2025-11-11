@@ -11,64 +11,45 @@
         <input type="text" class="form-control me-2" id="searchUsers" placeholder="Search users...">
     </div>
 
-    <!-- Users Table -->
-    <div class="overflow-auto">
-        <table class="table table-bordered table-hover align-middle" style="table-layout: auto; min-width: 100%;">
-            <thead class="table-light text-center">
-                <tr>
-                    <th colspan="7" class="bg-primary text-white">🧑 Personal Info</th>
-                    <th colspan="2" class="bg-success text-white">📞 Contact Info</th>
-                    <th colspan="2" class="bg-info text-white">👨‍👩‍👧 Emergency Contact</th>
-                    <th colspan="2" class="bg-warning text-dark">🔐 Biometric Data</th>
-                </tr>
-                <tr class="bg-secondary text-white">
-                    <th>Firstname</th>
-                    <th>Middlename</th>
-                    <th>Lastname</th>
-                    <th>Email</th>
-                    <th>Password</th>
-                    <th>Birthday</th>
-                    <th>Age</th>
-                    <th>Phone</th>
-                    <th>Address</th>
-                    <th>Contact Name</th>
-                    <th>Contact Number</th>
-                    <th>Fingerprint</th>
-                    <th>Face Scan</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($users as $user)
-                <tr>
-                    <td style="white-space: normal; word-break: break-word;">{{ $user->firstname }}</td>
-                    <td style="white-space: normal; word-break: break-word;">{{ $user->middlename }}</td>
-                    <td style="white-space: normal; word-break: break-word;">{{ $user->lastname }}</td>
-                    <td style="white-space: normal; word-break: break-word;">{{ $user->email }}</td>
-                    <td><i class="fas fa-lock text-muted"></i> Hidden</td>
-                    <td>{{ $user->birthday }}</td>
-                    <td>{{ $user->age }}</td>
-                    <td style="white-space: normal; word-break: break-word;">{{ $user->phone }}</td>
-                    <td style="white-space: normal; word-break: break-word;">{{ $user->address }}</td>
-                    <td style="white-space: normal; word-break: break-word;">{{ $user->contact_name }}</td>
-                    <td style="white-space: normal; word-break: break-word;">{{ $user->contact_number }}</td>
-                    <td>
+    <!-- Users Cards -->
+    <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        @foreach($users as $user)
+        <div class="bg-white shadow rounded p-4 flex flex-col justify-between hover:shadow-lg transition">
+            <div>
+                <h5 class="font-semibold text-lg">{{ $user->firstname }} {{ $user->lastname }}</h5>
+                <p class="text-sm text-gray-600"><strong>Email:</strong> {{ $user->email }}</p>
+                <p class="text-sm text-gray-600"><strong>Phone:</strong> {{ $user->phone }}</p>
+                <p class="text-sm text-gray-600"><strong>Age:</strong> {{ $user->age }}</p>
+                <p class="text-sm text-gray-600"><strong>Birthday:</strong> {{ $user->birthday }}</p>
+
+                <div class="mt-2">
+                    <p class="text-sm font-semibold text-gray-700">Contact Info</p>
+                    <p class="text-sm text-gray-600"><strong>Address:</strong> {{ $user->address }}</p>
+                    <p class="text-sm text-gray-600"><strong>Emergency:</strong> {{ $user->contact_name }} ({{ $user->contact_number }})</p>
+                </div>
+
+                <div class="mt-2">
+                    <p class="text-sm font-semibold text-gray-700">Biometric Data</p>
+                    <p class="text-sm">
+                        Fingerprint: 
                         @if($user->fingerprint_data)
                             <span class="badge bg-success">Captured</span>
                         @else
                             <span class="badge bg-secondary">None</span>
                         @endif
-                    </td>
-                    <td>
+                    </p>
+                    <p class="text-sm">
+                        Face Scan: 
                         @if($user->face_scan_path)
                             <a href="{{ asset('storage/' . $user->face_scan_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">View</a>
                         @else
                             <span class="badge bg-secondary">N/A</span>
                         @endif
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                    </p>
+                </div>
+            </div>
+        </div>
+        @endforeach
     </div>
 </div>
 @endsection
@@ -76,12 +57,14 @@
 @push('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    const cards = document.querySelectorAll('#mainContent > div.grid > div');
+
     document.getElementById('searchUsers').addEventListener('input', function () {
         const query = this.value.toLowerCase();
-        const rows = document.querySelectorAll('tbody tr');
-        rows.forEach(row => {
-            const text = row.innerText.toLowerCase();
-            row.style.display = text.includes(query) ? '' : 'none';
+
+        cards.forEach(card => {
+            const text = card.innerText.toLowerCase();
+            card.style.display = text.includes(query) ? 'flex' : 'none';
         });
     });
 });
