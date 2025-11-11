@@ -21,7 +21,9 @@
     ">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="no-referrer">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Disable zooming -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
           crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -46,7 +48,7 @@
             justify-content: center;
             align-items: center;
             padding: 15px;
-            overflow-y: auto; /* scroll if content is taller than viewport */
+            overflow-y: auto;
         }
 
         .landing-card {
@@ -58,6 +60,7 @@
             text-align: center;
             box-shadow: 0 0 20px rgba(0,0,0,0.6);
             backdrop-filter: blur(8px);
+            position: relative;
         }
 
         .landing-card .logo img {
@@ -118,7 +121,42 @@
             border-radius: 50px;
         }
 
-        /* Mobile adjustments */
+        /* Top-right menu */
+        .top-menu {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #ffd700;
+            z-index: 10;
+        }
+
+        .dropdown-menu-custom {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: rgba(0,0,0,0.9);
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            min-width: 160px;
+        }
+
+        .dropdown-menu-custom a {
+            padding: 10px 15px;
+            color: white;
+            text-decoration: none;
+            display: block;
+            transition: background 0.2s;
+        }
+
+        .dropdown-menu-custom a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #ffd700;
+        }
+
         @media(max-width: 576px) {
             .landing-card {
                 padding: 15px 10px;
@@ -148,6 +186,9 @@
                 font-size: 0.9rem;
                 padding: 6px 15px;
             }
+            .top-menu {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
@@ -155,11 +196,21 @@
 <body>
     <div class="overlay">
         <div class="landing-card">
+            <!-- Top-right menu -->
+            <div class="top-menu" id="menuToggle">
+                <i class="fas fa-bars"></i>
+                <div class="dropdown-menu-custom" id="dropdownMenu">
+                    <a href="{{ route('responder.login') }}">Login as Responder</a>
+                    <a href="{{ route('user.login') }}">Login as User</a>
+                    <a href="#" id="registerLink">Register</a>
+                </div>
+            </div>
+
             <div class="logo">
                 <img src="{{ asset('images/logo.png') }}" alt="Biometric Medical Access Logo" loading="lazy" decoding="async">
             </div>
 
-            <h1>Welcome to Biometric Medical Access</h1>
+            <h1>Biometric Medical Access</h1>
             <p>
                 Instantly alert emergency responders in <strong>Bantayan</strong>, <strong>Santa Fe</strong>, and <strong>Madridejos</strong>.
             </p>
@@ -208,7 +259,46 @@
             referrerpolicy="no-referrer"></script>
 
     <script nonce="{{ $cspNonce }}">
+        // Prevent framing
         if (window.top !== window.self) window.top.location = window.self.location;
+
+        // Disable pinch zoom on mobile
+        document.addEventListener('touchmove', function (event) {
+            if (event.scale !== undefined && event.scale !== 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
+        // Disable Ctrl + +/- and Ctrl + Mousewheel zoom on desktop
+        window.addEventListener('wheel', function (e) {
+            if (e.ctrlKey) e.preventDefault();
+        }, { passive: false });
+
+        window.addEventListener('keydown', function (e) {
+            if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
+                e.preventDefault();
+            }
+        });
+
+        // Toggle dropdown menu
+        const menuToggle = document.getElementById('menuToggle');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.style.display = dropdownMenu.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function() {
+            dropdownMenu.style.display = 'none';
+        });
+
+        // Register popup
+        document.getElementById('registerLink').addEventListener('click', function(e){
+            e.preventDefault();
+            alert('You cannot register here. Please register at MDRRMO.');
+        });
     </script>
 </body>
 </html>
