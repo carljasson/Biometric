@@ -13,7 +13,7 @@
         object-src 'none';
         frame-ancestors 'none';
         upgrade-insecure-requests;
-        script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'nonce-{{ $cspNonce }}';
+        script-src 'self' https://cdn.jsdelivr.net https https://cdnjs.cloudflare.com 'nonce-{{ $cspNonce }}';
         style-src  'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'nonce-{{ $cspNonce }}';
         img-src 'self' data:;
         font-src 'self' https://cdnjs.cloudflare.com;
@@ -114,36 +114,32 @@
             font-size: 0.85rem;
         }
 
-        .btn-home {
+        /* Login dropdown button */
+        .btn-login-dropdown {
             margin-top: 20px;
             padding: 8px 20px;
             font-size: 0.95rem;
             border-radius: 50px;
-        }
-
-        /* Top-right menu */
-        .top-menu {
-            position: fixed; /* fixed so it's always visible */
-            top: 15px;
-            right: 20px;
-            font-size: 1.8rem;
+            background-color: #007bff;
+            color: white;
             cursor: pointer;
-            color: #ffd700;
-            text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
-            z-index: 9999;
+            position: relative;
+            border: none;
         }
 
         .dropdown-menu-custom {
             position: absolute;
-            top: 45px;
-            right: 0;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
             background-color: rgba(0,0,0,0.95);
             border-radius: 12px;
             overflow: hidden;
             display: none;
             flex-direction: column;
-            min-width: 180px;
+            min-width: 200px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 1000;
         }
 
         .dropdown-menu-custom a {
@@ -189,12 +185,9 @@
             .feature-item p {
                 font-size: 0.8rem;
             }
-            .btn-home {
+            .btn-login-dropdown {
                 font-size: 0.9rem;
                 padding: 6px 15px;
-            }
-            .top-menu {
-                font-size: 1.5rem;
             }
         }
     </style>
@@ -202,15 +195,6 @@
 
 <body>
     <div class="overlay">
-        <!-- Top menu OUTSIDE landing-card -->
-        <div class="top-menu" id="menuToggle">
-            <i class="fas fa-bars"></i>
-            <div class="dropdown-menu-custom" id="dropdownMenu">
-                <a href="{{ route('responder.login') }}" style="background-color:#007bff;">Login as Responder</a>
-                <a href="{{ route('login') }}" style="background-color:#28a745;">Login as User</a>
-                <a href="#" id="registerLink" style="background-color:#dc3545;">Register</a>
-            </div>
-        </div>
 
         <!-- Landing card -->
         <div class="landing-card">
@@ -246,7 +230,14 @@
                 </div>
             </div>
 
-            <a href="/" class="btn btn-primary btn-home"><i class="fas fa-home"></i> Go to Dashboard</a>
+            <!-- Login dropdown button -->
+            <button class="btn-login-dropdown" id="loginDropdownBtn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            <div class="dropdown-menu-custom" id="loginDropdown">
+                <a href="{{ route('login') }}" style="background-color:#28a745;">Login as User</a>
+                <a href="{{ route('responder.login') }}" style="background-color:#007bff;">Login as Responder</a>
+            </div>
         </div>
     </div>
 
@@ -288,24 +279,18 @@
             }
         });
 
-        // Toggle dropdown menu
-        const menuToggle = document.getElementById('menuToggle');
-        const dropdownMenu = document.getElementById('dropdownMenu');
+        // Toggle login dropdown
+        const loginBtn = document.getElementById('loginDropdownBtn');
+        const loginDropdown = document.getElementById('loginDropdown');
 
-        menuToggle.addEventListener('click', function(e) {
+        loginBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            dropdownMenu.style.display = dropdownMenu.style.display === 'flex' ? 'none' : 'flex';
+            loginDropdown.style.display = loginDropdown.style.display === 'flex' ? 'none' : 'flex';
         });
 
         // Close dropdown when clicking outside
         document.addEventListener('click', function() {
-            dropdownMenu.style.display = 'none';
-        });
-
-        // Register popup
-        document.getElementById('registerLink').addEventListener('click', function(e){
-            e.preventDefault();
-            alert('You cannot register here. Please register at MDRRMO.');
+            loginDropdown.style.display = 'none';
         });
     </script>
 </body>
