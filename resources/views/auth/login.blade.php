@@ -3,7 +3,7 @@
 <head>
     <title>Login - Biometric Medical Access</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
     @php $cspNonce = bin2hex(random_bytes(16)); @endphp
 
@@ -46,6 +46,12 @@
             align-items: center;
             justify-content: center;
         }
+html, body {
+    touch-action: manipulation;
+}
+input, select, textarea {
+    font-size: 16px;
+}
 
         .login-container {
             display: flex;
