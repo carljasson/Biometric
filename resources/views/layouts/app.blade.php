@@ -98,7 +98,7 @@
         </main>
     </div>
      <!-- ✅ Global Broadcast Modal -->
-        @include('admin.announcements')
+        @include('broadcast-modal')
 </div>
 
 </body>
