@@ -1,33 +1,31 @@
 @extends('layouts.patients')
 
 @section('content')
-    <style>
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: #fff;
-            border-top: 1px solid #ddd;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            z-index: 1000;
-        }
-        .bottom-nav a {
-            color: #333;
-            text-align: center;
-            font-size: 14px;
-            text-decoration: none;
-        }
-        .bottom-nav a i {
-            font-size: 20px;
-            display: block;
-        }
-    </style>
+<style>
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: #fff;
+        border-top: 1px solid #ddd;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        z-index: 1000;
+    }
+    .bottom-nav a {
+        color: #333;
+        text-align: center;
+        font-size: 14px;
+        text-decoration: none;
+    }
+    .bottom-nav a i {
+        font-size: 20px;
+        display: block;
+    }
+</style>
+
 <div class="container mt-4">
-
-    
-
     <h2 class="text-center text-danger mb-4">🚨 Emergency Contacts</h2>
 
     <!-- Emergency Alert Button (Triggers Modal) -->
@@ -37,18 +35,18 @@
         </button>
     </div>
 
-<!-- ✅ Bottom Navigation (same function as in dashboard.blade.php) -->
-<div class="bottom-nav">
-    <a href="{{ route('dashboard') }}">
-        <i class="fas fa-home"></i><br>Home
-    </a>
-    <a href="{{ route('emergency') }}">
-        <i class="fas fa-phone-alt text-danger"></i><br>Emergency
-    </a>
-    <a href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
-        <i class="fas fa-user-circle"></i><br>My Profile
-    </a>
-</div>
+    <!-- ✅ Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="{{ route('dashboard') }}">
+            <i class="fas fa-home"></i><br>Home
+        </a>
+        <a href="{{ route('emergency') }}">
+            <i class="fas fa-phone-alt text-danger"></i><br>Emergency
+        </a>
+        <a href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+            <i class="fas fa-user-circle"></i><br>My Profile
+        </a>
+    </div>
 
     <!-- Emergency Modal -->
     <div class="modal fade" id="emergencyModal" tabindex="-1" aria-labelledby="emergencyModalLabel" aria-hidden="true">
@@ -74,15 +72,21 @@
                             </select>
                         </div>
 
-                        <!-- Camera Preview & Capture -->
+                        <!-- 📸 Camera Preview & Capture -->
                         <div class="mb-3">
                             <label class="form-label">📸 Capture Photo</label>
-                            <div class="text-center">
+                            <div class="text-center position-relative">
                                 <video id="camera" autoplay playsinline width="100%" class="rounded border"></video>
+                                <span id="liveIndicator" class="badge bg-danger position-absolute top-0 start-0 m-2" style="display:none;">● LIVE</span>
                                 <canvas id="snapshot" style="display:none;"></canvas>
                                 <input type="hidden" name="photo" id="photo">
-                                <button type="button" class="btn btn-secondary mt-2" onclick="takeSnapshot()">Capture</button>
+
+                                <div class="d-flex justify-content-center gap-2 mt-2">
+                                    <button type="button" class="btn btn-secondary" onclick="takeSnapshot()">📷 Capture</button>
+                                    <button type="button" class="btn btn-dark" onclick="switchCamera()">🔄 Switch Camera</button>
+                                </div>
                             </div>
+
                             <div id="previewContainer" class="text-center mt-2" style="display:none;">
                                 <img id="preview" class="img-fluid rounded border" />
                             </div>
@@ -111,7 +115,6 @@
             </form>
         </div>
     </div>
-
 </div>
 
 <!-- SweetAlert + Bootstrap JS -->
@@ -158,12 +161,21 @@
     let canvas = document.getElementById('snapshot');
     let preview = document.getElementById('preview');
     let previewContainer = document.getElementById('previewContainer');
+    let liveIndicator = document.getElementById('liveIndicator');
     let stream = null;
+    let useFrontCamera = true; // default front
 
     async function startCamera() {
         try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            if (stream) stopCamera();
+
+            const constraints = {
+                video: { facingMode: useFrontCamera ? "user" : "environment" }
+            };
+
+            stream = await navigator.mediaDevices.getUserMedia(constraints);
             video.srcObject = stream;
+            liveIndicator.style.display = "inline"; // show LIVE
         } catch (err) {
             Swal.fire('Camera Error', 'Unable to access your camera.', 'error');
         }
@@ -172,7 +184,9 @@
     function stopCamera() {
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
+            stream = null;
         }
+        liveIndicator.style.display = "none"; // hide LIVE
     }
 
     function takeSnapshot() {
@@ -188,9 +202,48 @@
         previewContainer.style.display = "block";
     }
 
+    function switchCamera() {
+        useFrontCamera = !useFrontCamera;
+        startCamera();
+    }
+
+    // ===== Check & Request Permissions =====
+    async function requestPermissions() {
+        // Location Permission
+        try {
+            const locationStatus = await navigator.permissions.query({ name: 'geolocation' });
+            if (locationStatus.state === 'denied') {
+                Swal.fire('Location Permission Denied', 'Please allow location access in your browser settings.', 'warning');
+            } else if (locationStatus.state === 'prompt') {
+                navigator.geolocation.getCurrentPosition(
+                    () => {}, 
+                    () => { 
+                        Swal.fire('Location Required', 'You need to allow location access to send alerts.', 'warning');
+                    }
+                );
+            }
+        } catch (err) { console.warn('Geolocation permission API not supported', err); }
+
+        // Camera Permission
+        try {
+            const cameraStatus = await navigator.permissions.query({ name: 'camera' });
+            if (cameraStatus.state === 'denied') {
+                Swal.fire('Camera Permission Denied', 'Please allow camera access in your browser settings.', 'warning');
+            } else if (cameraStatus.state === 'prompt') {
+                try {
+                    const testStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    testStream.getTracks().forEach(track => track.stop());
+                } catch {
+                    Swal.fire('Camera Required', 'You need to allow camera access to send alerts.', 'warning');
+                }
+            }
+        } catch (err) { console.warn('Camera permission API not supported', err); }
+    }
+
     // ===== Modal Events =====
     const emergencyModal = document.getElementById('emergencyModal');
-    emergencyModal.addEventListener('shown.bs.modal', function () {
+    emergencyModal.addEventListener('shown.bs.modal', async function () {
+        await requestPermissions(); // Request camera & location
         getUserLocation();
         startCamera();
     });
@@ -225,13 +278,13 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 const formData = new FormData(this);
-formData.append('destination', destination); // ✅ manually include
+                formData.append('destination', destination);
 
                 fetch("{{ route('patient.sendAlert') }}", {
                     method: "POST",
                     body: formData,
                     headers: {
-                        "X-CSRF-TOKEN": document.querySelector('input[name=\"_token\"]').value
+                        "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
                     }
                 })
                 .then(res => res.json())
@@ -256,4 +309,5 @@ formData.append('destination', destination); // ✅ manually include
         });
     });
 </script>
+
 @endsection
