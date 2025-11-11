@@ -1,10 +1,59 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="main-content flex-grow-1 p-4" style="margin-left: 16rem; min-height: 100vh; background-color: #f8f9fa;">
+<style>
+/* Make the main area adjust dynamically beside the sidebar */
+#mainContent {
+    transition: all 0.3s ease;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    padding: 20px;
+}
 
-    <div class="card shadow-sm border-0 w-100">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3 px-4 border-bottom">
+/* Full-width responsive card */
+.card {
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    border: none;
+}
+
+/* Table adjustments */
+.table {
+    width: 100%;
+    margin: 0;
+}
+
+.table th, .table td {
+    vertical-align: middle !important;
+}
+
+.table thead {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 1;
+}
+
+/* Scrollable table */
+.table-responsive {
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+}
+
+/* Hover and badge styles */
+.table-hover tbody tr:hover {
+    background-color: #f1f3f5;
+}
+.badge.bg-primary-subtle {
+    background-color: #e7f1ff !important;
+    color: #0d6efd !important;
+    font-size: 0.8rem;
+}
+</style>
+
+<div id="mainContent">
+    <div class="card">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0 text-secondary fw-semibold">
                 <i class="bi bi-clock-history me-2"></i> Login History
             </h5>
@@ -14,24 +63,22 @@
         </div>
 
         <div class="card-body p-0">
-            <div class="table-responsive" style="max-height: calc(100vh - 220px); overflow-y: auto;">
+            <div class="table-responsive">
                 <table class="table table-striped table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="text-center" style="width: 18%;">Date & Time</th>
-                            <th style="width: 25%;">User</th>
-                            <th style="width: 15%;">Method</th>
-                            <th style="width: 15%;">IP Address</th>
-                            <th style="width: 27%;">Device</th>
+                            <th class="text-center">Date & Time</th>
+                            <th>User</th>
+                            <th>Method</th>
+                            <th>IP Address</th>
+                            <th>Device</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($entries as $e)
                             <tr>
                                 <td class="text-center small">
-                                    <span class="badge bg-light text-dark fw-normal">
-                                        {{ $e->logged_in_at->format('Y-m-d H:i:s') }}
-                                    </span>
+                                    {{ $e->logged_in_at->format('Y-m-d H:i:s') }}
                                 </td>
                                 <td>
                                     @if($e->user)
@@ -42,12 +89,12 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <span class="badge bg-primary-subtle text-primary px-2 py-1 rounded">
+                                    <span class="badge bg-primary-subtle px-2 py-1 rounded">
                                         {{ ucfirst($e->method) }}
                                     </span>
                                 </td>
                                 <td><code class="small">{{ $e->ip }}</code></td>
-                                <td class="text-truncate" title="{{ $e->device }}" style="max-width: 250px;">
+                                <td class="text-truncate" style="max-width: 300px;" title="{{ $e->device }}">
                                     {{ $e->device }}
                                 </td>
                             </tr>
@@ -64,35 +111,4 @@
         </div>
     </div>
 </div>
-
-<style>
-body {
-    overflow-x: hidden;
-}
-
-.main-content {
-    transition: margin-left 0.3s ease;
-}
-
-/* Table tweaks */
-.table-hover tbody tr:hover {
-    background-color: #f1f3f5 !important;
-}
-
-.badge.bg-primary-subtle {
-    background-color: #e7f1ff !important;
-    color: #0d6efd !important;
-    font-size: 0.8rem;
-}
-
-/* Scrollbar styling */
-.table-responsive::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-.table-responsive::-webkit-scrollbar-thumb {
-    background-color: #c1c1c1;
-    border-radius: 10px;
-}
-</style>
 @endsection
