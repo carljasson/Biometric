@@ -46,12 +46,12 @@
             align-items: center;
             justify-content: center;
         }
-html, body {
-    touch-action: manipulation;
-}
-input, select, textarea {
-    font-size: 16px;
-}
+        html, body {
+            touch-action: manipulation;
+        }
+        input, select, textarea {
+            font-size: 16px;
+        }
 
         .login-container {
             display: flex;
@@ -62,8 +62,9 @@ input, select, textarea {
             width: 90%;
             border-radius: 12px;
             overflow: hidden;
-            border: 2px solid rgba(255,255,255,0.6); /* Outer border */
+            border: 2px solid rgba(255,255,255,0.6);
             animation: fadeIn 0.6s ease-in-out;
+            position: relative;
         }
 
         .login-left, .login-right {
@@ -75,7 +76,7 @@ input, select, textarea {
             display: flex;
             align-items: center;
             justify-content: center;
-            border-right: 2px solid rgba(255,255,255,0.6); /* Center border */
+            border-right: 2px solid rgba(255,255,255,0.6);
             background-color: rgba(0,0,0,0.1);
         }
 
@@ -88,6 +89,29 @@ input, select, textarea {
             display: flex;
             flex-direction: column;
             justify-content: center;
+            position: relative;
+        }
+
+        /* X button */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            background-color: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 32px;
+            font-weight: bold;
+            font-size: 20px;
+            color: #333;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .close-btn:hover {
+            background-color: rgba(255,0,0,0.8);
+            color: #fff;
         }
 
         .login-right h4 {
@@ -120,6 +144,9 @@ input, select, textarea {
 
     <!-- Right side: Login form -->
     <div class="login-right">
+        <!-- X button -->
+        <a href="/" class="close-btn">×</a>
+
         <h4 class="text-center">🔒 Login to Access</h4>
 
         @if(session('success'))
@@ -215,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
 if (window.top !== window.self) window.top.location = window.self.location;
 </script>
 
-{{-- Lockout handler: disable inputs + SweetAlert countdown --}}
+{{-- Lockout handler --}}
 @if(session('lockout'))
 <script nonce="{{ $cspNonce }}">
 document.addEventListener("DOMContentLoaded", () => {
