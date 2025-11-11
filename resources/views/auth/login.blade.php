@@ -22,6 +22,11 @@
         connect-src 'self' https://www.google.com https://www.gstatic.com https://recaptcha.net;
     ">
 
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Referrer-Policy" content="no-referrer">
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
+
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
           crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -34,7 +39,7 @@
         body {
             background: url('{{ asset('images/background.png') }}') no-repeat center center fixed;
             background-size: cover;
-            background-color: rgba(0,0,0,0.6);
+            background-color: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(2px);
             min-height: 100vh;
             display: flex;
@@ -51,6 +56,7 @@
             width: 90%;
             border-radius: 12px;
             overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.6); /* Outer border */
             animation: fadeIn 0.6s ease-in-out;
         }
 
@@ -63,12 +69,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            border-right: 2px solid rgba(255,255,255,0.6); /* Center border */
             background-color: rgba(0,0,0,0.1);
         }
 
         .login-left img {
-            max-width: 100%;
-            max-height: 250px;
+            max-width: 200px;
+            height: auto;
+        }
+
+        .login-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .login-right h4 {
@@ -79,7 +92,7 @@
 
         .form-label { font-weight: 500; }
         .alert { font-size: 0.9rem; }
-        .extra-links { font-size: 0.95rem; }
+        .extra-links { font-size: 0.95rem; margin-top: 15px; }
 
         /* Dimming effect for disabled form */
         .disabled-form {
@@ -87,24 +100,13 @@
             pointer-events: none;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 768px) {
-            .login-container {
-                flex-direction: column;
-            }
-            .login-left, .login-right {
-                padding: 30px;
-            }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="login-container">
+
     <!-- Left side: Logo -->
     <div class="login-left">
         <img src="{{ asset('images/logo.png') }}" alt="Logo">
@@ -135,6 +137,7 @@
                 <input type="password" name="password" class="form-control" required autocomplete="current-password">
             </div>
 
+            {{-- Google reCAPTCHA v3 --}}
             <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
             @error('g-recaptcha-response')
                 <div class="alert alert-danger mt-2">{{ $message }}</div>
@@ -143,15 +146,17 @@
             <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>
 
-        <div class="mt-3 text-center extra-links">
+        <div class="text-center extra-links">
             <a href="{{ route('password.request') }}">Forgot password?</a>
         </div>
     </div>
+
 </div>
 
-<!-- Modals -->
 <div class="modal fade" id="registerModal"><div class="modal-dialog"><div class="modal-content p-3">🚫 Registration is only available **at the MDRRMO office**</div></div></div>
 <div class="modal fade" id="tipsModal"><div class="modal-dialog"><div class="modal-content p-3">🚑 This system alerts the nearest responders & provides victim info!</div></div></div>
+
+<!-- PIN Modal -->
 <div class="modal fade" id="pinModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content p-4">
@@ -188,6 +193,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
 });
 </script>
 
+<!-- Show PIN modal if session exists -->
 <script nonce="{{ $cspNonce }}">
 document.addEventListener('DOMContentLoaded', () => {
     @if(session('showPinModal'))
@@ -203,6 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
 if (window.top !== window.self) window.top.location = window.self.location;
 </script>
 
+{{-- Lockout handler: disable inputs + SweetAlert countdown --}}
 @if(session('lockout'))
 <script nonce="{{ $cspNonce }}">
 document.addEventListener("DOMContentLoaded", () => {
