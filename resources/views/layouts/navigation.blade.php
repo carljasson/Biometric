@@ -73,16 +73,6 @@
                 </button>
             </div>
 
-            <h4 class="text-lg font-semibold">Biometric Emergency Access</h4>
-
-            <!-- Notification Bell -->
-            <div class="relative">
-                <button id="notificationBell" class="relative text-gray-600 hover:text-gray-800">
-                    <i class="bi bi-bell-fill text-2xl"></i>
-                    <span id="alertCount" class="absolute top-0 start-100 translate-middle badge rounded-full bg-red-500 hidden"></span>
-                </button>
-            </div>
-        </header>
 
         <!-- Page Content -->
         <main class="flex-1 overflow-y-auto p-4">
