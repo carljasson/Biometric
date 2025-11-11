@@ -70,10 +70,6 @@
                                 <path :class="{ 'hidden': !sidebarOpen, 'inline-flex': sidebarOpen }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
-
-                        <a href="{{ route('dashboard') }}" class="flex items-center">
-                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                        </a>
                     </div>
 
                     <!-- Right: Notification & Profile -->
@@ -98,19 +94,6 @@
                                             </svg>
                                         </div>
                                     </button>
-                                </x-slot>
-
-                                <x-slot name="content">
-                                    <x-dropdown-link :href="route('profile.edit')">
-                                        {{ __('Profile') }}
-                                    </x-dropdown-link>
-
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
-                                            {{ __('Log Out') }}
-                                        </x-dropdown-link>
-                                    </form>
                                 </x-slot>
                             </x-dropdown>
                         </div>
