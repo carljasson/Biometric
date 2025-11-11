@@ -81,12 +81,12 @@
     <!-- Main content -->
     <div class="flex-1 flex flex-col transition-all duration-300" :class="sidebarOpen ? 'ml-64' : 'ml-0 sm:ml-64'">
 
-        <!-- Header aligned next to sidebar -->
-        <div class="header fixed top-0 z-10 bg-white shadow-sm p-3 d-flex justify-content-between align-items-center w-full transition-all"
-             :style="sidebarOpen ? 'margin-left:16rem; width:calc(100% - 16rem);' : 'margin-left:0; width:100%;'">
+        <!-- Header -->
+        <div class="header fixed top-0 left-0 right-0 z-10 bg-white shadow-sm p-3 d-flex justify-content-between align-items-center"
+             :style="sidebarOpen ? 'margin-left:16rem;' : 'margin-left:0;'">
             <h4 class="m-0">Biometric Emergency Access</h4>
 
-            <!-- Notification Bell (same as dashboard) -->
+            <!-- 🔔 Notification Bell -->
             <div class="dropdown me-3">
                 <button class="btn btn-light position-relative" id="notificationBell" data-bs-toggle="dropdown">
                     <i class="bi bi-bell-fill fs-4"></i>
