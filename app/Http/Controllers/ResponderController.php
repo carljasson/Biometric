@@ -25,10 +25,10 @@ public function login(Request $request)
     ]);
 
     // ✅ Verify reCAPTCHA v3
-    //$response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-        //'secret' => env('RECAPTCHA_SECRET'),
-        //'response' => $request->input('g-recaptcha-response'),
-    ]//);
+    $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+        'secret' => env('RECAPTCHA_SECRET'),
+        'response' => $request->input('g-recaptcha-response'),
+    ]);
 
     $result = $response->json();
 
