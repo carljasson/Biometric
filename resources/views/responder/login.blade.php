@@ -15,22 +15,72 @@
         justify-content: center;
     }
 
-    .login-card {
-        background-color: #ffffff10;
+    .login-container {
+        display: flex;
+        max-width: 900px;
+        width: 90%;
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 16px;
-        padding: 30px;
-        width: 100%;
-        max-width: 400px;
-        color: white;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        position: relative;
         animation: fadeIn 0.6s ease-in-out;
+    }
+
+    .login-left, .login-right {
+        flex: 1;
+        padding: 40px;
+    }
+
+    .login-left {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-right: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .login-left img {
+        max-width: 180px;
+        height: auto;
+    }
+
+    .login-right {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         position: relative;
     }
 
-    .login-card h3 {
+    /* X button */
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        background-color: rgba(255,255,255,0.8);
+        border-radius: 50%;
+        text-align: center;
+        line-height: 32px;
         font-weight: bold;
+        font-size: 20px;
+        color: #333;
+        text-decoration: none;
+        transition: 0.3s;
+        z-index: 10;
+    }
+    .close-btn:hover {
+        background-color: rgba(255,0,0,0.8);
+        color: #fff;
+    }
+
+    .login-right h3 {
+        font-weight: bold;
+        color: white;
+        margin-bottom: 30px;
+        text-align: center;
     }
 
     .form-control {
@@ -65,28 +115,11 @@
     .alert-danger {
         background-color: rgba(220, 53, 69, 0.9);
         border: none;
+        color: white;
     }
 
     .text-danger {
         font-size: 0.875rem;
-    }
-
-    .back-button {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        background-color: #007bff;
-        color: white;
-        padding: 8px 14px;
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 0.95rem;
-        transition: background-color 0.3s;
-        z-index: 10;
-    }
-
-    .back-button:hover {
-        background-color: #0056b3;
     }
 
     @keyframes fadeIn {
@@ -95,40 +128,51 @@
     }
 </style>
 
-<a href="javascript:void(0)" onclick="window.history.back(); return false;" class="back-button">← Back</a>
+<div class="login-container">
 
-<div class="login-card text-white">
+    <!-- Left: Logo -->
+    <div class="login-left">
+        <img src="{{ asset('images/logo.png') }}" alt="Logo">
+    </div>
 
-    <h3 class="mb-4 text-center">🚑 Emergency Responder Login</h3>
+    <!-- Right: Login Form -->
+    <div class="login-right">
 
-    @if(session('error'))
-        <div class="alert alert-danger text-center">{{ session('error') }}</div>
-    @endif
+        <!-- X Button -->
+        <a href="{{ url('/') }}" class="close-btn">×</a>
 
-    <form id="responder-login-form" method="POST" action="{{ route('responder.login.submit') }}">
-        @csrf
+        <h3>🚑 Emergency Responder Login</h3>
 
-        <div class="mb-3">
-            <input type="email" name="email" value="{{ old('email') }}" class="form-control" placeholder="Email Address" required>
-            @error('email')
-                <div class="text-danger mt-1">{{ $message }}</div>
-            @enderror
-        </div>
+        @if(session('error'))
+            <div class="alert alert-danger text-center">{{ session('error') }}</div>
+        @endif
 
-        <div class="mb-3">
-            <input type="password" name="password" class="form-control" placeholder="Password" required>
-            @error('password')
-                <div class="text-danger mt-1">{{ $message }}</div>
-            @enderror
-        </div>
+        <form id="responder-login-form" method="POST" action="{{ route('responder.login.submit') }}">
+            @csrf
 
-        {{-- Hidden input for reCAPTCHA token --}}
-        <input type="hidden" name="g-recaptcha-response" id="recaptchaResponse">
+            <div class="mb-3">
+                <input type="email" name="email" value="{{ old('email') }}" class="form-control" placeholder="Email Address" required>
+                @error('email')
+                    <div class="text-danger mt-1">{{ $message }}</div>
+                @enderror
+            </div>
 
-        <div class="d-grid">
-            <button type="submit" class="btn btn-primary">Login</button>
-        </div>
-    </form>
+            <div class="mb-3">
+                <input type="password" name="password" class="form-control" placeholder="Password" required>
+                @error('password')
+                    <div class="text-danger mt-1">{{ $message }}</div>
+                @enderror
+            </div>
+
+            {{-- Hidden input for reCAPTCHA token --}}
+            <input type="hidden" name="g-recaptcha-response" id="recaptchaResponse">
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </form>
+    </div>
+
 </div>
 
 {{-- ✅ Google reCAPTCHA v3 --}}
@@ -140,5 +184,4 @@
         });
     });
 </script>
-
 @endsection
