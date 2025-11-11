@@ -8,11 +8,11 @@
     </a>
 
     <h3>Responder: Fingerprint Scan</h3>
-    <p>Tap the fingerprint icon to identify the user.</p>
+    <p>Tap the button below to identify the user.</p>
 
-    <!-- Fingerprint icon -->
-    <a href="myfingerprint://scan" id="launchApp">
-        <i class="fas fa-fingerprint fa-5x text-success mt-4" style="cursor:pointer;"></i>
+    <!-- Scan Button -->
+    <a href="myfingerprint://scan" id="launchApp" class="btn btn-success btn-lg mt-4">
+        <i class="fas fa-fingerprint me-2"></i> Scan
     </a>
 
     <form method="POST" action="{{ route('responder.scan.fingerprint.post') }}" id="scanForm">
@@ -39,7 +39,6 @@
 <script>
     // Optional: Warn user if protocol is not registered
     document.getElementById('launchApp').addEventListener('click', function(e){
-        // e.preventDefault(); // Uncomment if you want to handle custom JS checks first
         console.log('Attempting to launch myfingerprint:// app');
     });
 </script>
