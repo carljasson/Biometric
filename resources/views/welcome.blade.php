@@ -4,10 +4,8 @@
 <head>
     <title>Biometric Medical Access</title>
 
-    {{-- 🔐 Generate a nonce for CSP-safe inline <style> and <script> --}}
     @php $cspNonce = bin2hex(random_bytes(16)); @endphp
 
-    {{-- 🔐 Security headers --}}
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         base-uri 'self';
@@ -25,11 +23,9 @@
     <meta http-equiv="Referrer-Policy" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {{-- Bootstrap & FontAwesome --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
 
-    {{-- Landing Page Styles --}}
     <style nonce="{{ $cspNonce }}">
         html, body {
             height: 100%;
@@ -47,27 +43,29 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
         }
 
         .landing-card {
             background-color: rgba(255, 255, 255, 0.05);
             border-radius: 20px;
-            padding: 40px;
-            max-width: 900px;
+            padding: 30px 20px;
             width: 100%;
+            max-width: 800px;
             text-align: center;
             box-shadow: 0 0 20px rgba(0,0,0,0.6);
             backdrop-filter: blur(8px);
         }
 
         .landing-card .logo img {
-            max-width: 180px;
-            margin-bottom: 20px;
+            max-width: 150px;
+            width: 40%;
+            height: auto;
+            margin-bottom: 15px;
         }
 
         .landing-card h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             margin-bottom: 1rem;
             text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
         }
@@ -76,16 +74,16 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 30px;
-            margin-top: 30px;
+            gap: 20px;
+            margin-top: 25px;
         }
 
         .feature-item {
-            flex: 1 1 200px;
-            max-width: 250px;
+            flex: 1 1 150px;
+            max-width: 220px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
-            padding: 20px;
+            padding: 15px;
             transition: transform 0.3s, background 0.3s;
         }
 
@@ -95,26 +93,59 @@
         }
 
         .feature-item i {
-            font-size: 2rem;
-            margin-bottom: 10px;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
             color: #ffd700;
         }
 
         .feature-item h5 {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .feature-item p {
+            font-size: 0.9rem;
         }
 
         .btn-home {
-            margin-top: 30px;
-            padding: 12px 30px;
-            font-size: 1.2rem;
+            margin-top: 25px;
+            padding: 10px 25px;
+            font-size: 1rem;
             border-radius: 50px;
         }
 
-        @media(max-width: 768px) {
-            .landing-card h1 { font-size: 2rem; }
-            .feature-item { flex: 1 1 100%; max-width: 100%; }
+        /* Mobile adjustments */
+        @media(max-width: 576px) {
+            .landing-card {
+                padding: 20px 15px;
+            }
+            .landing-card .logo img {
+                max-width: 120px;
+                width: 50%;
+                margin-bottom: 10px;
+            }
+            .landing-card h1 {
+                font-size: 1.5rem;
+            }
+            .feature-item {
+                flex: 1 1 100%;
+                max-width: 100%;
+                padding: 12px;
+            }
+            .feature-item i {
+                font-size: 1.5rem;
+            }
+            .feature-item h5 {
+                font-size: 0.95rem;
+            }
+            .feature-item p {
+                font-size: 0.85rem;
+            }
+            .btn-home {
+                font-size: 0.95rem;
+                padding: 8px 20px;
+            }
         }
     </style>
 </head>
@@ -128,10 +159,9 @@
 
             <h1>Welcome to Biometric Medical Access</h1>
             <p>
-                A system that allows <strong>accident victims</strong> to instantly alert emergency responders in <strong>Bantayan</strong>, <strong>Santa Fe</strong>, and <strong>Madridejos</strong>.
+                Instantly alert emergency responders in <strong>Bantayan</strong>, <strong>Santa Fe</strong>, and <strong>Madridejos</strong>.
             </p>
 
-            {{-- Features with Icons --}}
             <div class="features">
                 <div class="feature-item">
                     <i class="fas fa-exclamation-triangle"></i>
@@ -146,12 +176,12 @@
                 <div class="feature-item">
                     <i class="fas fa-fingerprint"></i>
                     <h5>Biometric Scan</h5>
-                    <p>Responders can scan the victim’s fingerprint to access their info quickly.</p>
+                    <p>Scan the victim’s fingerprint to access info quickly.</p>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-phone-alt"></i>
                     <h5>Emergency Contact</h5>
-                    <p>Notify the victim’s emergency contact without delay for faster assistance.</p>
+                    <p>Notify contacts immediately for faster assistance.</p>
                 </div>
             </div>
 
@@ -170,14 +200,12 @@
         <div class="alert alert-danger text-center">{{ session('error') }}</div>
     @endif
 
-    {{-- Bootstrap JS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
             nonce="{{ $cspNonce }}"
             crossorigin="anonymous"
             referrerpolicy="no-referrer"></script>
 
     <script nonce="{{ $cspNonce }}">
-        // Prevent iframe embedding
         if (window.top !== window.self) window.top.location = window.self.location;
     </script>
 </body>
