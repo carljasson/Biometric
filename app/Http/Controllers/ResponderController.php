@@ -24,28 +24,15 @@ public function login(Request $request)
     $request->validate([
         'email' => 'required|email',
         'password' => 'required',
-        'g-recaptcha-response' => 'required',
     ]);
-
-    // ✅ Verify reCAPTCHA
-    $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-        'secret' => env('RECAPTCHA_SECRET'),
-        'response' => $request->input('g-recaptcha-response'),
-    ]);
-
-    $result = $response->json();
-    if (!($result['success'] ?? false) || ($result['score'] ?? 0) < 0.5) {
-        Log::warning('Responder reCAPTCHA failed', ['result' => $result]);
-        return back()->with('error', 'reCAPTCHA verification failed. Please try again.');
-    }
 
     $responder = Responder::where('email', $request->email)->first();
+
     if (!$responder) {
         return back()->with('error', 'Responder not found.');
     }
 
     if (!Hash::check($request->password, $responder->password)) {
-        Log::info('Responder password mismatch', ['email' => $request->email]);
         return back()->with('error', 'Incorrect password.');
     }
 
