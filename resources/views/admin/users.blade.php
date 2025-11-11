@@ -3,6 +3,7 @@
 
 @section('content')
 <div id="mainContent" class="p-4">
+
     <h4 class="mb-4"><i class="bi bi-people-fill me-2"></i> Registered Users</h4>
 
     <!-- Search -->
@@ -11,8 +12,8 @@
     </div>
 
     <!-- Users Table -->
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
+    <div class="overflow-auto">
+        <table class="table table-bordered table-hover align-middle" style="table-layout: auto; min-width: 100%;">
             <thead class="table-light text-center">
                 <tr>
                     <th colspan="7" class="bg-primary text-white">🧑 Personal Info</th>
@@ -39,17 +40,17 @@
             <tbody>
                 @foreach($users as $user)
                 <tr>
-                    <td>{{ $user->firstname }}</td>
-                    <td>{{ $user->middlename }}</td>
-                    <td>{{ $user->lastname }}</td>
-                    <td>{{ $user->email }}</td>
+                    <td style="white-space: normal; word-break: break-word;">{{ $user->firstname }}</td>
+                    <td style="white-space: normal; word-break: break-word;">{{ $user->middlename }}</td>
+                    <td style="white-space: normal; word-break: break-word;">{{ $user->lastname }}</td>
+                    <td style="white-space: normal; word-break: break-word;">{{ $user->email }}</td>
                     <td><i class="fas fa-lock text-muted"></i> Hidden</td>
                     <td>{{ $user->birthday }}</td>
                     <td>{{ $user->age }}</td>
-                    <td>{{ $user->phone }}</td>
-                    <td>{{ $user->address }}</td>
-                    <td>{{ $user->contact_name }}</td>
-                    <td>{{ $user->contact_number }}</td>
+                    <td style="white-space: normal; word-break: break-word;">{{ $user->phone }}</td>
+                    <td style="white-space: normal; word-break: break-word;">{{ $user->address }}</td>
+                    <td style="white-space: normal; word-break: break-word;">{{ $user->contact_name }}</td>
+                    <td style="white-space: normal; word-break: break-word;">{{ $user->contact_number }}</td>
                     <td>
                         @if($user->fingerprint_data)
                             <span class="badge bg-success">Captured</span>
