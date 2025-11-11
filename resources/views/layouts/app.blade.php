@@ -17,14 +17,36 @@
     <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
+        body, html { margin: 0; padding: 0; height: 100%; }
+        main { padding-top: 0 !important; }
+
+        /* Emergency Bell Flash */
+        .emergency-light {
+            animation: flashRed 1s infinite alternate;
         }
-        main {
-            padding-top: 0 !important;
+        @keyframes flashRed {
+            from { color: #dc3545; }
+            to { color: #ff0000; }
+        }
+
+        /* Alert Dropdown Highlight */
+        .new-alert {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-radius: 5px;
+            padding: 8px;
+            margin-bottom: 5px;
+            display: block;
+            transition: background 0.3s;
+        }
+        .new-alert.read {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            font-weight: normal !important;
         }
     </style>
 </head>
@@ -78,7 +100,7 @@
         </nav>
     </aside>
 
-    <!-- Main content -->
+    <!-- Main Content -->
     <div class="flex-1 flex flex-col transition-all duration-300" :class="sidebarOpen ? 'ml-64' : 'ml-0 sm:ml-64'">
 
         <!-- Header -->
@@ -104,12 +126,111 @@
         </main>
     </div>
 
-    <!-- Global Broadcast Modal -->
+    <!-- Broadcast Modal -->
     @include('admin.broadcast-modal')
 
-    <!-- Blade Scripts -->
-    @stack('scripts')
+    <!-- Blade Scripts --> @stack('scripts')
+
+    <!-- Alert Sound -->
+    <audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
 
 </div>
+
+<script>
+let lastAlertCount = 0;
+
+function fetchAlerts() {
+    fetch("{{ route('admin.fetch-alerts') }}")
+        .then(res => res.json())
+        .then(data => {
+            const alertCountEl = document.getElementById('alertCount');
+            const alertsList = document.getElementById('alertsList');
+            const bellIcon = document.querySelector('#notificationBell i');
+            const alertSound = document.getElementById('alertSound');
+            alertsList.innerHTML = '';
+
+            const unreadCount = data.unreadCount;
+
+            if (data.alerts.length > 0) {
+                if(unreadCount > 0){
+                    alertCountEl.textContent = unreadCount;
+                    alertCountEl.classList.remove('d-none');
+                    bellIcon.classList.add("emergency-light");
+
+                    if (alertSound.paused) {
+                        alertSound.loop = true;
+                        alertSound.play().catch(e=>console.log("Autoplay blocked:", e));
+                    }
+
+                    if (unreadCount > lastAlertCount) {
+                        Swal.fire({
+                            title: '🚨 Emergency Alert!',
+                            html: `<p>You have <strong>${unreadCount}</strong> new alert${unreadCount>1?'s':''}.</p>`,
+                            background:'#ff4d4d', color:'#fff',
+                            confirmButtonText:'OK', confirmButtonColor:'#28a745',
+                            timer:10000, timerProgressBar:true,
+                            didOpen:()=>{
+                                const swalPopup=Swal.getHtmlContainer();
+                                let flash=true;
+                                const flashInterval=setInterval(()=>{
+                                    if(swalPopup){ swalPopup.style.backgroundColor=flash?'#ff0000':'#ff4d4d'; flash=!flash;}
+                                },500);
+                                Swal.getConfirmButton().addEventListener('click',()=>{
+                                    clearInterval(flashInterval);
+                                    alertSound.pause(); alertSound.currentTime=0;
+                                    bellIcon.classList.remove("emergency-light");
+                                });
+                            }
+                        });
+                    }
+                } else {
+                    alertCountEl.textContent = 0;
+                    alertCountEl.classList.add('d-none');
+                    bellIcon.classList.remove("emergency-light");
+                    alertSound.pause();
+                    alertSound.currentTime = 0;
+                }
+
+                data.alerts.forEach(alert=>{
+                    const li=document.createElement('li');
+                    li.innerHTML=`<a href="#" class="dropdown-item mark-read-redirect ${alert.read?'read':'new-alert'}" data-id="${alert.id}">
+                        🚨 <strong>${alert.type}</strong><br><small>${new Date(alert.created_at).toLocaleString()}</small>
+                    </a>`;
+                    alertsList.appendChild(li);
+                });
+            } else {
+                alertCountEl.classList.add('d-none');
+                alertsList.innerHTML='<li class="text-center text-muted">No new alerts</li>';
+                bellIcon.classList.remove("emergency-light");
+                alertSound.pause(); alertSound.currentTime=0;
+            }
+
+            lastAlertCount=unreadCount;
+        })
+        .catch(console.error);
+}
+
+// Mark as read + redirect
+document.addEventListener("click", e=>{
+    const alertItem=e.target.closest(".mark-read-redirect");
+    if(alertItem){
+        e.preventDefault();
+        let alertId=alertItem.dataset.id;
+        alertItem.classList.add("read");
+        fetch("{{ route('admin.mark-alerts-read') }}", {
+            method:"POST",
+            headers:{
+                "X-CSRF-TOKEN":"{{ csrf_token() }}",
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({id:alertId})
+        }).then(res=>res.json()).then(()=>{ window.location.href="{{ route('admin.alerts') }}"; });
+    }
+});
+
+setInterval(fetchAlerts,10000);
+fetchAlerts();
+</script>
+
 </body>
 </html>
