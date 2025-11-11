@@ -11,14 +11,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-    <!-- Tailwind (optional) -->
+    <!-- Tailwind (optional for utility classes) -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
     <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
 </head>
 <body class="font-sans antialiased">
+
 <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-gray-100">
 
     <!-- Sidebar -->
@@ -29,35 +29,21 @@
         <!-- Sidebar Header -->
         <div class="px-6 py-4 text-center bg-gray-900">
             <i class="bi bi-person-circle text-6xl mb-2"></i>
-            <h5 class="font-semibold">{{ Auth::user()->name ?? Auth::guard('admin')->user()->name ?? 'Guest' }}</h5>
+            <h5 class="font-semibold">
+                {{ Auth::user()->name ?? Auth::guard('admin')->user()->name ?? 'Guest' }}
+            </h5>
         </div>
 
+        <!-- Sidebar Links -->
         <nav class="mt-4 flex flex-col">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2 hover:bg-gray-700 {{ request()->routeIs('admin.dashboard') ? 'bg-gray-700 font-bold' : '' }}">
-                <i class="bi bi-house-door-fill me-2"></i> Home
-            </a>
-
-            <a href="{{ route('admin.users') }}" class="flex items-center px-4 py-2 hover:bg-gray-700 {{ request()->routeIs('admin.users') ? 'bg-gray-700 font-bold' : '' }}">
-                <i class="bi bi-people-fill me-2"></i> Manage Users
-            </a>
-
-            <a href="{{ route('admin.alerts') }}" class="flex items-center px-4 py-2 hover:bg-gray-700">
-                <i class="bi bi-exclamation-triangle-fill text-yellow-400 me-2"></i> Emergency Alerts
-            </a>
-
-            <a href="{{ route('admin.admin-users') }}" class="flex items-center px-4 py-2 hover:bg-gray-700 {{ request()->routeIs('admin.admin-users') ? 'bg-gray-700 font-bold' : '' }}">
-                <i class="bi bi-shield-lock-fill me-2"></i> Admin User Management
-            </a>
-
-            <a href="{{ route('admin.add-responder') }}" class="flex items-center px-4 py-2 hover:bg-gray-700 {{ request()->routeIs('admin.add-responder') ? 'bg-gray-700 font-bold' : '' }}">
-                <i class="bi bi-plus-circle-fill me-2"></i> Add Responder
-            </a>
-
-            <a href="{{ route('admin.login-history') }}" class="flex items-center px-4 py-2 hover:bg-gray-700 {{ request()->routeIs('admin.login-history') ? 'bg-gray-700 font-bold' : '' }}">
-                <i class="bi bi-clock-history me-2"></i> Login History
-            </a>
-
-            <a href="#" data-bs-toggle="modal" data-bs-target="#broadcastModal" class="flex items-center px-4 py-2 hover:bg-gray-700">
+            <x-sidebar-link route="admin.dashboard" icon="house-door-fill" label="Home" />
+            <x-sidebar-link route="admin.users" icon="people-fill" label="Manage Users" />
+            <x-sidebar-link route="admin.alerts" icon="exclamation-triangle-fill" label="Emergency Alerts" color="text-yellow-400" />
+            <x-sidebar-link route="admin.admin-users" icon="shield-lock-fill" label="Admin User Management" />
+            <x-sidebar-link route="admin.add-responder" icon="plus-circle-fill" label="Add Responder" />
+            <x-sidebar-link route="admin.login-history" icon="clock-history" label="Login History" />
+            <a href="#" data-bs-toggle="modal" data-bs-target="#broadcastModal"
+               class="flex items-center px-4 py-2 hover:bg-gray-700">
                 <i class="bi bi-megaphone-fill me-2"></i> Broadcast Messages
             </a>
 
@@ -70,7 +56,7 @@
         </nav>
     </aside>
 
-    <!-- Main content -->
+    <!-- Main Content -->
     <div class="flex-1 flex flex-col transition-all duration-300" :class="sidebarOpen ? 'ml-64' : 'ml-0 sm:ml-64'">
 
         <!-- Top Navigation -->
@@ -86,16 +72,13 @@
                 </button>
             </div>
 
-
         </header>
 
         <!-- Page Content -->
         <main class="flex-1 overflow-auto p-4">
             @yield('content')
         </main>
-
     </div>
-
 </div>
 
 </body>
