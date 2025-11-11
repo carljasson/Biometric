@@ -3,7 +3,6 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <form method="POST" 
               action="{{ route('announcements.store') }}"
-              enctype="multipart/form-data"
               class="modal-content border-0 shadow-sm rounded-3">
             @csrf
 
@@ -28,13 +27,6 @@
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Message</label>
                     <textarea name="message" class="form-control" rows="4" placeholder="Enter your message..." required></textarea>
-                </div>
-
-                <!-- Image Upload -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Upload Image (Optional)</label>
-                    <input type="file" name="image" class="form-control" accept="image/*">
-                    <small class="text-muted">Supported formats: JPG, PNG, GIF. Max 2MB.</small>
                 </div>
 
                 <!-- Expiration -->
