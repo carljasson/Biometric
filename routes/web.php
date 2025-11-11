@@ -314,3 +314,7 @@ Route::get('/run-seeder', function () {
     Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\ResponderSeeder', '--force' => true]);
     return '✅ ResponderSeeder executed!';
 });
+
+Route::get('/pin-login', function () {
+    return view('auth.pin-login');
+})->name('pin.login');
