@@ -8,7 +8,20 @@
     @php $cspNonce = bin2hex(random_bytes(16)); @endphp
 
     {{-- 🔐 Security headers as meta (best set in real HTTP headers too) --}}
-    <meta http-equiv="Content-Security-Policy" content="
+    <meta<meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    base-uri 'self';
+    form-action 'self';
+    object-src 'none';
+    frame-ancestors 'none';
+    upgrade-insecure-requests;
+    script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'nonce-{{ $cspNonce }}';
+    style-src  'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-inline' 'nonce-{{ $cspNonce }}';
+    img-src 'self' data: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+    font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com data:;
+    connect-src 'self';
+">
+ http-equiv="Content-Security-Policy" content="
         default-src 'self';
         base-uri 'self';
         form-action 'self';
