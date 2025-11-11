@@ -98,7 +98,7 @@
 
     <div class="mt-3">
         <a href="{{ route('resend.pin') }}" class="text-decoration-none">Resend PIN</a> |
-        <a href="{{ route('logout') }}" class="text-danger text-decoration-none">Cancel</a>
+        <a href="{{ route('login') }}" class="text-danger text-decoration-none">Cancel</a>
     </div>
 </div>
 
