@@ -1,42 +1,78 @@
 <!-- Broadcast Modal -->
-<div class="modal fade" id="broadcastModal" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal fade" id="broadcastModal" tabindex="-1" aria-labelledby="broadcastModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <form method="POST" 
               action="{{ route('announcements.store') }}"
-              enctype="multipart/form-data"     <!-- IMPORTANT -->
-              class="modal-content">
+              enctype="multipart/form-data"
+              class="modal-content border-0 shadow-sm rounded-3">
             @csrf
-            <div class="modal-header">
-                <h5 class="modal-title">Broadcast</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+            <!-- Header -->
+            <div class="modal-header bg-primary text-white rounded-top">
+                <h5 class="modal-title" id="broadcastModalLabel">
+                    <i class="bi bi-megaphone-fill me-2"></i> Broadcast Announcement
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
-            <div class="modal-body">
+            <!-- Body -->
+            <div class="modal-body bg-light">
+
                 <!-- Title -->
-                <input name="title" class="form-control mb-2" placeholder="Announcement Title" required>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Announcement Title</label>
+                    <input type="text" name="title" class="form-control" placeholder="Enter title..." required>
+                </div>
 
                 <!-- Message -->
-                <textarea name="message" class="form-control mb-2" rows="4"
-                          placeholder="Enter your message..." required></textarea>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Message</label>
+                    <textarea name="message" class="form-control" rows="4" placeholder="Enter your message..." required></textarea>
+                </div>
 
-                <!-- Optional Image Upload -->
-                <label class="form-label">Upload Image (Optional)</label>
-                <input type="file" name="image" class="form-control mb-3" accept="image/*">
+                <!-- Image Upload -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Upload Image (Optional)</label>
+                    <input type="file" name="image" class="form-control" accept="image/*">
+                    <small class="text-muted">Supported formats: JPG, PNG, GIF. Max 2MB.</small>
+                </div>
 
-                <!-- Expired Date and Time -->
-                <label for="expired_at" class="form-label">Expired Date & Time</label>
-                <input type="datetime-local"
-                       name="expired_at"
-                       id="expired_at"
-                       class="form-control"
-                       required
-                       min="{{ \Carbon\Carbon::now()->format('Y-m-d\TH:i') }}">
+                <!-- Expiration -->
+                <div class="mb-3">
+                    <label for="expired_at" class="form-label fw-semibold">Expiration Date & Time</label>
+                    <input type="datetime-local"
+                           name="expired_at"
+                           id="expired_at"
+                           class="form-control"
+                           required
+                           min="{{ \Carbon\Carbon::now()->format('Y-m-d\TH:i') }}">
+                </div>
+
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary">Send</button>
+            <!-- Footer -->
+            <div class="modal-footer bg-white rounded-bottom">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i> Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-send-fill me-1"></i> Send Broadcast
+                </button>
             </div>
         </form>
     </div>
 </div>
+
+<style>
+/* Subtle custom touch for consistent system style */
+.modal-content {
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+.modal-body label {
+    color: #495057;
+}
+.modal-header, .modal-footer {
+    border: none;
+}
+</style>
