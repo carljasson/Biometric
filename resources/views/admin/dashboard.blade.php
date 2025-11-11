@@ -175,18 +175,6 @@
                 </div>
             @endif
         </div>
-<!-- 🔔 Notification Bell -->
-<div class="dropdown me-3">
-    <button class="btn btn-light position-relative" id="notificationBell" data-bs-toggle="dropdown">
-        <i class="bi bi-bell-fill fs-4"></i>
-        <span id="alertCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"></span>
-    </button>
-    <ul class="dropdown-menu dropdown-menu-end p-2" 
-        style="width: 300px; max-height: 400px; overflow-y: auto;" 
-        id="alertsList">
-        <li class="text-center text-muted">No new alerts</li>
-    </ul>
-</div>
 
 <!-- 🚨 Emergency Light CSS -->
 <style>
