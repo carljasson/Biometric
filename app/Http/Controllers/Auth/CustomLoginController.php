@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 
-class LoginController extends Controller
+class CustomLoginController extends Controller
 {
     public function authenticate(Request $request)
     {
