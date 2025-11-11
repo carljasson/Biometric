@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Http\Controllers\CheckController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Artisan;
 
 use App\Models\Alert;
 
@@ -310,7 +311,7 @@ Route::prefix('admin')->middleware(['web', 'admin.auth'])->group(function () {
     Route::get('/login-history', [AdminController::class, 'loginHistory'])->name('admin.login-history');
 });
 
-Route::get('/run-migrate', function () {
-    Artisan::call('migrate', ['--force' => true]);
-    return '✅ Migrations have been executed successfully!';
+Route::get('/run-seeder', function () {
+    Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\ResponderSeeder', '--force' => true]);
+    return '✅ ResponderSeeder executed!';
 });
