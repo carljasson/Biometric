@@ -17,7 +17,7 @@
         backdrop-filter: blur(2px);
         display: flex;
         justify-content: center;
-        align-items: center; /* vertical center */
+        align-items: center;
         padding: 20px;
     }
 
@@ -25,7 +25,7 @@
         display: flex;
         max-width: 900px;
         width: 100%;
-        background-color: rgba(255, 255, 255, 0.05);
+        background-color: rgba(255, 255, 255, 0.3);
         backdrop-filter: blur(10px);
         border-radius: 16px;
         overflow: hidden;
@@ -34,10 +34,11 @@
         align-items: stretch;
     }
 
+    /* Left: Message */
     .login-left {
         flex: 1;
-        background-color: rgba(0,0,0,0.3);
-        padding: 50px 30px;
+        background-color: rgba(0,0,0,0.2);
+        padding: 40px 30px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -49,14 +50,15 @@
     .login-left h2 {
         font-weight: bold;
         font-size: 1.8rem;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
     }
 
     .login-left p {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         line-height: 1.5;
     }
 
+    /* Right: Login Form */
     .login-right {
         flex: 1;
         padding: 40px 30px;
@@ -65,6 +67,7 @@
         flex-direction: column;
         justify-content: center;
         color: white;
+        background-color: rgba(0,0,0,0.15);
     }
 
     .login-right h3 {
@@ -77,6 +80,8 @@
         background-color: rgba(255, 255, 255, 0.1);
         color: #fff;
         border: none;
+        border-radius: 8px;
+        padding: 10px 12px;
     }
 
     .form-control::placeholder {
@@ -95,6 +100,8 @@
         color: #0d6efd;
         font-weight: bold;
         border: none;
+        border-radius: 8px;
+        padding: 10px;
     }
 
     .btn-primary:hover {
@@ -102,13 +109,14 @@
         color: #0a58ca;
     }
 
-    .text-danger {
-        font-size: 0.875rem;
-    }
-
     .alert-danger {
         background-color: rgba(220, 53, 69, 0.9);
         border: none;
+        font-size: 0.9rem;
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
     }
 
     /* X / Close button */
@@ -143,7 +151,6 @@
     @media (max-width: 768px) {
         .login-container {
             flex-direction: column;
-            align-items: center;
         }
         .login-left {
             border-right: none;
@@ -158,9 +165,9 @@
 
 <div class="login-container">
 
-    <!-- Left: Motivational / Encouraging Message -->
+    <!-- Left: Motivational Message -->
     <div class="login-left">
-        <h2>Welcome, Hero!</h2>
+        <h2>🚑 Welcome, Hero!</h2>
         <p>Every second counts. Your bravery and quick action can save lives. Log in now and be ready to respond to emergencies and make a real difference in your community.</p>
     </div>
 
@@ -169,7 +176,7 @@
         <!-- Close/X button -->
         <button class="close-button" onclick="window.location.href='{{ url('/') }}';">&times;</button>
 
-        <h3>🚑 Responder Login</h3>
+        <h3>Responder Login</h3>
 
         @if(session('error'))
             <div class="alert alert-danger text-center">{{ session('error') }}</div>
