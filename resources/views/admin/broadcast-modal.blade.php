@@ -44,10 +44,7 @@
 
             <!-- Footer -->
             <div class="modal-footer bg-white rounded-bottom">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle me-1"></i> Cancel
-                </button>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary w-100">
                     <i class="bi bi-send-fill me-1"></i> Send Broadcast
                 </button>
             </div>
@@ -56,7 +53,7 @@
 </div>
 
 <style>
-/* Subtle custom touch for consistent system style */
+/* Subtle consistent design */
 .modal-content {
     border-radius: 0.75rem;
     overflow: hidden;
