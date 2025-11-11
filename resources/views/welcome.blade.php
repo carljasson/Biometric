@@ -8,7 +8,7 @@
     @php $cspNonce = bin2hex(random_bytes(16)); @endphp
 
     {{-- 🔐 Security headers as meta (best set in real HTTP headers too) --}}
-    <meta<meta http-equiv="Content-Security-Policy" content="
+<meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     base-uri 'self';
     form-action 'self';
@@ -21,19 +21,7 @@
     font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com data:;
     connect-src 'self';
 ">
- http-equiv="Content-Security-Policy" content="
-        default-src 'self';
-        base-uri 'self';
-        form-action 'self';
-        object-src 'none';
-        frame-ancestors 'none';
-        upgrade-insecure-requests;
-        script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'nonce-{{ $cspNonce }}';
-        style-src  'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-inline' 'nonce-{{ $cspNonce }}';
-        img-src 'self' data:;
-        font-src 'self';
-        connect-src 'self';
-    ">
+
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1">
