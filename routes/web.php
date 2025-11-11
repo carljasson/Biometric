@@ -16,8 +16,8 @@ use App\Http\Controllers\CheckController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Artisan;
-
 use App\Models\Alert;
+use App\Http\Controllers\Auth\LoginController;
 
 // =========================
 // 🌐 GENERAL
@@ -28,12 +28,12 @@ Route::get('/', fn () => view('welcome'))->name('welcome');
 // 👤 USER AUTH & DASHBOARD
 // =========================
 // 1️⃣ Custom login form
-Route::get('/login', [BiometricController::class, 'showLoginForm'])->name('login');
+use App\Http\Controllers\Auth\LoginController;
 
-// 2️⃣ Custom login POST
-Route::post('/login', [BiometricController::class, 'login'])->name('login.post');
-
-Route::post('/login/pin', [BiometricController::class,'verifyPin'])->name('login.pin');
+Route::post('/login', [LoginController::class, 'authenticate'])->name('login');
+Route::get('/login/pin', [LoginController::class, 'showPinForm'])->name('login.pin');
+Route::post('/verify-pin', [LoginController::class, 'verifyPin'])->name('verify.pin');
+Route::get('/resend-pin', [LoginController::class, 'resendPin'])->name('resend.pin');
 
 
 
