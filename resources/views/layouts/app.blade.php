@@ -64,6 +64,8 @@
             <a href="{{ route('admin.login-history') }}" class="flex items-center px-4 py-2 hover:bg-gray-700 {{ request()->routeIs('admin.login-history') ? 'bg-gray-700 font-bold' : '' }}">
                 <i class="bi bi-clock-history me-2"></i> Login History
             </a>
+
+            <!-- ✅ Broadcast Modal Trigger -->
             <a href="#" data-bs-toggle="modal" data-bs-target="#broadcastModal" class="flex items-center px-4 py-2 hover:bg-gray-700">
                 <i class="bi bi-megaphone-fill me-2"></i> Broadcast Messages
             </a>
@@ -97,8 +99,9 @@
             @yield('content')
         </main>
     </div>
-     <!-- ✅ Global Broadcast Modal -->
-        @include('broadcast-modal')
+
+    <!-- ✅ Global Broadcast Modal Include -->
+    @include('admin.broadcast-modal')
 </div>
 
 </body>
