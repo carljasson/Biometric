@@ -201,7 +201,7 @@
                 <i class="fas fa-bars"></i>
                 <div class="dropdown-menu-custom" id="dropdownMenu">
                     <a href="{{ route('responder.login') }}">Login as Responder</a>
-                    <a href="{{ route('user.login') }}">Login as User</a>
+                    <a href="{{ route('login') }}">Login as User</a>
                     <a href="#" id="registerLink">Register</a>
                 </div>
             </div>
