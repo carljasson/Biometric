@@ -26,7 +26,7 @@ $response->headers->set(
     "default-src 'self'; ".
     "script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; ".
     "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; ".
-    "font-src 'self' data:; ". // 👈 allow local fonts and data URIs
+    "font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com data:; ". // ✅ this line added
     "img-src 'self' data: https:; ".
     "object-src 'none'; ".
     "frame-ancestors 'self'; ".
