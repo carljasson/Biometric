@@ -15,26 +15,27 @@
         background-size: cover;
         background-color: rgba(0, 0, 0, 0.6);
         backdrop-filter: blur(2px);
+
         display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
+        justify-content: center; /* horizontal center */
+        align-items: center;     /* vertical center */
+        min-height: 100vh;
     }
 
     .login-container {
         display: flex;
         max-width: 900px;
-        width: 100%;
+        width: 90%;
         background-color: rgba(255, 255, 255, 0.3);
         backdrop-filter: blur(10px);
         border-radius: 16px;
         overflow: hidden;
         box-shadow: 0 8px 30px rgba(0,0,0,0.3);
         animation: fadeIn 0.6s ease-in-out;
-        align-items: stretch;
+        align-items: center;
     }
 
-    /* Left: Message */
+    /* Left: Motivational Message */
     .login-left {
         flex: 1;
         background-color: rgba(0,0,0,0.2);
@@ -151,6 +152,7 @@
     @media (max-width: 768px) {
         .login-container {
             flex-direction: column;
+            width: 95%;
         }
         .login-left {
             border-right: none;
