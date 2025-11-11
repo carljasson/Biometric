@@ -97,6 +97,8 @@
             @yield('content')
         </main>
     </div>
+     <!-- ✅ Global Broadcast Modal -->
+        @include('partials.broadcast-modal')
 </div>
 
 </body>
