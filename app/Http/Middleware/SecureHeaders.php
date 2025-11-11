@@ -26,7 +26,7 @@ $response->headers->set(
     "default-src 'self'; ".
     "script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; ".
     "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; ".
-    "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; ".
+    "font-src 'self' data:; ". // 👈 allow local fonts and data URIs
     "img-src 'self' data: https:; ".
     "object-src 'none'; ".
     "frame-ancestors 'self'; ".
@@ -34,6 +34,7 @@ $response->headers->set(
     "form-action 'self'; ".
     "upgrade-insecure-requests;"
 );
+
 
         // HSTS only on HTTPS
         if ($request->isSecure()) {
