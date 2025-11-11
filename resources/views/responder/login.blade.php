@@ -39,6 +39,7 @@
         box-shadow: 0 8px 30px rgba(0,0,0,0.3);
         animation: fadeIn 0.6s ease-in-out;
         align-items: stretch;
+        position: relative;
     }
 
     /* Left: Motivational Message */
@@ -167,6 +168,10 @@
         .login-right {
             padding: 30px 20px;
         }
+        .close-button {
+            top: 8px;
+            right: 8px;
+        }
     }
 </style>
 
@@ -182,7 +187,8 @@
         <!-- Right: Login Form -->
         <div class="login-right">
             <!-- Close/X button -->
-        <a href="/" class="close-btn">×</a>
+            <button class="close-button" onclick="window.location.href='{{ url('/') }}';">&times;</button>
+
             <h3>Responder Login</h3>
 
             @if(session('error'))
