@@ -2,14 +2,17 @@
 
 @section('content')
 <style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
     body {
         background: url('/images/background.png') no-repeat center center fixed;
         background-size: cover;
         background-color: rgba(0, 0, 0, 0.6);
         backdrop-filter: blur(2px);
-        min-height: 100vh;
-        margin: 0;
-        padding: 0;
         display: flex;
         align-items: center;
         justify-content: center;
