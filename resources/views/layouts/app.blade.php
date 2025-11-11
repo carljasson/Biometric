@@ -23,12 +23,13 @@
 
     <!-- Sidebar -->
     <aside 
-        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'" 
+        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'"
         class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white transform transition-transform duration-300 shadow-lg z-20">
-        
+
+        <!-- Sidebar Header -->
         <div class="px-6 py-4 text-center bg-gray-900">
             <i class="bi bi-person-circle text-6xl mb-2"></i>
-            <h5 class="font-semibold">{{ Auth::user()->name ?? 'Guest' }}</h5>
+            <h5 class="font-semibold">{{ Auth::user()->name ?? Auth::guard('admin')->user()->name ?? 'Guest' }}</h5>
         </div>
 
         <nav class="mt-4 flex flex-col">
