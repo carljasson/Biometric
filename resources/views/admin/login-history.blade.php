@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid px-0">
+<div class="main-content flex-grow-1 p-4" style="margin-left: 16rem;"> <!-- 16rem = 256px sidebar width -->
 
     <div class="card shadow-sm border-0">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
@@ -66,25 +66,15 @@
 
 </div>
 
-{{-- Custom CSS to match system style and sidebar --}}
 <style>
-html, body {
-    height: 100%;
+.main-content {
+    transition: margin-left 0.3s;
 }
 
-.container-fluid {
-    padding-left: 1rem;
-    padding-right: 1rem;
-}
-
+/* Adjust table style */
 .table-hover tbody tr:hover {
     background-color: #f1f3f5 !important;
     transition: 0.2s ease-in-out;
-}
-
-.card {
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
 }
 
 .card-header {
@@ -102,10 +92,18 @@ html, body {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
-/* Make table occupy full width minus sidebar */
-.main-content {
-    padding: 1rem;
-    margin-left: 0; /* let your app layout handle sidebar spacing */
-}
 </style>
+
+<script>
+// Optional: handle sidebar toggle dynamically
+document.addEventListener('alpine:init', () => {
+    Alpine.data('sidebarAdjust', () => ({
+        sidebarOpen: false,
+        toggleSidebar() {
+            this.sidebarOpen = !this.sidebarOpen;
+            const main = document.querySelector('.main-content');
+            main.style.marginLeft = this.sidebarOpen ? '16rem' : '4rem'; // adjust width
+        }
+    }))
+});
+</script>
