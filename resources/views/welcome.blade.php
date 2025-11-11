@@ -23,8 +23,10 @@
     <meta http-equiv="Referrer-Policy" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"
+          crossorigin="anonymous" referrerpolicy="no-referrer">
 
     <style nonce="{{ $cspNonce }}">
         html, body {
@@ -44,12 +46,13 @@
             justify-content: center;
             align-items: center;
             padding: 15px;
+            overflow-y: auto; /* scroll if content is taller than viewport */
         }
 
         .landing-card {
             background-color: rgba(255, 255, 255, 0.05);
             border-radius: 20px;
-            padding: 30px 20px;
+            padding: 25px 20px;
             width: 100%;
             max-width: 800px;
             text-align: center;
@@ -58,15 +61,15 @@
         }
 
         .landing-card .logo img {
-            max-width: 150px;
-            width: 40%;
+            max-width: 120px;
+            width: 50%;
             height: auto;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .landing-card h1 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
             text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
         }
 
@@ -74,16 +77,16 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
-            margin-top: 25px;
+            gap: 15px;
+            margin-top: 20px;
         }
 
         .feature-item {
-            flex: 1 1 150px;
+            flex: 1 1 100%;
             max-width: 220px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
-            padding: 15px;
+            padding: 12px;
             transition: transform 0.3s, background 0.3s;
         }
 
@@ -93,37 +96,36 @@
         }
 
         .feature-item i {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             margin-bottom: 8px;
             color: #ffd700;
         }
 
         .feature-item h5 {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         .feature-item p {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .btn-home {
-            margin-top: 25px;
-            padding: 10px 25px;
-            font-size: 1rem;
+            margin-top: 20px;
+            padding: 8px 20px;
+            font-size: 0.95rem;
             border-radius: 50px;
         }
 
         /* Mobile adjustments */
         @media(max-width: 576px) {
             .landing-card {
-                padding: 20px 15px;
+                padding: 15px 10px;
             }
             .landing-card .logo img {
-                max-width: 120px;
-                width: 50%;
-                margin-bottom: 10px;
+                max-width: 100px;
+                width: 60%;
             }
             .landing-card h1 {
                 font-size: 1.5rem;
@@ -131,20 +133,20 @@
             .feature-item {
                 flex: 1 1 100%;
                 max-width: 100%;
-                padding: 12px;
+                padding: 10px;
             }
             .feature-item i {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
             }
             .feature-item h5 {
-                font-size: 0.95rem;
+                font-size: 0.9rem;
             }
             .feature-item p {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
             }
             .btn-home {
-                font-size: 0.95rem;
-                padding: 8px 20px;
+                font-size: 0.9rem;
+                padding: 6px 15px;
             }
         }
     </style>
