@@ -12,8 +12,9 @@
 <body style="background-color: #f8f9fa;">
 @include('admin.broadcast-modal')
 
-<!-- Sidebar -->
-<div id="sidebar" class="sidebar" style="height: 100vh; width: 250px; background-color: #343a40; position: fixed; top: 0; left: -250px; transition: left 0.3s; z-index: 1050; overflow-y: auto;">
+<!-- Sidebar (Fixed, Always Visible) -->
+<div id="sidebar" class="sidebar" 
+     style="height: 100vh; width: 250px; background-color: #343a40; position: fixed; top: 0; left: 0; z-index: 1050; overflow-y: auto;">
     <div class="sidebar-header" style="color: #fff; padding: 15px 20px; background-color: #212529; text-align: center;">
         <i class="bi bi-person-circle" style="font-size: 50px; color: #fff; margin-top: 10px;"></i>
         <h5 style="color: white;">{{ $admin->name }}</h5>
@@ -60,26 +61,23 @@
     </form>
 </div>
 
-
 <!-- Main Content -->
-<div id="main" class="main-content" style="margin-left: 0; transition: margin-left 0.3s;">
+<div id="main" class="main-content" style="margin-left: 250px; transition: margin-left 0.3s;">
     <div class="header bg-white shadow-sm p-3 d-flex justify-content-between align-items-center">
-        <button class="menu-toggle" onclick="toggleSidebar()" style="background: none; border: none; font-size: 24px;">☰</button>
         <h4 class="m-0">Biometric Emergency Access</h4>
 
         <!-- 🔔 Notification Bell -->
         <div class="dropdown me-3">
             <button class="btn btn-light position-relative" id="notificationBell" data-bs-toggle="dropdown">
                 <i class="bi bi-bell-fill fs-4"></i>
-                <span id="alertCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
-                    
-                </span>
+                <span id="alertCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end p-2" style="width: 300px; max-height: 400px; overflow-y: auto;" id="alertsList">
                 <li class="text-center text-muted">No new alerts</li>
             </ul>
         </div>
     </div>
+
 
     <div class="container mt-4">
 
