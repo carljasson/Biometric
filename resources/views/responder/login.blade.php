@@ -16,9 +16,10 @@
         backdrop-filter: blur(2px);
         display: flex;
         justify-content: center;
-        align-items: center; /* vertically center */
-        position: relative;
+        align-items: flex-start; /* start from top */
+        padding-top: 80px; /* push slightly below top for better float */
         font-family: Arial, sans-serif;
+        position: relative;
     }
 
     .login-card {
@@ -38,6 +39,7 @@
     .login-card h3 {
         font-weight: bold;
         margin-bottom: 25px;
+        text-align: center;
     }
 
     .form-control {
@@ -113,7 +115,7 @@
     <!-- Close/X button -->
     <button class="close-button" onclick="window.location.href='{{ url('/') }}';">&times;</button>
 
-    <h3 class="text-center">🚑 Emergency Responder Login</h3>
+    <h3>🚑 Emergency Responder Login</h3>
 
     @if(session('error'))
         <div class="alert alert-danger text-center">{{ session('error') }}</div>
