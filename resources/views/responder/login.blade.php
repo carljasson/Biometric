@@ -182,8 +182,7 @@
         <!-- Right: Login Form -->
         <div class="login-right">
             <!-- Close/X button -->
-            <button class="close-button" onclick="window.location.href='{{ url('/') }}';">&times;</button>
-
+        <a href="/" class="close-btn">×</a>
             <h3>Responder Login</h3>
 
             @if(session('error'))
