@@ -123,14 +123,14 @@
 
         /* Top-right menu */
         .top-menu {
-            position: absolute;
+            position: fixed; /* fixed so it's always visible */
             top: 15px;
             right: 20px;
             font-size: 1.8rem;
             cursor: pointer;
-            color: white;
+            color: #ffd700;
             text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
-            z-index: 20;
+            z-index: 9999;
         }
 
         .dropdown-menu-custom {
@@ -202,17 +202,18 @@
 
 <body>
     <div class="overlay">
-        <div class="landing-card">
-            <!-- Top-right menu -->
-            <div class="top-menu" id="menuToggle">
-                <i class="fas fa-bars"></i>
-                <div class="dropdown-menu-custom" id="dropdownMenu">
-                    <a href="{{ route('responder.login') }}" style="background-color:#007bff;">Login as Responder</a>
-                    <a href="{{ route('login') }}" style="background-color:#28a745;">Login as User</a>
-                    <a href="#" id="registerLink" style="background-color:#dc3545;">Register</a>
-                </div>
+        <!-- Top menu OUTSIDE landing-card -->
+        <div class="top-menu" id="menuToggle">
+            <i class="fas fa-bars"></i>
+            <div class="dropdown-menu-custom" id="dropdownMenu">
+                <a href="{{ route('responder.login') }}" style="background-color:#007bff;">Login as Responder</a>
+                <a href="{{ route('login') }}" style="background-color:#28a745;">Login as User</a>
+                <a href="#" id="registerLink" style="background-color:#dc3545;">Register</a>
             </div>
+        </div>
 
+        <!-- Landing card -->
+        <div class="landing-card">
             <div class="logo">
                 <img src="{{ asset('images/logo.png') }}" alt="Biometric Medical Access Logo" loading="lazy" decoding="async">
             </div>
