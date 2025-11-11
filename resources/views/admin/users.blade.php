@@ -14,39 +14,41 @@
     <!-- Users Cards -->
     <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         @foreach($users as $user)
-        <div class="bg-white shadow rounded p-4 flex flex-col justify-between hover:shadow-lg transition">
-            <div>
+        <div class="rounded shadow-lg transition hover:shadow-xl overflow-hidden">
+
+            <!-- Personal Info -->
+            <div class="bg-primary text-white p-3">
                 <h5 class="font-semibold text-lg">{{ $user->firstname }} {{ $user->lastname }}</h5>
-                <p class="text-sm text-gray-600"><strong>Email:</strong> {{ $user->email }}</p>
-                <p class="text-sm text-gray-600"><strong>Phone:</strong> {{ $user->phone }}</p>
-                <p class="text-sm text-gray-600"><strong>Age:</strong> {{ $user->age }}</p>
-                <p class="text-sm text-gray-600"><strong>Birthday:</strong> {{ $user->birthday }}</p>
+                <p class="text-sm"><strong>Email:</strong> {{ $user->email }}</p>
+                <p class="text-sm"><strong>Phone:</strong> {{ $user->phone }}</p>
+                <p class="text-sm"><strong>Age:</strong> {{ $user->age }}</p>
+                <p class="text-sm"><strong>Birthday:</strong> {{ $user->birthday }}</p>
+            </div>
 
-                <div class="mt-2">
-                    <p class="text-sm font-semibold text-gray-700">Contact Info</p>
-                    <p class="text-sm text-gray-600"><strong>Address:</strong> {{ $user->address }}</p>
-                    <p class="text-sm text-gray-600"><strong>Emergency:</strong> {{ $user->contact_name }} ({{ $user->contact_number }})</p>
-                </div>
+            <!-- Contact Info -->
+            <div class="bg-success text-white p-3">
+                <p class="text-sm"><strong>Address:</strong> {{ $user->address }}</p>
+                <p class="text-sm"><strong>Emergency Contact:</strong> {{ $user->contact_name }} ({{ $user->contact_number }})</p>
+            </div>
 
-                <div class="mt-2">
-                    <p class="text-sm font-semibold text-gray-700">Biometric Data</p>
-                    <p class="text-sm">
-                        Fingerprint: 
-                        @if($user->fingerprint_data)
-                            <span class="badge bg-success">Captured</span>
-                        @else
-                            <span class="badge bg-secondary">None</span>
-                        @endif
-                    </p>
-                    <p class="text-sm">
-                        Face Scan: 
-                        @if($user->face_scan_path)
-                            <a href="{{ asset('storage/' . $user->face_scan_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">View</a>
-                        @else
-                            <span class="badge bg-secondary">N/A</span>
-                        @endif
-                    </p>
-                </div>
+            <!-- Biometric Data -->
+            <div class="bg-warning text-dark p-3">
+                <p class="text-sm">
+                    Fingerprint: 
+                    @if($user->fingerprint_data)
+                        <span class="badge bg-success">Captured</span>
+                    @else
+                        <span class="badge bg-secondary">None</span>
+                    @endif
+                </p>
+                <p class="text-sm">
+                    Face Scan: 
+                    @if($user->face_scan_path)
+                        <a href="{{ asset('storage/' . $user->face_scan_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">View</a>
+                    @else
+                        <span class="badge bg-secondary">N/A</span>
+                    @endif
+                </p>
             </div>
         </div>
         @endforeach
