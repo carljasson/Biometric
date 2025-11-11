@@ -102,6 +102,9 @@
 
     <!-- ✅ Global Broadcast Modal Include -->
     @include('admin.broadcast-modal')
+
+    <!-- Blade Scripts -->
+@stack('scripts')
 </div>
 
 </body>
