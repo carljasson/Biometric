@@ -14,10 +14,10 @@
     <!-- Users Cards -->
     <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         @foreach($users as $user)
-        <div class="rounded shadow-lg transition hover:shadow-xl overflow-hidden">
+        <div class="rounded shadow-md overflow-hidden transition hover:shadow-lg">
 
             <!-- Personal Info -->
-            <div class="bg-primary text-white p-3">
+            <div class="bg-blue-100 text-gray-800 p-3">
                 <h5 class="font-semibold text-lg">{{ $user->firstname }} {{ $user->lastname }}</h5>
                 <p class="text-sm"><strong>Email:</strong> {{ $user->email }}</p>
                 <p class="text-sm"><strong>Phone:</strong> {{ $user->phone }}</p>
@@ -26,13 +26,13 @@
             </div>
 
             <!-- Contact Info -->
-            <div class="bg-success text-white p-3">
+            <div class="bg-green-100 text-gray-800 p-3">
                 <p class="text-sm"><strong>Address:</strong> {{ $user->address }}</p>
                 <p class="text-sm"><strong>Emergency Contact:</strong> {{ $user->contact_name }} ({{ $user->contact_number }})</p>
             </div>
 
             <!-- Biometric Data -->
-            <div class="bg-warning text-dark p-3">
+            <div class="bg-yellow-100 text-gray-800 p-3">
                 <p class="text-sm">
                     Fingerprint: 
                     @if($user->fingerprint_data)
