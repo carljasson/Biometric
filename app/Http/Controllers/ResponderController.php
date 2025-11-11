@@ -54,11 +54,7 @@ public function login(Request $request)
     return redirect()->route('responder.dashboard');
 }
 
-public function logout()
-{
-    Auth::guard('responder')->logout();
-    return redirect()->route('responder.login');
-}
+
 
  // Logout
     public function logout()
