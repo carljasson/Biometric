@@ -23,7 +23,6 @@
             padding: 0;
             height: 100%;
         }
-
         main {
             padding-top: 0 !important;
         }
@@ -65,7 +64,7 @@
                 <i class="bi bi-clock-history me-2"></i> Login History
             </a>
 
-            <!-- ✅ Broadcast Modal Trigger -->
+            <!-- Broadcast Modal Trigger -->
             <a href="#" data-bs-toggle="modal" data-bs-target="#broadcastModal" class="flex items-center px-4 py-2 hover:bg-gray-700">
                 <i class="bi bi-megaphone-fill me-2"></i> Broadcast Messages
             </a>
@@ -82,30 +81,35 @@
     <!-- Main content -->
     <div class="flex-1 flex flex-col transition-all duration-300" :class="sidebarOpen ? 'ml-64' : 'ml-0 sm:ml-64'">
 
-        <!-- Top Navigation -->
-        <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white border-b border-gray-200 flex justify-between items-center h-16">
-            <div class="flex items-center sm:hidden">
-                <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 focus:outline-none">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{ 'hidden': sidebarOpen, 'inline-flex': !sidebarOpen }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{ 'hidden': !sidebarOpen, 'inline-flex': sidebarOpen }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+        <!-- Header -->
+        <div class="header fixed top-0 left-0 right-0 z-10 bg-white shadow-sm p-3 d-flex justify-content-between align-items-center"
+             :style="sidebarOpen ? 'margin-left:16rem;' : 'margin-left:0;'">
+            <h4 class="m-0">Biometric Emergency Access</h4>
+
+            <!-- 🔔 Notification Bell -->
+            <div class="dropdown me-3">
+                <button class="btn btn-light position-relative" id="notificationBell" data-bs-toggle="dropdown">
+                    <i class="bi bi-bell-fill fs-4"></i>
+                    <span id="alertCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"></span>
                 </button>
+                <ul class="dropdown-menu dropdown-menu-end p-2" style="width: 300px; max-height: 400px; overflow-y: auto;" id="alertsList">
+                    <li class="text-center text-muted">No new alerts</li>
+                </ul>
             </div>
-        </header>
+        </div>
 
         <!-- Page Content -->
-        <main class="flex-1 overflow-auto p-0">
+        <main class="flex-1 overflow-auto p-4 mt-16">
             @yield('content')
         </main>
     </div>
 
-    <!-- ✅ Global Broadcast Modal Include -->
+    <!-- Global Broadcast Modal -->
     @include('admin.broadcast-modal')
 
     <!-- Blade Scripts -->
-@stack('scripts')
-</div>
+    @stack('scripts')
 
+</div>
 </body>
 </html>
