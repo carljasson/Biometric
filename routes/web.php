@@ -28,7 +28,6 @@ Route::get('/', fn () => view('welcome'))->name('welcome');
 // 👤 USER AUTH & DASHBOARD
 // =========================
 // 1️⃣ Custom login form
-use App\Http\Controllers\Auth\LoginController;
 
 Route::post('/login', [CustomLoginController::class, 'authenticate'])->name('login');
 Route::get('/login/pin', [CustomLoginController::class, 'showPinForm'])->name('login.pin');
