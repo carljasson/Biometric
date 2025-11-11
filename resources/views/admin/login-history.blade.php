@@ -1,12 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="main-content flex-grow-1 p-3">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <h6 class="mb-0 text-secondary">
-                <i class="bi bi-clock-history me-1"></i> Login History
-            </h6>
+<div class="main-content flex-grow-1 p-4" style="margin-left: 16rem; min-height: 100vh; background-color: #f8f9fa;">
+
+    <div class="card shadow-sm border-0 w-100">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3 px-4 border-bottom">
+            <h5 class="mb-0 text-secondary fw-semibold">
+                <i class="bi bi-clock-history me-2"></i> Login History
+            </h5>
             <small class="text-muted">
                 Showing latest {{ $entries->count() }} entries
             </small>
@@ -14,7 +15,7 @@
 
         <div class="card-body p-0">
             <div class="table-responsive" style="max-height: calc(100vh - 220px); overflow-y: auto;">
-                <table class="table table-hover table-striped align-middle mb-0">
+                <table class="table table-striped table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th class="text-center" style="width: 18%;">Date & Time</th>
@@ -27,8 +28,8 @@
                     <tbody>
                         @forelse($entries as $e)
                             <tr>
-                                <td class="text-center">
-                                    <span class="badge bg-light text-dark fw-normal small">
+                                <td class="text-center small">
+                                    <span class="badge bg-light text-dark fw-normal">
                                         {{ $e->logged_in_at->format('Y-m-d H:i:s') }}
                                     </span>
                                 </td>
@@ -46,7 +47,7 @@
                                     </span>
                                 </td>
                                 <td><code class="small">{{ $e->ip }}</code></td>
-                                <td class="text-truncate" title="{{ $e->device }}" style="max-width: 200px;">
+                                <td class="text-truncate" title="{{ $e->device }}" style="max-width: 250px;">
                                     {{ $e->device }}
                                 </td>
                             </tr>
@@ -66,19 +67,16 @@
 
 <style>
 body {
-    overflow-x: hidden; /* prevents horizontal scroll */
+    overflow-x: hidden;
 }
 
 .main-content {
-    margin-left: 16rem; /* Sidebar width */
-    transition: margin-left 0.3s;
-    min-height: calc(100vh - 2rem);
+    transition: margin-left 0.3s ease;
 }
 
-/* Table hover effect */
+/* Table tweaks */
 .table-hover tbody tr:hover {
-    background-color: #f8f9fa !important;
-    transition: background-color 0.2s ease-in-out;
+    background-color: #f1f3f5 !important;
 }
 
 .badge.bg-primary-subtle {
@@ -87,12 +85,7 @@ body {
     font-size: 0.8rem;
 }
 
-.text-truncate {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
+/* Scrollbar styling */
 .table-responsive::-webkit-scrollbar {
     width: 8px;
     height: 8px;
