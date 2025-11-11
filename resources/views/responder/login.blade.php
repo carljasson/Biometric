@@ -93,9 +93,6 @@
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
-
-    /* Force reCAPTCHA badge to show */
-    .grecaptcha-badge { visibility: visible !important; }
 </style>
 
 <a href="javascript:void(0)" onclick="window.history.back(); return false;" class="back-button">← Back</a>
@@ -125,8 +122,8 @@
             @enderror
         </div>
 
-        <!-- Hidden input for reCAPTCHA token -->
-        <input type="hidden" name="g-recaptcha-response" id="recaptchaResponse">
+        {{-- Temporarily disabled reCAPTCHA --}}
+        {{-- <input type="hidden" name="g-recaptcha-response" id="recaptchaResponse"> --}}
 
         <div class="d-grid">
             <button type="submit" class="btn btn-primary">Login</button>
@@ -134,13 +131,5 @@
     </form>
 </div>
 
-{{-- ✅ Google reCAPTCHA v3 --}}
-<script src="https://www.google.com/recaptcha/api.js?render={{ env('RECAPTCHA_SITEKEY') }}"></script>
-<script>
-    grecaptcha.ready(function() {
-        grecaptcha.execute('{{ env('RECAPTCHA_SITEKEY') }}', {action: 'login'}).then(function(token) {
-            document.getElementById('recaptchaResponse').value = token;
-        });
-    });
-</script>
+{{-- reCAPTCHA temporarily removed --}}
 @endsection
