@@ -15,24 +15,30 @@
         background-size: cover;
         background-color: rgba(0, 0, 0, 0.6);
         backdrop-filter: blur(2px);
+    }
 
+    /* Wrapper to center the login container */
+    .responder-login-wrapper {
         display: flex;
-        justify-content: center; /* horizontal center */
-        align-items: center;     /* vertical center */
-        min-height: 100vh;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100%;
+        padding: 20px;
+        box-sizing: border-box;
     }
 
     .login-container {
         display: flex;
         max-width: 900px;
-        width: 90%;
+        width: 100%;
         background-color: rgba(255, 255, 255, 0.3);
         backdrop-filter: blur(10px);
         border-radius: 16px;
         overflow: hidden;
         box-shadow: 0 8px 30px rgba(0,0,0,0.3);
         animation: fadeIn 0.6s ease-in-out;
-        align-items: center;
+        align-items: stretch;
     }
 
     /* Left: Motivational Message */
@@ -152,7 +158,6 @@
     @media (max-width: 768px) {
         .login-container {
             flex-direction: column;
-            width: 95%;
         }
         .login-left {
             border-right: none;
@@ -165,48 +170,51 @@
     }
 </style>
 
-<div class="login-container">
+<div class="responder-login-wrapper">
+    <div class="login-container">
 
-    <!-- Left: Motivational Message -->
-    <div class="login-left">
-        <h2>🚑 Welcome, Hero!</h2>
-        <p>Every second counts. Your bravery and quick action can save lives. Log in now and be ready to respond to emergencies and make a real difference in your community.</p>
-    </div>
+        <!-- Left: Motivational Message -->
+        <div class="login-left">
+            <h2>🚑 Welcome, Hero!</h2>
+            <p>Every second counts. Your bravery and quick action can save lives. Log in now and be ready to respond to emergencies and make a real difference in your community.</p>
+        </div>
 
-    <!-- Right: Login Form -->
-    <div class="login-right">
-        <!-- Close/X button -->
-        <button class="close-button" onclick="window.location.href='{{ url('/') }}';">&times;</button>
+        <!-- Right: Login Form -->
+        <div class="login-right">
+            <!-- Close/X button -->
+            <button class="close-button" onclick="window.location.href='{{ url('/') }}';">&times;</button>
 
-        <h3>Responder Login</h3>
+            <h3>Responder Login</h3>
 
-        @if(session('error'))
-            <div class="alert alert-danger text-center">{{ session('error') }}</div>
-        @endif
+            @if(session('error'))
+                <div class="alert alert-danger text-center">{{ session('error') }}</div>
+            @endif
 
-        <form id="responder-login-form" method="POST" action="{{ route('responder.login.submit') }}">
-            @csrf
+            <form id="responder-login-form" method="POST" action="{{ route('responder.login.submit') }}">
+                @csrf
 
-            <div class="mb-3">
-                <input type="email" name="email" value="{{ old('email') }}" class="form-control" placeholder="Email Address" required>
-                @error('email')
-                    <div class="text-danger mt-1">{{ $message }}</div>
-                @enderror
-            </div>
+                <div class="mb-3">
+                    <input type="email" name="email" value="{{ old('email') }}" class="form-control" placeholder="Email Address" required>
+                    @error('email')
+                        <div class="text-danger mt-1">{{ $message }}</div>
+                    @enderror
+                </div>
 
-            <div class="mb-3">
-                <input type="password" name="password" class="form-control" placeholder="Password" required>
-                @error('password')
-                    <div class="text-danger mt-1">{{ $message }}</div>
-                @enderror
-            </div>
+                <div class="mb-3">
+                    <input type="password" name="password" class="form-control" placeholder="Password" required>
+                    @error('password')
+                        <div class="text-danger mt-1">{{ $message }}</div>
+                    @enderror
+                </div>
 
-            <input type="hidden" name="g-recaptcha-response" id="recaptchaResponse">
+                <input type="hidden" name="g-recaptcha-response" id="recaptchaResponse">
 
-            <div class="d-grid">
-                <button type="submit" class="btn btn-primary">Login</button>
-            </div>
-        </form>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </form>
+        </div>
+
     </div>
 </div>
 
