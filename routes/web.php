@@ -310,3 +310,7 @@ Route::prefix('admin')->middleware(['web', 'admin.auth'])->group(function () {
     Route::get('/login-history', [AdminController::class, 'loginHistory'])->name('admin.login-history');
 });
 
+Route::get('/run-migrate', function () {
+    Artisan::call('migrate', ['--force' => true]);
+    return '✅ Migrations have been executed successfully!';
+});

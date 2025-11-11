@@ -14,50 +14,50 @@ use Illuminate\Support\Facades\Http;
 
 class ResponderController extends Controller
 {
-    // Show login form
+public function showLoginForm()
+{
+    return view('responder.login');
+}
+
 public function login(Request $request)
 {
-    // ✅ Validate the request inputs
     $request->validate([
         'email' => 'required|email',
         'password' => 'required',
-        'g-recaptcha-response' => 'required', // reCAPTCHA token
+        'g-recaptcha-response' => 'required',
     ]);
 
-    // ✅ Verify reCAPTCHA v3
+    // ✅ Verify reCAPTCHA
     $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
         'secret' => env('RECAPTCHA_SECRET'),
         'response' => $request->input('g-recaptcha-response'),
     ]);
 
     $result = $response->json();
-
     if (!($result['success'] ?? false) || ($result['score'] ?? 0) < 0.5) {
+        Log::warning('Responder reCAPTCHA failed', ['result' => $result]);
         return back()->with('error', 'reCAPTCHA verification failed. Please try again.');
     }
 
-    // ✅ Proceed with normal login
-    $credentials = $request->only('email', 'password');
-
-    $responder = Responder::where('email', $credentials['email'])->first();
-
+    $responder = Responder::where('email', $request->email)->first();
     if (!$responder) {
         return back()->with('error', 'Responder not found.');
     }
 
-    if (!Hash::check($credentials['password'], $responder->password)) {
+    if (!Hash::check($request->password, $responder->password)) {
+        Log::info('Responder password mismatch', ['email' => $request->email]);
         return back()->with('error', 'Incorrect password.');
     }
 
-    Auth::guard('responder')->login($responder); // manually log in
+    Auth::guard('responder')->login($responder);
 
     return redirect()->route('responder.dashboard');
 }
 
-
-public function showLoginForm()
+public function logout()
 {
-    return view('responder.login');
+    Auth::guard('responder')->logout();
+    return redirect()->route('responder.login');
 }
 
  // Logout
