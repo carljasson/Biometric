@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid px-0">
 
-    <div class="card shadow-sm border-0 mb-4">
+    <div class="card shadow-sm border-0">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h6 class="mb-0 text-secondary">
                 <i class="bi bi-clock-history me-1"></i> Login History
@@ -15,7 +15,7 @@
 
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover table-striped align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th class="text-center" style="width: 18%;">Date & Time</th>
@@ -66,8 +66,17 @@
 
 </div>
 
-{{-- Custom styling to match system aesthetics --}}
+{{-- Custom CSS to match system style and sidebar --}}
 <style>
+html, body {
+    height: 100%;
+}
+
+.container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
 .table-hover tbody tr:hover {
     background-color: #f1f3f5 !important;
     transition: 0.2s ease-in-out;
@@ -75,6 +84,7 @@
 
 .card {
     border-radius: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .card-header {
@@ -91,5 +101,11 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* Make table occupy full width minus sidebar */
+.main-content {
+    padding: 1rem;
+    margin-left: 0; /* let your app layout handle sidebar spacing */
 }
 </style>
