@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <title>Biometric Medical Access</title>
@@ -16,24 +16,29 @@
         frame-ancestors 'none';
         upgrade-insecure-requests;
         script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'nonce-{{ $cspNonce }}';
-        style-src  'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'nonce-{{ $cspNonce }}';
+        style-src  'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-inline' 'nonce-{{ $cspNonce }}';
         img-src 'self' data:;
-        font-src 'self' https://cdnjs.cloudflare.com;
+        font-src 'self';
         connect-src 'self';
     ">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {{-- ✅ Keep your CDNs; add safer attributes --}}
+    {{-- ✅ Bootstrap CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
           rel="stylesheet"
           crossorigin="anonymous"
           referrerpolicy="no-referrer">
+
+    {{-- ✅ Font Awesome (still from CDN) --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
           rel="stylesheet"
           crossorigin="anonymous"
           referrerpolicy="no-referrer">
+
+    {{-- ✅ Local Bootstrap Icons (fix for CSP-blocked icons) --}}
+    <link rel="stylesheet" href="{{ asset('bootstrap-icons/bootstrap-icons.css') }}">
 
     {{-- ✅ Fullscreen scalable background --}}
     <style nonce="{{ $cspNonce }}">
@@ -69,6 +74,7 @@
             gap: 15px;
             align-items: center;
         }
+
         .top-right-icons a,
         .top-right-icons .dropdown-toggle {
             color: white;
@@ -79,6 +85,7 @@
             transition: background-color 0.3s ease;
             text-decoration: none;
         }
+
         .top-right-icons a:hover,
         .top-right-icons .dropdown-toggle:hover {
             background-color: rgba(255,255,255,0.2);
@@ -121,13 +128,13 @@
     {{-- Top Right Icons --}}
     <div class="top-right-icons">
         <a href="/" title="Dashboard" rel="noopener noreferrer" referrerpolicy="no-referrer">
-            <i class="fas fa-home"></i>
+            <i class="bi bi-house-door-fill"></i>
         </a>
 
         {{-- Login Dropdown --}}
         <div class="dropdown">
             <a class="dropdown-toggle" href="#" role="button" id="loginDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Login">
-                <i class="fas fa-sign-in-alt"></i>
+                <i class="bi bi-box-arrow-in-right"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="loginDropdown">
                 <li><a class="dropdown-item" href="{{ route('login') }}">Login as User</a></li>
@@ -137,11 +144,11 @@
 
         {{-- Register (Info Only) --}}
         <a href="#" title="Signup" data-bs-toggle="modal" data-bs-target="#registerModal">
-            <i class="fas fa-user-plus"></i>
+            <i class="bi bi-person-plus-fill"></i>
         </a>
 
         <a href="#" title="Tips" data-bs-toggle="modal" data-bs-target="#tipsModal">
-            <i class="fas fa-lightbulb"></i>
+            <i class="bi bi-lightbulb-fill"></i>
         </a>
     </div>
 
