@@ -72,7 +72,7 @@
 </div>
 @endsection
 
-@push('scripts')
+@stack('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('searchUsers').addEventListener('input', function () {
