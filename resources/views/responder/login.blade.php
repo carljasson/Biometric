@@ -31,6 +31,7 @@
         overflow: hidden;
         box-shadow: 0 8px 30px rgba(0,0,0,0.3);
         animation: fadeIn 0.6s ease-in-out;
+        align-items: stretch;
     }
 
     .login-left {
@@ -142,10 +143,15 @@
     @media (max-width: 768px) {
         .login-container {
             flex-direction: column;
+            align-items: center;
         }
         .login-left {
             border-right: none;
             border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding: 30px 20px;
+        }
+        .login-right {
+            padding: 30px 20px;
         }
     }
 </style>
