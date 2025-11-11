@@ -46,13 +46,6 @@
             align-items: center;
             justify-content: center;
         }
-        .top-right-icons { position: absolute; top: 20px; right: 20px; display: flex; gap: 12px; z-index: 999; }
-        .top-right-icons a, .top-right-icons .dropdown-toggle {
-            color: white; background-color: rgba(0, 0, 0, 0.6); padding: 10px; border-radius: 50%; font-size: 1.3rem;
-            transition: 0.3s; text-decoration: none;
-        }
-        .top-right-icons a:hover, .top-right-icons .dropdown-toggle:hover { background-color: rgba(255,255,255,0.25); }
-        .dropdown-menu-dark { background-color: #343a40; }
         .login-card {
             background-color: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(8px);
@@ -77,25 +70,6 @@
     </style>
 </head>
 <body>
-
-<div class="top-right-icons">
-    <a href="/" title="Home"><i class="fas fa-home"></i></a>
-    <div class="dropdown">
-        <a class="dropdown-toggle" href="#" role="button" id="loginDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-sign-in-alt"></i>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="loginDropdown">
-            <li><a class="dropdown-item" href="{{ route('login') }}">Login as User</a></li>
-            <li><a class="dropdown-item" href="{{ route('responder.login') }}">Login as Responder</a></li>
-        </ul>
-    </div>
-    <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" title="Signup">
-        <i class="fas fa-user-plus"></i>
-    </a>
-    <a href="#" data-bs-toggle="modal" data-bs-target="#tipsModal" title="Tips">
-        <i class="fas fa-lightbulb"></i>
-    </a>
-</div>
 
 <div class="login-card">
     <div class="text-center mb-4"><h4>🔒 Login to Access</h4></div>
