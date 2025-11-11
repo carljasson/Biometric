@@ -7,6 +7,7 @@
         margin: 0;
         padding: 0;
         overflow: hidden; /* remove scroll bar */
+        font-family: Arial, sans-serif;
     }
 
     body {
@@ -16,30 +17,59 @@
         backdrop-filter: blur(2px);
         display: flex;
         justify-content: center;
-        align-items: flex-start; /* start from top */
-        padding-top: 80px; /* push slightly below top for better float */
-        font-family: Arial, sans-serif;
-        position: relative;
+        align-items: center; /* vertical center */
+        padding: 20px;
     }
 
-    .login-card {
-        background-color: #ffffff10;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 16px;
-        padding: 30px;
+    .login-container {
+        display: flex;
+        max-width: 900px;
         width: 100%;
-        max-width: 400px;
-        color: white;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        background-color: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
         animation: fadeIn 0.6s ease-in-out;
-        position: relative;
     }
 
-    .login-card h3 {
+    .login-left {
+        flex: 1;
+        background-color: rgba(0,0,0,0.3);
+        padding: 50px 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        color: #fff;
+        text-align: center;
+        border-right: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .login-left h2 {
+        font-weight: bold;
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+
+    .login-left p {
+        font-size: 1.1rem;
+        line-height: 1.5;
+    }
+
+    .login-right {
+        flex: 1;
+        padding: 40px 30px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        color: white;
+    }
+
+    .login-right h3 {
+        text-align: center;
         font-weight: bold;
         margin-bottom: 25px;
-        text-align: center;
     }
 
     .form-control {
@@ -49,7 +79,7 @@
     }
 
     .form-control::placeholder {
-        color: rgba(255, 255, 255, 0.6);
+        color: rgba(255,255,255,0.6);
     }
 
     .form-control:focus {
@@ -71,13 +101,13 @@
         color: #0a58ca;
     }
 
+    .text-danger {
+        font-size: 0.875rem;
+    }
+
     .alert-danger {
         background-color: rgba(220, 53, 69, 0.9);
         border: none;
-    }
-
-    .text-danger {
-        font-size: 0.875rem;
     }
 
     /* X / Close button */
@@ -108,46 +138,64 @@
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
+
+    @media (max-width: 768px) {
+        .login-container {
+            flex-direction: column;
+        }
+        .login-left {
+            border-right: none;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+    }
 </style>
 
-<div class="login-card text-white">
+<div class="login-container">
 
-    <!-- Close/X button -->
-    <button class="close-button" onclick="window.location.href='{{ url('/') }}';">&times;</button>
+    <!-- Left: Motivational / Encouraging Message -->
+    <div class="login-left">
+        <h2>Welcome, Hero!</h2>
+        <p>Every second counts. Your bravery and quick action can save lives. Log in now and be ready to respond to emergencies and make a real difference in your community.</p>
+    </div>
 
-    <h3>🚑 Emergency Responder Login</h3>
+    <!-- Right: Login Form -->
+    <div class="login-right">
+        <!-- Close/X button -->
+        <button class="close-button" onclick="window.location.href='{{ url('/') }}';">&times;</button>
 
-    @if(session('error'))
-        <div class="alert alert-danger text-center">{{ session('error') }}</div>
-    @endif
+        <h3>🚑 Responder Login</h3>
 
-    <form id="responder-login-form" method="POST" action="{{ route('responder.login.submit') }}">
-        @csrf
+        @if(session('error'))
+            <div class="alert alert-danger text-center">{{ session('error') }}</div>
+        @endif
 
-        <div class="mb-3">
-            <input type="email" name="email" value="{{ old('email') }}" class="form-control" placeholder="Email Address" required>
-            @error('email')
-                <div class="text-danger mt-1">{{ $message }}</div>
-            @enderror
-        </div>
+        <form id="responder-login-form" method="POST" action="{{ route('responder.login.submit') }}">
+            @csrf
 
-        <div class="mb-3">
-            <input type="password" name="password" class="form-control" placeholder="Password" required>
-            @error('password')
-                <div class="text-danger mt-1">{{ $message }}</div>
-            @enderror
-        </div>
+            <div class="mb-3">
+                <input type="email" name="email" value="{{ old('email') }}" class="form-control" placeholder="Email Address" required>
+                @error('email')
+                    <div class="text-danger mt-1">{{ $message }}</div>
+                @enderror
+            </div>
 
-        {{-- Hidden input for reCAPTCHA token --}}
-        <input type="hidden" name="g-recaptcha-response" id="recaptchaResponse">
+            <div class="mb-3">
+                <input type="password" name="password" class="form-control" placeholder="Password" required>
+                @error('password')
+                    <div class="text-danger mt-1">{{ $message }}</div>
+                @enderror
+            </div>
 
-        <div class="d-grid">
-            <button type="submit" class="btn btn-primary">Login</button>
-        </div>
-    </form>
+            <input type="hidden" name="g-recaptcha-response" id="recaptchaResponse">
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </form>
+    </div>
 </div>
 
-{{-- ✅ Google reCAPTCHA v3 --}}
+{{-- Google reCAPTCHA v3 --}}
 <script src="https://www.google.com/recaptcha/api.js?render={{ env('RECAPTCHA_SITEKEY') }}"></script>
 <script>
     grecaptcha.ready(function() {
