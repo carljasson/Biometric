@@ -14,8 +14,9 @@
         background-color: rgba(0, 0, 0, 0.6);
         backdrop-filter: blur(2px);
         display: flex;
-        align-items: center;
         justify-content: center;
+        /* Remove vertical centering to adjust manually */
+        position: relative;
     }
 
     .login-container {
@@ -28,7 +29,9 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.2);
         box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-        position: relative;
+        position: absolute;
+        top: 20%; /* push down from top */
+        transform: translateY(0); /* no perfect vertical centering */
         animation: fadeIn 0.6s ease-in-out;
     }
 
