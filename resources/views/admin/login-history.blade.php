@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="main-content flex-grow-1 p-4" style="margin-left: 16rem;"> <!-- 16rem = 256px sidebar width -->
-
+<div class="main-content flex-grow-1 p-3">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h6 class="mb-0 text-secondary">
@@ -14,7 +13,7 @@
         </div>
 
         <div class="card-body p-0">
-            <div class="table-responsive">
+            <div class="table-responsive" style="max-height: calc(100vh - 220px); overflow-y: auto;">
                 <table class="table table-hover table-striped align-middle mb-0">
                     <thead class="table-light">
                         <tr>
@@ -47,7 +46,7 @@
                                     </span>
                                 </td>
                                 <td><code class="small">{{ $e->ip }}</code></td>
-                                <td class="text-truncate" style="max-width: 250px;">
+                                <td class="text-truncate" title="{{ $e->device }}" style="max-width: 200px;">
                                     {{ $e->device }}
                                 </td>
                             </tr>
@@ -63,22 +62,23 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <style>
+body {
+    overflow-x: hidden; /* prevents horizontal scroll */
+}
+
 .main-content {
+    margin-left: 16rem; /* Sidebar width */
     transition: margin-left 0.3s;
+    min-height: calc(100vh - 2rem);
 }
 
-/* Adjust table style */
+/* Table hover effect */
 .table-hover tbody tr:hover {
-    background-color: #f1f3f5 !important;
-    transition: 0.2s ease-in-out;
-}
-
-.card-header {
-    border-bottom: 1px solid #e9ecef;
+    background-color: #f8f9fa !important;
+    transition: background-color 0.2s ease-in-out;
 }
 
 .badge.bg-primary-subtle {
@@ -92,18 +92,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-</style>
 
-<script>
-// Optional: handle sidebar toggle dynamically
-document.addEventListener('alpine:init', () => {
-    Alpine.data('sidebarAdjust', () => ({
-        sidebarOpen: false,
-        toggleSidebar() {
-            this.sidebarOpen = !this.sidebarOpen;
-            const main = document.querySelector('.main-content');
-            main.style.marginLeft = this.sidebarOpen ? '16rem' : '4rem'; // adjust width
-        }
-    }))
-});
-</script>
+.table-responsive::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+    background-color: #c1c1c1;
+    border-radius: 10px;
+}
+</style>
+@endsection
