@@ -52,14 +52,14 @@
         }
 
         .landing-card {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             padding: 25px 20px;
             width: 100%;
             max-width: 800px;
             text-align: center;
-            box-shadow: 0 0 20px rgba(0,0,0,0.6);
-            backdrop-filter: blur(8px);
+            box-shadow: 0 0 25px rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
             position: relative;
         }
 
@@ -73,7 +73,7 @@
         .landing-card h1 {
             font-size: 1.8rem;
             margin-bottom: 0.8rem;
-            text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
         }
 
         .features {
@@ -87,7 +87,7 @@
         .feature-item {
             flex: 1 1 100%;
             max-width: 220px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 15px;
             padding: 12px;
             transition: transform 0.3s, background 0.3s;
@@ -95,7 +95,7 @@
 
         .feature-item:hover {
             transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
         }
 
         .feature-item i {
@@ -126,35 +126,42 @@
             position: absolute;
             top: 15px;
             right: 20px;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             cursor: pointer;
-            color: #ffd700;
-            z-index: 10;
+            color: white;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
+            z-index: 20;
         }
 
         .dropdown-menu-custom {
             position: absolute;
-            top: 40px;
+            top: 45px;
             right: 0;
-            background-color: rgba(0,0,0,0.9);
-            border-radius: 10px;
+            background-color: rgba(0,0,0,0.95);
+            border-radius: 12px;
             overflow: hidden;
             display: none;
             flex-direction: column;
-            min-width: 160px;
+            min-width: 180px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
         .dropdown-menu-custom a {
-            padding: 10px 15px;
+            padding: 12px 15px;
             color: white;
             text-decoration: none;
             display: block;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .dropdown-menu-custom a:last-child {
+            border-bottom: none;
         }
 
         .dropdown-menu-custom a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: #ffd700;
+            opacity: 0.9;
         }
 
         @media(max-width: 576px) {
@@ -187,7 +194,7 @@
                 padding: 6px 15px;
             }
             .top-menu {
-                font-size: 1.3rem;
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -200,9 +207,9 @@
             <div class="top-menu" id="menuToggle">
                 <i class="fas fa-bars"></i>
                 <div class="dropdown-menu-custom" id="dropdownMenu">
-                    <a href="{{ route('responder.login') }}">Login as Responder</a>
-                    <a href="{{ route('login') }}">Login as User</a>
-                    <a href="#" id="registerLink">Register</a>
+                    <a href="{{ route('responder.login') }}" style="background-color:#007bff;">Login as Responder</a>
+                    <a href="{{ route('login') }}" style="background-color:#28a745;">Login as User</a>
+                    <a href="#" id="registerLink" style="background-color:#dc3545;">Register</a>
                 </div>
             </div>
 
