@@ -13,59 +13,83 @@ class SecureHeaders
 
         /*
         |--------------------------------------------------------------------------
-        | SECURITY HEADERS (ALL FIXED)
+        | SECURITY HEADERS
         |--------------------------------------------------------------------------
         */
 
-        // HSTS - Required for HTTPS security
+        // HSTS (Force HTTPS)
         $response->headers->set(
             'Strict-Transport-Security',
             'max-age=31536000; includeSubDomains'
         );
 
-        // Prevent clickjacking
+        // Prevent Clickjacking
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
 
-        // Prevent MIME sniffing
+        // Prevent MIME Sniffing
         $response->headers->set('X-Content-Type-Options', 'nosniff');
 
-        // Control referrer behavior
-        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+        // Referrer Policy
+        $response->headers->set(
+            'Referrer-Policy',
+            'strict-origin-when-cross-origin'
+        );
 
-        // Permissions Policy – safer version to avoid blocking browser features
+        // Permissions Policy
         $response->headers->set(
             'Permissions-Policy',
             "geolocation=(), microphone=(), camera=(), fullscreen=(self), payment=()"
         );
 
-        // Required for cross-origin isolation
+        // Cross-Origin Isolation
         $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
         $response->headers->set('Cross-Origin-Embedder-Policy', 'require-corp');
         $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
 
         /*
         |--------------------------------------------------------------------------
-        | SAFE CONTENT SECURITY POLICY
+        | CONTENT SECURITY POLICY (CSP)
         |--------------------------------------------------------------------------
-        | Your previous CSP was too strict and would break Laravel, Bootstrap,
-        | JS libraries, images, and sometimes Hostinger itself.
+        | Compatible with Laravel, JS, SweetAlert, Bootstrap,
+        | reCAPTCHA, CDNJS, and JSDelivr.
         |--------------------------------------------------------------------------
         */
 
         $response->headers->set(
             'Content-Security-Policy',
             "default-src 'self';
+
              img-src 'self' data: https:;
-             script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
-             style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+
+             script-src 
+                'self'
+                https://www.gstatic.com
+                https://www.google.com
+                https://www.google-analytics.com
+                https://cdn.jsdelivr.net
+                https://cdnjs.cloudflare.com;
+
+             style-src
+                'self'
+                https://cdn.jsdelivr.net
+                https://cdnjs.cloudflare.com
+                'unsafe-inline';
+
+             frame-src 
+                https://www.google.com 
+                https://www.gstatic.com;
+
              font-src 'self' data: https:;
+
              connect-src 'self' https:;
+
              frame-ancestors 'self';
+
              base-uri 'self';
              form-action 'self';"
         );
 
-        // Remove PHP version leak
+        // Remove X-Powered-By (security)
         if (function_exists('header_remove')) {
             header_remove('X-Powered-By');
         }
