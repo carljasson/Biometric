@@ -40,9 +40,22 @@
 </IfModule>
 
 # ===== SECURITY BLOCKS =====
+# Block hidden files like .env
 <FilesMatch "^\.">
-    Order allow,deny
-    Deny from all
+    Require all denied
 </FilesMatch>
 
+# Block sensitive directories
 RedirectMatch 403 ^/(vendor|storage|bootstrap|config|database|resources|routes|tests)(.*)$
+
+# Block direct access to images you want private
+<FilesMatch "logo\.png">
+    Require all denied
+</FilesMatch>
+
+# Optionally, block all .php files outside index.php
+<FilesMatch "\.php$">
+    <If "%{REQUEST_URI} !~ m#^/index\.php$#">
+        Require all denied
+    </If>
+</FilesMatch>
