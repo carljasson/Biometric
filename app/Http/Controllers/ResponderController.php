@@ -26,19 +26,49 @@ public function login(Request $request)
         'password' => 'required',
     ]);
 
-    $responder = Responder::where('email', $request->email)->first();
+    $email = $request->email;
+    $attemptsKey = 'responder_login_attempts_' . $email;
+    $lockoutKey = 'responder_login_lockout_' . $email;
 
+    // Check if user is currently locked out
+    if (Cache::has($lockoutKey)) {
+        $secondsLeft = Cache::get($lockoutKey) - time();
+        return back()
+            ->with('error', "Too many failed attempts. Please wait {$secondsLeft} seconds.")
+            ->with('lockout', $secondsLeft);
+    }
+
+    $responder = Responder::where('email', $email)->first();
+
+    // If responder not found
     if (!$responder) {
+        $this->incrementAttempts($attemptsKey, $lockoutKey);
         return back()->with('error', 'Responder not found.');
     }
 
+    // If password is incorrect
     if (!Hash::check($request->password, $responder->password)) {
+        $this->incrementAttempts($attemptsKey, $lockoutKey);
         return back()->with('error', 'Incorrect password.');
     }
 
+    // Successful login: clear attempts
+    Cache::forget($attemptsKey);
     Auth::guard('responder')->login($responder);
 
     return redirect()->route('responder.dashboard');
+}
+
+// Helper function to handle login attempts
+protected function incrementAttempts($attemptsKey, $lockoutKey)
+{
+    $attempts = Cache::get($attemptsKey, 0) + 1;
+    Cache::put($attemptsKey, $attempts, 120); // store attempts for 2 mins
+
+    if ($attempts >= 3) {
+        $lockoutTime = 120; // 2 minutes in seconds
+        Cache::put($lockoutKey, time() + $lockoutTime, $lockoutTime);
+    }
 }
 
 

@@ -110,10 +110,17 @@
 
     @if(session('error'))
         <div class="alert alert-danger text-center">{{ session('error') }}</div>
-        <div class="countdown-timer" id="countdown">Redirecting in 2:00 minutes...</div>
     @endif
 
-    <form id="responder-login-form" method="POST" action="{{ route('responder.login.submit') }}">
+    {{-- Show countdown if locked out --}}
+    @if(session('lockout'))
+        <div class="countdown-timer">
+            Too many failed attempts. Try again in <span id="lockout-timer">{{ session('lockout') }}</span> seconds.
+        </div>
+    @endif
+
+    <form id="responder-login-form" method="POST" action="{{ route('responder.login.submit') }}"
+          @if(session('lockout')) style="pointer-events:none; opacity:0.6;" @endif>
         @csrf
 
         <div class="mb-3">
@@ -130,36 +137,30 @@
             @enderror
         </div>
 
-        {{-- Temporarily disabled reCAPTCHA --}}
-        {{-- <input type="hidden" name="g-recaptcha-response" id="recaptchaResponse"> --}}
-
         <div class="d-grid">
-            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" class="btn btn-primary" @if(session('lockout')) disabled @endif>Login</button>
         </div>
     </form>
 </div>
 
-{{-- Countdown timer script --}}
-@if(session('error'))
+@if(session('lockout'))
 <script>
-    let totalSeconds = 120; // 2 minutes
-    const countdownEl = document.getElementById('countdown');
+    let secondsLeft = {{ session('lockout') }};
+    const timerEl = document.getElementById('lockout-timer');
+    const form = document.getElementById('responder-login-form');
+    const button = form.querySelector('button[type="submit"]');
 
     const timer = setInterval(() => {
-        totalSeconds--;
+        secondsLeft--;
+        timerEl.textContent = secondsLeft;
 
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-
-        countdownEl.textContent = `Redirecting in ${minutes}:${seconds.toString().padStart(2,'0')} minutes...`;
-
-        if (totalSeconds <= 0) {
+        if (secondsLeft <= 0) {
             clearInterval(timer);
-            window.location.href = "{{ route('responder.login') }}";
+            form.style.pointerEvents = 'auto';
+            form.style.opacity = '1';
+            button.disabled = false;
         }
     }, 1000);
 </script>
 @endif
-
-{{-- reCAPTCHA temporarily removed --}}
 @endsection
