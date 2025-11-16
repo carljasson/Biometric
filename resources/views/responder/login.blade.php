@@ -89,6 +89,13 @@
         background-color: #0056b3;
     }
 
+    .countdown-timer {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #ffdddd;
+    }
+
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
@@ -103,6 +110,7 @@
 
     @if(session('error'))
         <div class="alert alert-danger text-center">{{ session('error') }}</div>
+        <div class="countdown-timer" id="countdown">Redirecting in 2:00 minutes...</div>
     @endif
 
     <form id="responder-login-form" method="POST" action="{{ route('responder.login.submit') }}">
@@ -130,6 +138,28 @@
         </div>
     </form>
 </div>
+
+{{-- Countdown timer script --}}
+@if(session('error'))
+<script>
+    let totalSeconds = 120; // 2 minutes
+    const countdownEl = document.getElementById('countdown');
+
+    const timer = setInterval(() => {
+        totalSeconds--;
+
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+
+        countdownEl.textContent = `Redirecting in ${minutes}:${seconds.toString().padStart(2,'0')} minutes...`;
+
+        if (totalSeconds <= 0) {
+            clearInterval(timer);
+            window.location.href = "{{ route('responder.login') }}";
+        }
+    }, 1000);
+</script>
+@endif
 
 {{-- reCAPTCHA temporarily removed --}}
 @endsection
