@@ -62,6 +62,10 @@ $pin = rand(100000, 999999);
 Session::put('responder_pin', $pin);
 Session::put('responder_id', $responder->id);
 
+
+// Set expiration time (5 minutes from now)
+Session::put('responder_pin_expires_at', Carbon::now()->addMinutes(5));
+
 // Send PIN via email
 Mail::raw("Your login PIN is: $pin", function($message) use ($responder) {
     $message->to($responder->email)
@@ -102,6 +106,9 @@ public function resendPin()
     // Generate new PIN
     $pin = rand(100000, 999999);
     Session::put('responder_pin', $pin);
+
+    // Set expiration time
+Session::put('responder_pin_expires_at', Carbon::now()->addMinutes(5));
 
     // Send PIN via email
     Mail::raw("Your login PIN is: $pin", function($message) use ($responder) {
