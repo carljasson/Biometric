@@ -148,8 +148,7 @@
                 </div>
             @endif
 
-            <form id="login-form" action="{{ route('admin.login.submit') }}" method="POST" ...>
-
+            <form id="login-form" action="{{ route('admin.login.post') }}" method="POST" autocomplete="off" novalidate>
                 @csrf
 
                 <div class="mb-3">
