@@ -307,10 +307,7 @@ Route::middleware(['auth','can:viewLoginHistory'])->prefix('admin')->group(funct
         ->name('admin.login-history');
 });
 
-Route::prefix('admin')->middleware(['web', 'admin.auth'])->group(function () {
-    // ... your existing admin routes
 
-  
 
 Route::get('/run-seeder', function () {
     Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\ResponderSeeder', '--force' => true]);
