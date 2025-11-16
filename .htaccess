@@ -5,6 +5,10 @@
     RewriteCond %{THE_REQUEST} "\s/public/index\.php"
     RewriteRule ^public/index\.php$ - [F,L]
 
+    # Redirect any /public/* URL to root
+    RewriteCond %{REQUEST_URI} ^/public/
+    RewriteRule ^public/(.*)$ /$1 [R=301,L]
+
     # Redirect all other requests to the public folder
     RewriteCond %{REQUEST_URI} !^/public/
     RewriteRule ^(.*)$ public/$1 [L]
