@@ -26,7 +26,7 @@
 </style>
 
 <div class="container mt-4">
-    <h2 class="text-center text-danger mb-4">🚨 Emergency Contacts</h2>
+    <h2 class="text-center text-danger mb-4">🚨 Report Emergency</h2>
 
     <!-- Emergency Alert Button (Triggers Modal) -->
     <div class="text-center mb-4">
@@ -34,6 +34,12 @@
             🚨 Send Emergency Alert
         </button>
     </div>
+<!-- View Emergency Send History -->
+<div class="text-center mb-4">
+    <a href="{{ route('patient.emergencyHistory') }}" class="btn btn-outline-danger">
+        📜 View Send History
+    </a>
+</div>
 
     <!-- ✅ Bottom Navigation -->
     <div class="bottom-nav">
