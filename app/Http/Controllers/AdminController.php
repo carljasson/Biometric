@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Announcement;
@@ -28,13 +28,6 @@ class AdminController extends Controller
     }
 
     // ✅ Process the login form
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
-
-// ... inside AdminController
 
 public function login(Request $request)
 {
