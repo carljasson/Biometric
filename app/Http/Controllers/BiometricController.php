@@ -447,7 +447,6 @@ public function fingerprintPage($id)
 }
 
 
-}
 
 
 public function validatePhone(Request $request)
@@ -462,4 +461,6 @@ public function validateEmail(Request $request)
     $exists = \App\Models\User::where('email', $request->email)->exists();
 
     return response()->json(['exists' => $exists]);
+}
+
 }
