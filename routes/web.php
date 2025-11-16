@@ -329,3 +329,5 @@ Route::middleware(['auth', 'can:admin-only'])->prefix('admin')->name('admin.')->
     Route::delete('backups/{filename}', [AdminBackupController::class, 'destroy'])->name('backups.destroy');
 
 });
+Route::post('/validate-phone', [RegisterController::class, 'validatePhone']);
+Route::post('/validate-email', [RegisterController::class, 'validateEmail']);

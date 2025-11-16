@@ -34,7 +34,6 @@
     <form method="POST" action="{{ route('register.step1') }}" id="step1Form">
         @csrf
 
-        <!-- Steps 1-6 (same as your original inputs) -->
         <!-- Step 1 -->
         <div class="form-step active">
             <input type="text" name="firstname" placeholder="First Name" required oninput="this.value=this.value.replace(/[^a-zA-Z\s]/g,'')">
@@ -105,6 +104,7 @@ const progressBar = document.getElementById('progressBar');
 const progressPercentage = document.getElementById('progressPercentage');
 let currentStep = 0;
 
+// Show step and progress
 function showStep(step){
     steps.forEach((s,i)=>s.classList.toggle('active',i===step));
     nextBtn.style.display = step<steps.length-1?'inline-block':'none';
@@ -114,7 +114,15 @@ function showStep(step){
     progressPercentage.textContent=percent+'%';
 }
 
-nextBtn.addEventListener('click', ()=>{
+// Toggle password visibility
+function togglePassword(id,label){
+    const input = document.getElementById(id);
+    input.type = input.type==='password' ? 'text' : 'password';
+    label.textContent = input.type==='text' ? 'Hide Password' : 'Show Password';
+}
+
+// Next button click
+nextBtn.addEventListener('click', async ()=>{
     const inputs = steps[currentStep].querySelectorAll('input,select');
     let valid = true;
 
@@ -132,10 +140,43 @@ nextBtn.addEventListener('click', ()=>{
         return;
     }
 
+    // Step 4: Check phone
+    if(currentStep === 3){
+        const phone = document.getElementById('phone').value.trim();
+        const res = await fetch('{{ route("check.phone") }}', {
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'X-CSRF-TOKEN':'{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ phone })
+        });
+        const data = await res.json();
+        if(data.exists){
+            Swal.fire({icon:'error',title:'Oops...',text:'Phone number is already in use!'});
+            return;
+        }
+    }
+
+    // Step 6: Password strength check
+    if(currentStep === steps.length-1){
+        const password = document.getElementById('password').value;
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&]).{8,16}$/;
+        if(!regex.test(password)){
+            Swal.fire({
+                icon:'error',
+                title:'Weak Password',
+                html:'Password must contain:<br>- 1 uppercase letter<br>- 1 lowercase letter<br>- 1 number<br>- 1 special character (e.g. *@$!%*#?&)<br>- 8-16 characters'
+            });
+            return;
+        }
+    }
+
     currentStep++;
     showStep(currentStep);
 });
 
+// Back button
 topBackBtn.addEventListener('click', (e)=>{
     e.preventDefault();
     if(currentStep===0) window.location.href='/';
@@ -158,11 +199,25 @@ document.getElementById('birthday').setAttribute('max',
     `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`
 );
 
-function togglePassword(id,label){
-    const input = document.getElementById(id);
-    input.type = input.type==='password' ? 'text' : 'password';
-    label.textContent = input.type==='text' ? 'Hide Password' : 'Show Password';
-}
+// Real-time email uniqueness check
+document.getElementById('email').addEventListener('blur', async function(){
+    const email = this.value.trim();
+    if(email){
+        const res = await fetch('{{ route("check.email") }}', {
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'X-CSRF-TOKEN':'{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if(data.exists){
+            Swal.fire({icon:'error',title:'Oops...',text:'Email is already in use!'});
+            this.value = '';
+        }
+    }
+});
 
 showStep(currentStep);
 </script>
