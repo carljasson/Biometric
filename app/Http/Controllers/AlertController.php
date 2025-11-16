@@ -81,7 +81,7 @@ public function alertHistory(Request $request)
         return view('patients.partials.alerts_list', compact('alerts'))->render();
     }
 
-    return view('patients.emergency_history', compact('alerts'));
+    return view('patient.emergency_history', compact('alerts'));
 }
 
 }
