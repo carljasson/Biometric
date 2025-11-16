@@ -1,19 +1,16 @@
+# ===== BLOCK /public/index.php directly =====
+<Files "index.php">
+    <If "%{REQUEST_URI} =~ m#^/public/index\.php$#">
+        Require all denied
+    </If>
+</Files>
+
 <IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
     RewriteEngine On
-
-    # ===== BLOCK /public/index.php directly =====
-    RewriteRule ^public/index\.php$ - [F,L]
-
-    # Redirect /public exactly to root
-    RewriteRule ^public/?$ / [R=301,L]
-
-    # Redirect any other /public/* URL to root
-    RewriteRule ^public/(.*)$ /$1 [R=301,L]
-
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -23,10 +20,20 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
-    # Send Requests To Front Controller...
+    # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Redirect /public exactly to root
+    RewriteCond %{REQUEST_URI} ^/public/?$
+    RewriteRule ^public/?$ / [R=301,L]
+
+    # Redirect any other /public/* URL to root
+    RewriteCond %{REQUEST_URI} ^/public/
+    RewriteRule ^public/(.*)$ /$1 [R=301,L]
+
+   
 </IfModule>
 
 # ===== SECURITY BLOCKS =====
