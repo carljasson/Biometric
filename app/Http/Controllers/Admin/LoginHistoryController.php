@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\LoginHistory;
 
-class AdminController extends Controller
+class LoginHistoryController extends Controller
 {
-    public function loginHistory()
+    public function index()
     {
         $admins = LoginHistory::with('user')
             ->whereHas('user', fn($q) => $q->where('role', 'admin'))
@@ -27,4 +27,3 @@ class AdminController extends Controller
         return view('admin.login-history', compact('admins', 'responders', 'users'));
     }
 }
-
