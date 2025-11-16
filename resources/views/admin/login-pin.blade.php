@@ -22,9 +22,17 @@
       @csrf
       <div class="mb-3">
         <input type="text" name="pin" maxlength="6" class="form-control text-center fs-4" required inputmode="numeric" autofocus>
-        <small class="text-muted d-block text-center mt-2">A PIN was sent to your email. Expires in 5 minutes.</small>
+        <small class="text-muted d-block text-center mt-2">
+          A PIN was sent to your email. Expires in 5 minutes.
+        </small>
       </div>
-      <button class="btn btn-primary w-100">Verify PIN</button>
+
+      <button class="btn btn-primary w-100 mb-2">Verify PIN</button>
+
+      <!-- ❌ Cancel button -->
+      <a href="{{ route('admin.login') }}" class="btn btn-outline-secondary w-100">
+        Cancel
+      </a>
     </form>
 
     <div class="text-center mt-3">
