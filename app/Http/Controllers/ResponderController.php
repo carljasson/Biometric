@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Announcement;
 use Illuminate\Support\Facades\Http;
-
+use Illuminate\Support\Facades\Cache;
 
 class ResponderController extends Controller
 {
