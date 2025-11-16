@@ -111,7 +111,15 @@ public function resendPin()
 
     return back()->with('success', 'A new PIN has been sent to your email.');
 }
+public function showPinForm()
+{
+    // If no PIN session, redirect back to login
+    if (!Session::has('responder_id')) {
+        return redirect()->route('responder.login')->with('error', 'Please login first.');
+    }
 
+    return view('responder.login-pin');
+}
 
  // Logout
     public function logout()

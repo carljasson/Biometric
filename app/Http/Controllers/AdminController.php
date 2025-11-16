@@ -28,16 +28,6 @@ class AdminController extends Controller
     }
 
     // ✅ Process the login form
-public function showPinForm()
-{
-    // If no PIN session, redirect back to login
-    if (!Session::has('responder_id')) {
-        return redirect()->route('responder.login')->with('error', 'Please login first.');
-    }
-
-    return view('responder.login-pin');
-}
-
 
 public function login(Request $request)
 {
