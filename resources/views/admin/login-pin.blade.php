@@ -18,7 +18,7 @@
       <div class="alert alert-danger">{{ $errors->first() }}</div>
     @endif
 
-    <form method="POST" action="{{ route('admin.verify.pin') }}">
+    <form method="POST" action="{{ route('admin.login.pin.verify') }}">
       @csrf
       <div class="mb-3">
         <input type="text" name="pin" maxlength="6" class="form-control text-center fs-4" required inputmode="numeric" autofocus>
