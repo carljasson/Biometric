@@ -11,6 +11,8 @@ use App\Models\User;
 use App\Models\Announcement;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 
 class ResponderController extends Controller
 {
@@ -52,12 +54,25 @@ public function login(Request $request)
         return back()->with('error', 'Incorrect password.');
     }
 
-    // Successful login: clear attempts
-    Cache::forget($attemptsKey);
-    Auth::guard('responder')->login($responder);
+// Successful login: clear attempts
+Cache::forget($attemptsKey);
 
-    return redirect()->route('responder.dashboard');
+// Generate 6-digit PIN
+$pin = rand(100000, 999999);
+Session::put('responder_pin', $pin);
+Session::put('responder_id', $responder->id);
+
+// Send PIN via email
+Mail::raw("Your login PIN is: $pin", function($message) use ($responder) {
+    $message->to($responder->email)
+            ->subject('Your Responder Login PIN');
+});
+
+// Redirect to PIN entry page
+return redirect()->route('responder.login.pin');
+
 }
+
 
 // Helper function to handle login attempts
 protected function incrementAttempts($attemptsKey, $lockoutKey)
@@ -71,6 +86,31 @@ protected function incrementAttempts($attemptsKey, $lockoutKey)
     }
 }
 
+public function resendPin()
+{
+    if (!Session::has('responder_id')) {
+        return redirect()->route('responder.login')->with('error', 'Please login first.');
+    }
+
+    $responderId = Session::get('responder_id');
+    $responder = Responder::find($responderId);
+
+    if (!$responder) {
+        return redirect()->route('responder.login')->with('error', 'Responder not found.');
+    }
+
+    // Generate new PIN
+    $pin = rand(100000, 999999);
+    Session::put('responder_pin', $pin);
+
+    // Send PIN via email
+    Mail::raw("Your login PIN is: $pin", function($message) use ($responder) {
+        $message->to($responder->email)
+                ->subject('Your Responder Login PIN');
+    });
+
+    return back()->with('success', 'A new PIN has been sent to your email.');
+}
 
 
  // Logout

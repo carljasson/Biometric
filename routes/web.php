@@ -159,6 +159,10 @@ Route::get('/test-view', function () {
 Route::get('/responder/login', [ResponderController::class, 'showLoginForm'])->name('responder.login');
 Route::post('/responder/login', [ResponderController::class, 'login'])->name('responder.login.submit');
 Route::get('/responder/logout', [ResponderController::class, 'logout'])->name('responder.logout');
+Route::get('/responder/resend-pin', [ResponderController::class, 'resendPin'])
+    ->name('responder.pin.resend');
+Route::get('/responder/login-pin', [ResponderController::class, 'showPinForm'])->name('responder.login.pin');
+Route::post('/responder/login-pin', [ResponderController::class, 'verifyPin'])->name('responder.login.pin.submit');
 
 // Responder Dashboard (protected)
 Route::middleware(['auth:responder'])->group(function () {
