@@ -1,3 +1,10 @@
+# ===== BLOCK /public/index.php directly =====
+<Files "index.php">
+    <If "%{REQUEST_URI} =~ m#^/public/index\.php$#">
+        Require all denied
+    </If>
+</Files>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
@@ -17,10 +24,6 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
-
-    # Block direct access to /public/index.php
-    RewriteCond %{THE_REQUEST} "\s/public/index\.php"
-    RewriteRule ^public/index\.php$ - [F,L]
 
     # Redirect /public exactly to root
     RewriteCond %{REQUEST_URI} ^/public/?$
