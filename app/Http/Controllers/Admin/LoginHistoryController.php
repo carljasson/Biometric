@@ -13,7 +13,7 @@ class LoginHistoryController extends Controller
         $admins = LoginHistory::with('user')
             ->whereHas('user', fn($q) => $q->where('role', 'admin'))
             ->orderBy('logged_in_at', 'desc')
-            ->paginate(50, ['*'], 'admins'); // third param = query string for page
+            ->paginate(50, ['*'], 'admins');
 
         $responders = LoginHistory::with('user')
             ->whereHas('user', fn($q) => $q->where('role', 'responder'))
@@ -25,6 +25,8 @@ class LoginHistoryController extends Controller
             ->orderBy('logged_in_at', 'desc')
             ->paginate(50, ['*'], 'users');
 
+        // Pass all three to the view
         return view('admin.login-history', compact('admins', 'responders', 'users'));
     }
 }
+
