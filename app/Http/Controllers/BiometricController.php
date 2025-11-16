@@ -142,7 +142,6 @@ public function verifyPin(Request $request) {
     }
 
   // Step 1: Personal Info
-// app/Http/Controllers/RegisterController.php (or wherever step1 is)
 public function step1(Request $request)
 {
     if ($request->isMethod('post')) {
@@ -155,15 +154,29 @@ public function step1(Request $request)
             'age'             => 'required|integer|min:1',
             'gender'          => 'required',
             'status'          => 'required',
-            'phone'           => 'required|digits:11',
+            'phone'           => 'required|digits:11|unique:users,phone',
             'address'         => 'required|string|max:255',
             'contact_name'    => 'required|string|max:255',
             'contact_number'  => 'required|digits:11',
             'email'           => 'required|email|unique:users,email',
-            'password'        => 'required|string|min:8|max:16|confirmed',
+            'password'        => [
+                'required',
+                'string',
+                'confirmed',
+                'min:8',
+                'max:16',
+                'regex:/[a-z]/',      // at least 1 lowercase
+                'regex:/[A-Z]/',      // at least 1 uppercase
+                'regex:/[0-9]/',      // at least 1 number
+                'regex:/[@$!%*#?&]/'  // at least 1 special char
+            ],
+        ], [
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*#?&).',
+            'phone.unique'   => 'Phone number is already in use.',
+            'email.unique'   => 'Email is already in use.',
         ]);
 
-        // ✅ 1. Save user
+        // Save user
         $user = \App\Models\User::create([
             'firstname'       => $validated['firstname'],
             'middlename'      => $validated['middlename'] ?? null,
@@ -180,15 +193,16 @@ public function step1(Request $request)
             'password'        => bcrypt($validated['password']),
         ]);
 
-        // ✅ 2. Store user ID in session
+        // Store user ID in session for fingerprint step
         session(['user_id' => $user->id]);
 
-        // ✅ 3. Return a small “launch” view with JavaScript to call your EXE
+        // Return fingerprint launch view
         return view('register.open-fingerprint', ['userId' => $user->id]);
     }
 
     return view('register.step1');
 }
+
 
 
 // Step 2: Fingerprint
