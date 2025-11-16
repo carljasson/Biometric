@@ -7,12 +7,25 @@ use App\Models\LoginHistory;
 
 class LoginHistoryController extends Controller
 {
-    // protect with middleware('auth') and authorization as needed
     public function index()
     {
-        // paginate or limit as needed
-        $entries = LoginHistory::with('user')->orderBy('logged_in_at', 'desc')->paginate(50);
-return view('admin.login-history', compact('entries'));
+        // Fetch 50 latest entries per role
+        $admins = LoginHistory::with('user')
+                    ->whereHas('user', fn($q) => $q->where('role', 'admin'))
+                    ->orderBy('logged_in_at', 'desc')
+                    ->paginate(50, ['*'], 'admins'); // paginate separately
 
+        $responders = LoginHistory::with('user')
+                    ->whereHas('user', fn($q) => $q->where('role', 'responder'))
+                    ->orderBy('logged_in_at', 'desc')
+                    ->paginate(50, ['*'], 'responders');
+
+        $users = LoginHistory::with('user')
+                    ->whereHas('user', fn($q) => $q->where('role', 'user'))
+                    ->orderBy('logged_in_at', 'desc')
+                    ->paginate(50, ['*'], 'users');
+
+        return view('admin.login-history', compact('admins', 'responders', 'users'));
     }
 }
+
