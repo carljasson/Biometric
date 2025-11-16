@@ -71,11 +71,15 @@ class AlertController extends Controller
         }
     }
     // History method
-public function alertHistory()
+public function alertHistory(Request $request)
 {
     $alerts = Alert::where('user_id', auth()->id())
         ->orderBy('created_at', 'desc')
         ->get();
+
+    if ($request->ajax()) {
+        return view('patients.partials.alerts_list', compact('alerts'))->render();
+    }
 
     return view('patients.emergency_history', compact('alerts'));
 }

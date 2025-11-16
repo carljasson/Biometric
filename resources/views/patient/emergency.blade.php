@@ -35,6 +35,14 @@
         </button>
     </div>
 
+    <!-- ✅ Alert History Section -->
+    <div id="alertHistory" class="mb-4">
+        <h4 class="text-danger mb-2">📝 My Sent Alerts</h4>
+        <div id="alertsContainer" class="list-group">
+            <div class="text-center text-muted">Loading alerts...</div>
+        </div>
+    </div>
+
     <!-- ✅ Bottom Navigation -->
     <div class="bottom-nav">
         <a href="{{ route('dashboard') }}">
@@ -72,7 +80,7 @@
                             </select>
                         </div>
 
-                        <!-- 📸 Camera Preview & Capture -->
+                        <!-- Camera Preview & Capture -->
                         <div class="mb-3">
                             <label class="form-label">📸 Capture Photo</label>
                             <div class="text-center position-relative">
@@ -121,40 +129,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // ===== Location =====
-    async function getUserLocation() {
-        if (!navigator.geolocation) {
-            document.getElementById('locationStatus').innerText = '❌ Geolocation not supported.';
-            return;
-        }
-
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lon;
-
-            const apiKey = '45c8795c3e094eb8994cc238f809c663'; // OpenCage API key
-            const apiUrl = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${apiKey}&language=en`;
-
-            try {
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-
-                if (data && data.results && data.results.length > 0) {
-                    const address = data.results[0].formatted;
-                    document.getElementById('address').value = address;
-                    document.getElementById('locationStatus').innerText = `📍 ${address}`;
-                } else {
-                    document.getElementById('locationStatus').innerText = '⚠️ Unable to retrieve address.';
-                }
-            } catch (error) {
-                document.getElementById('locationStatus').innerText = '❌ Failed to get address.';
-            }
-        }, () => {
-            document.getElementById('locationStatus').innerText = '⚠️ Location denied or unavailable.';
-        });
-    }
+    async function getUserLocation() { /*...existing code...*/ }
 
     // ===== Camera =====
     let video = document.getElementById('camera');
@@ -163,93 +138,36 @@
     let previewContainer = document.getElementById('previewContainer');
     let liveIndicator = document.getElementById('liveIndicator');
     let stream = null;
-    let useFrontCamera = true; // default front
+    let useFrontCamera = true;
 
-    async function startCamera() {
-        try {
-            if (stream) stopCamera();
-
-            const constraints = {
-                video: { facingMode: useFrontCamera ? "user" : "environment" }
-            };
-
-            stream = await navigator.mediaDevices.getUserMedia(constraints);
-            video.srcObject = stream;
-            liveIndicator.style.display = "inline"; // show LIVE
-        } catch (err) {
-            Swal.fire('Camera Error', 'Unable to access your camera.', 'error');
-        }
-    }
-
-    function stopCamera() {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            stream = null;
-        }
-        liveIndicator.style.display = "none"; // hide LIVE
-    }
-
-    function takeSnapshot() {
-        const context = canvas.getContext('2d');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        const dataUrl = canvas.toDataURL('image/png');
-        document.getElementById('photo').value = dataUrl;
-
-        preview.src = dataUrl;
-        previewContainer.style.display = "block";
-    }
-
-    function switchCamera() {
-        useFrontCamera = !useFrontCamera;
-        startCamera();
-    }
+    async function startCamera() { /*...existing code...*/ }
+    function stopCamera() { /*...existing code...*/ }
+    function takeSnapshot() { /*...existing code...*/ }
+    function switchCamera() { /*...existing code...*/ }
 
     // ===== Check & Request Permissions =====
-    async function requestPermissions() {
-        // Location Permission
-        try {
-            const locationStatus = await navigator.permissions.query({ name: 'geolocation' });
-            if (locationStatus.state === 'denied') {
-                Swal.fire('Location Permission Denied', 'Please allow location access in your browser settings.', 'warning');
-            } else if (locationStatus.state === 'prompt') {
-                navigator.geolocation.getCurrentPosition(
-                    () => {}, 
-                    () => { 
-                        Swal.fire('Location Required', 'You need to allow location access to send alerts.', 'warning');
-                    }
-                );
-            }
-        } catch (err) { console.warn('Geolocation permission API not supported', err); }
-
-        // Camera Permission
-        try {
-            const cameraStatus = await navigator.permissions.query({ name: 'camera' });
-            if (cameraStatus.state === 'denied') {
-                Swal.fire('Camera Permission Denied', 'Please allow camera access in your browser settings.', 'warning');
-            } else if (cameraStatus.state === 'prompt') {
-                try {
-                    const testStream = await navigator.mediaDevices.getUserMedia({ video: true });
-                    testStream.getTracks().forEach(track => track.stop());
-                } catch {
-                    Swal.fire('Camera Required', 'You need to allow camera access to send alerts.', 'warning');
-                }
-            }
-        } catch (err) { console.warn('Camera permission API not supported', err); }
-    }
+    async function requestPermissions() { /*...existing code...*/ }
 
     // ===== Modal Events =====
     const emergencyModal = document.getElementById('emergencyModal');
     emergencyModal.addEventListener('shown.bs.modal', async function () {
-        await requestPermissions(); // Request camera & location
+        await requestPermissions();
         getUserLocation();
         startCamera();
     });
     emergencyModal.addEventListener('hidden.bs.modal', function () {
         stopCamera();
     });
+
+    // ===== Load Alert History via AJAX =====
+    function loadAlertHistory() {
+        fetch("{{ route('patient.alertHistory') }}?ajax=1")
+            .then(res => res.text())
+            .then(html => { document.getElementById('alertsContainer').innerHTML = html; })
+            .catch(() => { document.getElementById('alertsContainer').innerHTML = '<div class="text-center text-danger">Failed to load alerts.</div>'; });
+    }
+    setInterval(loadAlertHistory, 10000); // auto-refresh every 10s
+    loadAlertHistory(); // initial load
 
     // ===== Confirm before sending =====
     document.getElementById('alertForm').addEventListener('submit', function(e) {
@@ -283,21 +201,15 @@
                 fetch("{{ route('patient.sendAlert') }}", {
                     method: "POST",
                     body: formData,
-                    headers: {
-                        "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
-                    }
+                    headers: { "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value }
                 })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        Swal.fire({
-                            icon: "success",
-                            title: data.message,
-                            timer: 2500,
-                            showConfirmButton: false
-                        });
+                        Swal.fire({ icon: "success", title: data.message, timer: 2500, showConfirmButton: false });
                         const modal = bootstrap.Modal.getInstance(document.getElementById('emergencyModal'));
                         modal.hide();
+                        loadAlertHistory(); // refresh history immediately
                     } else {
                         Swal.fire("Error", data.message, "error");
                     }
@@ -309,5 +221,4 @@
         });
     });
 </script>
-
 @endsection
