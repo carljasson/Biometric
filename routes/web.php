@@ -275,6 +275,7 @@ Route::get('/debug-alerts', function () {
 });
 
 Route::post('/patient/send-alert', [App\Http\Controllers\AlertController::class, 'sendAlert'])->name('patient.sendAlert');
+    Route::get('patient/alerts/history', [AlertController::class, 'alertHistory'])->name('patient.alertHistory');
 
 
 Route::resource('responders', ResponderController::class);
