@@ -28,48 +28,79 @@ class AdminController extends Controller
     }
 
     // ✅ Process the login form
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
+// ... inside AdminController
 
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email|max:255',
-            'password' => 'required|string|min:8',
-        ]);
+public function login(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email|max:255',
+        'password' => 'required|string|min:8',
+    ]);
 
-        $key = $this->throttleKey($request);
+    $key = $this->throttleKey($request);
 
-        // 🚫 If locked out already
-        if (RateLimiter::tooManyAttempts($key, $this->maxAttempts)) {
-            $seconds = RateLimiter::availableIn($key);
-            $message = 'Too many failed login attempts. Please wait ' . gmdate('H:i:s', $seconds) . ' before trying again.';
-            return back()
-                ->withInput($request->only('email'))
-                ->with('lockout', $message)
-                ->with('lockout_seconds', $seconds);
-        }
-
-        // ✅ Attempt login
-        if (Auth::guard('admin')->attempt($request->only('email', 'password'))) {
-    RateLimiter::clear($key);
-    $admin = Auth::guard('admin')->user();
-    session(['admin_id' => $admin->id]); // optional if your dashboard uses session('admin_id')
-    return redirect()->intended('/admin/dashboard')->with('success', 'Welcome back, Admin!');
-}
-
-
-        // ❌ Failed login → increment attempt count
-        RateLimiter::hit($key, $this->decaySeconds);
-
-        $attemptsLeft = RateLimiter::remaining($key, $this->maxAttempts);
-        $error = $attemptsLeft > 0
-            ? "Invalid credentials. You have {$attemptsLeft} attempt(s) remaining."
-            : "Account locked. Please wait 1 hour before trying again.";
-
+    // If locked out
+    if (RateLimiter::tooManyAttempts($key, $this->maxAttempts)) {
+        $seconds = RateLimiter::availableIn($key);
+        $message = 'Too many failed login attempts. Please wait ' . gmdate('H:i:s', $seconds) . ' before trying again.';
         return back()
             ->withInput($request->only('email'))
-            ->withErrors(['email' => $error]);
+            ->with('lockout', $message)
+            ->with('lockout_seconds', $seconds);
     }
+
+    // Attempt credentials (but DO NOT keep the user logged in yet)
+    if (Auth::guard('admin')->attempt($request->only('email', 'password'))) {
+
+        // clear rate limiter
+        RateLimiter::clear($key);
+
+        // get admin model instance
+        $admin = Auth::guard('admin')->user();
+
+        // Generate PIN and save pending login info in session (expires in 5 minutes)
+        $pin = random_int(100000, 999999);
+        session([
+            'admin_pending_id'     => $admin->id,
+            'admin_login_pin'      => $pin,
+            'admin_pin_expires_at' => now()->addMinutes(5)->toDateTimeString(),
+        ]);
+
+        // Immediately logout so app does not treat this attempt as an authenticated session
+        Auth::guard('admin')->logout();
+
+        // Send PIN — simple/quick implementation; switch to Mailable if you prefer
+        try {
+            Mail::raw("Your admin login PIN is: {$pin}\nThis PIN will expire in 5 minutes.", function ($msg) use ($admin) {
+                $msg->to($admin->email)->subject('Your Admin Login PIN');
+            });
+        } catch (\Exception $e) {
+            // Optionally log email sending failure; still redirect so admin can request resend
+            \Log::error('Failed sending admin login PIN: '.$e->getMessage());
+        }
+
+        // redirect to pin entry page (route name described below)
+        return redirect()->route('admin.login.pin')->with('success', 'A verification PIN has been sent to your email.');
+    }
+
+    // Failed login -> increment attempts
+    RateLimiter::hit($key, $this->decaySeconds);
+
+    $attemptsLeft = RateLimiter::remaining($key, $this->maxAttempts);
+    $error = $attemptsLeft > 0
+        ? "Invalid credentials. You have {$attemptsLeft} attempt(s) remaining."
+        : "Account locked. Please wait 1 hour before trying again.";
+
+    return back()
+        ->withInput($request->only('email'))
+        ->withErrors(['email' => $error]);
+}
 
     /**
      * Generate a unique key for throttling based on user email + IP
@@ -114,6 +145,7 @@ $announcements = Announcement::where(function ($query) {
     // ✅ Admin logout
     public function logout()
     {
+        Auth::guard('admin')->logout();
         session()->forget('admin_id');
         return redirect()->route('admin.login');
     }
@@ -424,5 +456,85 @@ public function loginHistory()
 
     return view('admin.login-history', compact('entries'));
 }
+
+
+public function showPinForm()
+{
+    if (!session()->has('admin_pending_id') || !session()->has('admin_login_pin')) {
+        return redirect()->route('admin.login')->withErrors('Please login first.');
+    }
+
+    // pass expiry seconds to show countdown if you want
+    $expiresAt = session('admin_pin_expires_at');
+    $secondsLeft = $expiresAt ? max(0, Carbon::parse($expiresAt)->diffInSeconds(now())) : null;
+
+    return view('admin.login-pin', compact('secondsLeft'));
+}
+
+public function verifyPin(Request $request)
+{
+    $request->validate(['pin' => 'required|digits:6']);
+
+    if (!session()->has('admin_pending_id') || !session()->has('admin_login_pin')) {
+        return redirect()->route('admin.login')->withErrors('Session expired. Please login again.');
+    }
+
+    // check expiry
+    $expiresAt = session('admin_pin_expires_at');
+    if (!$expiresAt || now()->greaterThan(Carbon::parse($expiresAt))) {
+        session()->forget(['admin_pending_id', 'admin_login_pin', 'admin_pin_expires_at']);
+        return redirect()->route('admin.login')->withErrors('PIN expired. Please login again.');
+    }
+
+    // check PIN
+    if ($request->pin != session('admin_login_pin')) {
+        return back()->withErrors(['pin' => 'Incorrect PIN.'])->withInput();
+    }
+
+    // PIN correct — log in the admin and clear session
+    $adminId = session('admin_pending_id');
+    Auth::guard('admin')->loginUsingId($adminId);
+
+    // Set session('admin_id') if your app relies on that
+    session(['admin_id' => $adminId]);
+
+    // Clear temporary session keys
+    session()->forget(['admin_pending_id', 'admin_login_pin', 'admin_pin_expires_at']);
+
+    return redirect()->intended('/admin/dashboard')->with('success', 'Welcome back, Admin!');
+}
+
+public function resendPin()
+{
+    if (!session()->has('admin_pending_id')) {
+        return redirect()->route('admin.login')->withErrors('Please login first.');
+    }
+
+    $admin = Admin::find(session('admin_pending_id'));
+    if (!$admin) {
+        session()->forget(['admin_pending_id', 'admin_login_pin', 'admin_pin_expires_at']);
+        return redirect()->route('admin.login')->withErrors('Admin not found. Please login again.');
+    }
+
+    $pin = random_int(100000, 999999);
+
+    session([
+        'admin_login_pin'      => $pin,
+        'admin_pin_expires_at' => now()->addMinutes(5)->toDateTimeString(),
+    ]);
+
+    try {
+        Mail::raw("Your new admin login PIN is: {$pin}\nThis PIN will expire in 5 minutes.", function ($msg) use ($admin) {
+            $msg->to($admin->email)->subject('Your NEW Admin Login PIN');
+        });
+    } catch (\Exception $e) {
+        \Log::error('Failed sending admin resend PIN: '.$e->getMessage());
+    }
+
+    return back()->with('success', 'A new PIN has been sent to your email.');
+}
+
+
+
 
 }
