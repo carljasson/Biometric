@@ -1,38 +1,35 @@
-<!DOCTYPE html>
+<!-- resources/views/admin/login-pin.blade.php -->
+<!doctype html>
 <html>
 <head>
-    <title>Enter Login PIN</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Enter PIN</title>
 </head>
-
-<body class="bg-light d-flex justify-content-center align-items-center" style="height: 100vh;">
-<div class="card p-4 shadow" style="width: 380px;">
-    <h4 class="text-center mb-3">Enter Verification PIN</h4>
+<body class="d-flex align-items-center justify-content-center vh-100 bg-light">
+  <div class="card p-4" style="width:360px;">
+    <h5 class="mb-3 text-center">Enter verification PIN</h5>
 
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+      <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     @if($errors->any())
-        <div class="alert alert-danger">
-            {{ $errors->first() }}
-        </div>
+      <div class="alert alert-danger">{{ $errors->first() }}</div>
     @endif
 
-    <form action="{{ route('admin.login.pin.verify') }}" method="POST">
-        @csrf
-
-        <div class="mb-3">
-            <label class="form-label">Enter 6-digit PIN</label>
-            <input type="text" name="pin" maxlength="6" inputmode="numeric" class="form-control" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100">Verify PIN</button>
+    <form method="POST" action="{{ route('admin.verify.pin') }}">
+      @csrf
+      <div class="mb-3">
+        <input type="text" name="pin" maxlength="6" class="form-control text-center fs-4" required inputmode="numeric" autofocus>
+        <small class="text-muted d-block text-center mt-2">A PIN was sent to your email. Expires in 5 minutes.</small>
+      </div>
+      <button class="btn btn-primary w-100">Verify PIN</button>
     </form>
 
-    <p class="text-center mt-3 small text-muted">
-        A verification PIN was sent to your email.
-    </p>
-</div>
+    <div class="text-center mt-3">
+      <a href="{{ route('admin.resend.pin') }}">Resend PIN</a>
+    </div>
+  </div>
 </body>
 </html>
