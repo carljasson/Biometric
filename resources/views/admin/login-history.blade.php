@@ -2,29 +2,66 @@
 
 @section('content')
 <style>
-/* ... your existing CSS ... */
+/* Make the main area adjust dynamically beside the sidebar */
+#mainContent {
+    transition: all 0.3s ease;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    padding: 20px;
+}
+
+/* Full-width responsive card */
+.card {
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    border: none;
+}
+
+/* Table adjustments */
+.table {
+    width: 100%;
+    margin: 0;
+}
+
+.table th, .table td {
+    vertical-align: middle !important;
+}
+
+.table thead {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 1;
+}
+
+/* Scrollable table */
+.table-responsive {
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+}
+
+/* Hover and badge styles */
+.table-hover tbody tr:hover {
+    background-color: #f1f3f5;
+}
+.badge.bg-primary-subtle {
+    background-color: #e7f1ff !important;
+    color: #0d6efd !important;
+    font-size: 0.8rem;
+}
 </style>
 
 <div id="mainContent">
-
-@php
-$roles = [
-    'Admins' => $admins,
-    'Responders' => $responders,
-    'Users' => $users
-];
-@endphp
-
-@foreach($roles as $roleName => $entries)
-    <div class="card mb-4">
+    <div class="card">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0 text-secondary fw-semibold">
-                <i class="bi bi-clock-history me-2"></i> {{ $roleName }} Login History
+                <i class="bi bi-clock-history me-2"></i> Login History
             </h5>
             <small class="text-muted">
                 Showing latest {{ $entries->count() }} entries
             </small>
         </div>
+
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-striped table-hover align-middle mb-0">
@@ -40,7 +77,9 @@ $roles = [
                     <tbody>
                         @forelse($entries as $e)
                             <tr>
-                                <td class="text-center small">{{ $e->logged_in_at->format('Y-m-d H:i:s') }}</td>
+                                <td class="text-center small">
+                                    {{ $e->logged_in_at->format('Y-m-d H:i:s') }}
+                                </td>
                                 <td>
                                     @if($e->user)
                                         <strong>{{ $e->user->name }}</strong>
@@ -50,11 +89,7 @@ $roles = [
                                     @endif
                                 </td>
                                 <td>
-                                    <span class="badge 
-                                        {{ $e->user->role == 'admin' ? 'bg-admin' : '' }}
-                                        {{ $e->user->role == 'responder' ? 'bg-responder' : '' }}
-                                        {{ $e->user->role == 'user' ? 'bg-user' : '' }}
-                                        px-2 py-1 rounded">
+                                    <span class="badge bg-primary-subtle px-2 py-1 rounded">
                                         {{ ucfirst($e->method) }}
                                     </span>
                                 </td>
@@ -66,21 +101,14 @@ $roles = [
                         @empty
                             <tr>
                                 <td colspan="5" class="text-center text-muted py-4">
-                                    <i class="bi bi-emoji-frown me-1"></i> No login history.
+                                    <i class="bi bi-emoji-frown me-1"></i> No login history yet.
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-
-            <!-- Pagination -->
-            <div class="mt-2 px-3">
-                {{ $entries->links() }}
-            </div>
         </div>
     </div>
-@endforeach
-
 </div>
 @endsection
