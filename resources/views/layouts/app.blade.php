@@ -91,6 +91,12 @@
                 <i class="bi bi-megaphone-fill me-2"></i> Broadcast Messages
             </a>
 
+            <!-- ⭐ Backup Manager -->
+            <a href="{{ route('admin.backups.index') }}" 
+               class="flex items-center px-4 py-2 hover:bg-gray-700 {{ request()->routeIs('admin.backups.index') ? 'bg-gray-700 font-bold' : '' }}">
+                <i class="bi bi-hdd-fill me-2"></i> Backup Manager
+            </a>
+
             <form action="{{ route('admin.logout') }}" method="POST" class="px-4 py-2 mt-auto">
                 @csrf
                 <button type="submit" class="w-full flex items-center justify-center px-2 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">
@@ -133,7 +139,6 @@
 
     <!-- Alert Sound -->
     <audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
-
 </div>
 
 <script>
@@ -172,14 +177,8 @@ function fetchAlerts() {
                             didOpen:()=>{
                                 const swalPopup=Swal.getHtmlContainer();
                                 let flash=true;
-                                const flashInterval=setInterval(()=>{
-                                    if(swalPopup){ swalPopup.style.backgroundColor=flash?'#ff0000':'#ff4d4d'; flash=!flash;}
-                                },500);
-                                Swal.getConfirmButton().addEventListener('click',()=>{
-                                    clearInterval(flashInterval);
-                                    alertSound.pause(); alertSound.currentTime=0;
-                                    bellIcon.classList.remove("emergency-light");
-                                });
+                                const flashInterval=setInterval(()=>{ if(swalPopup){ swalPopup.style.backgroundColor=flash?'#ff0000':'#ff4d4d'; flash=!flash;} },500);
+                                Swal.getConfirmButton().addEventListener('click',()=>{ clearInterval(flashInterval); alertSound.pause(); alertSound.currentTime=0; bellIcon.classList.remove("emergency-light"); });
                             }
                         });
                     }
@@ -193,9 +192,7 @@ function fetchAlerts() {
 
                 data.alerts.forEach(alert=>{
                     const li=document.createElement('li');
-                    li.innerHTML=`<a href="#" class="dropdown-item mark-read-redirect ${alert.read?'read':'new-alert'}" data-id="${alert.id}">
-                        🚨 <strong>${alert.type}</strong><br><small>${new Date(alert.created_at).toLocaleString()}</small>
-                    </a>`;
+                    li.innerHTML=`<a href="#" class="dropdown-item mark-read-redirect ${alert.read?'read':'new-alert'}" data-id="${alert.id}">🚨 <strong>${alert.type}</strong><br><small>${new Date(alert.created_at).toLocaleString()}</small></a>`;
                     alertsList.appendChild(li);
                 });
             } else {
@@ -210,7 +207,6 @@ function fetchAlerts() {
         .catch(console.error);
 }
 
-// Mark as read + redirect
 document.addEventListener("click", e=>{
     const alertItem=e.target.closest(".mark-read-redirect");
     if(alertItem){
@@ -231,6 +227,13 @@ document.addEventListener("click", e=>{
 setInterval(fetchAlerts,10000);
 fetchAlerts();
 </script>
+
+@if(session('success'))
+<script>Swal.fire({ icon: 'success', title: 'Success!', text: "{{ session('success') }}", confirmButtonColor: '#3085d6' });</script>
+@endif
+@if($errors->any())
+<script>Swal.fire({ icon: 'error', title: 'Oops...', text: "{{ $errors->first() }}", confirmButtonColor: '#d33' });</script>
+@endif
 
 </body>
 </html>
