@@ -91,14 +91,7 @@
                 <i class="bi bi-megaphone-fill me-2"></i> Broadcast Messages
             </a>
 
-            <form action="{{ route('admin.logout') }}" method="POST" class="px-4 py-2 mt-auto">
-                @csrf
-                <button type="submit" class="w-full flex items-center justify-center px-2 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">
-                    <i class="bi bi-box-arrow-right me-1"></i> Logout
-                </button>
-            </form>
-        </nav>
-    </aside>
+            
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col transition-all duration-300" :class="sidebarOpen ? 'ml-64' : 'ml-0 sm:ml-64'">
