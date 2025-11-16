@@ -287,6 +287,10 @@ Route::middleware(['admin.auth'])->group(function () {
 
 // Handle login submission
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.post');
+// Admin PIN Login
+Route::get('/login/pin', [AdminController::class, 'showPinForm'])->name('admin.login.pin');
+Route::post('/login/verify-pin', [AdminController::class, 'verifyPin'])->name('admin.verify.pin');
+Route::get('/login/resend-pin', [AdminController::class, 'resendPin'])->name('admin.resend.pin');
 
 
 
@@ -332,3 +336,8 @@ Route::middleware(['auth', 'can:admin-only'])->prefix('admin')->name('admin.')->
 });
 Route::post('/validate-phone', [RegisterController::class, 'validatePhone']);
 Route::post('/validate-email', [RegisterController::class, 'validateEmail']);
+
+Route::get('/responder/alerts/view/{id}', [ResponderAlertController::class, 'view'])
+    ->name('responder.alerts.view');
+
+    
