@@ -289,7 +289,7 @@ Route::middleware(['admin.auth'])->group(function () {
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.post');
 // Admin PIN Login
 Route::get('/login/pin', [AdminController::class, 'showPinForm'])->name('admin.login.pin');
-Route::post('/login/verify-pin', [AdminController::class, 'verifyPin'])->name('admin.verify.pin');
+Route::post('/login/verify-pin', [AdminController::class, 'verifyPin'])->name('admin.login.pin.verify');
 Route::get('/login/resend-pin', [AdminController::class, 'resendPin'])->name('admin.resend.pin');
 
 
