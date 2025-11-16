@@ -53,6 +53,11 @@
         <i class="bi bi-megaphone-fill me-2"></i> Broadcast Messages
     </a>
 
+    <!-- Backup Manager link -->
+    <a href="#" onclick="showBackupManager()" class="text-white px-4 py-2 d-block text-decoration-none">
+        <i class="bi bi-hdd-fill me-2"></i> Backup Manager
+    </a>
+
     <form action="{{ route('admin.logout') }}" method="POST" class="m-3">
         @csrf
         <button type="submit" class="btn btn-outline-light w-100">
@@ -77,7 +82,6 @@
             </ul>
         </div>
     </div>
-
 
     <div class="container mt-4">
 
@@ -176,6 +180,72 @@
             @endif
         </div>
 
+        <!-- ------------------------
+             Backup Manager Section
+             ------------------------ -->
+        <div id="backupManager" style="display: none;" class="mt-4">
+            <div class="card mb-3 p-3">
+                <h5 class="mb-3"><i class="bi bi-hdd-fill me-2"></i>Backup Manager</h5>
+
+                <form action="{{ route('admin.backups.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="row g-2 align-items-center">
+                        <div class="col-auto" style="min-width: 300px;">
+                            <input type="file" name="backup_file" class="form-control" required>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-primary">Upload Backup</button>
+                        </div>
+                        <div class="col-auto">
+                            <small class="text-muted">Max: 100MB (change validation in controller)</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card p-3">
+                <h6>Uploaded Backups</h6>
+                @if(isset($backups) && $backups->isNotEmpty())
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Size</th>
+                                    <th>Modified</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($backups as $b)
+                                    <tr>
+                                        <td>{{ $b['name'] }}</td>
+                                        <td>{{ number_format($b['size'] / 1024, 2) }} KB</td>
+                                        <td>{{ $b['modified'] }}</td>
+                                        <td>
+                                            <a href="{{ route('admin.backups.download', $b['name']) }}" class="btn btn-sm btn-success">
+                                                <i class="bi bi-download"></i> Download
+                                            </a>
+
+                                            <form action="{{ route('admin.backups.destroy', $b['name']) }}" method="POST" style="display:inline-block" onsubmit="return confirm('Delete {{ $b['name'] }}?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="btn btn-sm btn-danger">
+                                                    <i class="bi bi-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="alert alert-secondary">No backups found.</div>
+                @endif
+            </div>
+        </div>
+
 <!-- 🚨 Emergency Light CSS -->
 <style>
     .emergency-light {
@@ -242,17 +312,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function showDashboard() {
     document.getElementById('dashboardOverview').style.display = 'block';
-    document.getElementById('userTable').style.display = 'none';
+    const userTable = document.getElementById('userTable');
+    if (userTable) userTable.style.display = 'none';
     document.getElementById('announcementsSection').style.display = 'block';
+    document.getElementById('backupManager').style.display = 'none';
 }
 
 function loadUsers() {
     document.getElementById('dashboardOverview').style.display = 'none';
-    document.getElementById('userTable').style.display = 'block';
+    const userTable = document.getElementById('userTable');
+    if (userTable) userTable.style.display = 'block';
     document.getElementById('announcementsSection').style.display = 'none';
+    document.getElementById('backupManager').style.display = 'none';
 }
 
-/* 🔔 Fetch Alerts */
+function showBackupManager() {
+    document.getElementById('dashboardOverview').style.display = 'none';
+    const userTable = document.getElementById('userTable');
+    if (userTable) userTable.style.display = 'none';
+    document.getElementById('announcementsSection').style.display = 'none';
+    document.getElementById('backupManager').style.display = 'block';
+
+    // Optional: scroll to top of backup manager
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 /* 🔔 Fetch Alerts */
 let lastAlertCount = 0; // track previous unread alerts
 

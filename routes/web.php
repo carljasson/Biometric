@@ -18,6 +18,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Artisan;
 use App\Models\Alert;
 use App\Http\Controllers\Auth\CustomLoginController;
+use App\Http\Controllers\AdminBackupController;
 
 // =========================
 // 🌐 GENERAL
@@ -318,3 +319,11 @@ Route::get('/run-seeder', function () {
 Route::get('/pin-login', function () {
     return view('auth.pin-login');
 })->name('pin.login');
+
+
+Route::middleware(['auth', 'can:admin-only'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('backups', [AdminBackupController::class, 'index'])->name('backups.index');
+    Route::post('backups/upload', [AdminBackupController::class, 'store'])->name('backups.store');
+    Route::get('backups/download/{filename}', [AdminBackupController::class, 'download'])->name('backups.download');
+    Route::delete('backups/{filename}', [AdminBackupController::class, 'destroy'])->name('backups.destroy');
+});
