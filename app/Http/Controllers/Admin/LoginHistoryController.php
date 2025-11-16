@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\LoginHistory;
 
-class LoginHistoryController extends Controller
+class AdminController extends Controller
 {
-    public function index()
+    public function loginHistory()
     {
-        // Separate paginated queries per role
         $admins = LoginHistory::with('user')
             ->whereHas('user', fn($q) => $q->where('role', 'admin'))
             ->orderBy('logged_in_at', 'desc')
@@ -25,7 +24,6 @@ class LoginHistoryController extends Controller
             ->orderBy('logged_in_at', 'desc')
             ->paginate(50, ['*'], 'users');
 
-        // Pass all three to the view
         return view('admin.login-history', compact('admins', 'responders', 'users'));
     }
 }
