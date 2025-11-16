@@ -111,6 +111,35 @@ public function resendPin()
 
     return back()->with('success', 'A new PIN has been sent to your email.');
 }
+
+ // Verify submitted PIN
+    public function verifyPin(Request $request)
+    {
+        $request->validate(['pin' => 'required|digits:6']);
+
+        if (!session()->has('responder_id') || !session()->has('responder_pin')) {
+            return redirect()->route('responder.login')->with('error', 'Session expired. Please login again.');
+        }
+
+        $expiresAt = session('responder_pin_expires_at');
+        if (!$expiresAt || now()->greaterThan(Carbon::parse($expiresAt))) {
+            session()->forget(['responder_id', 'responder_pin', 'responder_pin_expires_at']);
+            return redirect()->route('responder.login')->with('error', 'PIN expired. Please login again.');
+        }
+
+        if ($request->pin != session('responder_pin')) {
+            return back()->with('error', 'Incorrect PIN.')->withInput();
+        }
+
+        // Log in responder
+        $responderId = session('responder_id');
+        Auth::guard('responder')->loginUsingId($responderId);
+
+        session()->forget(['responder_id', 'responder_pin', 'responder_pin_expires_at']);
+
+        return redirect()->intended('/responder/dashboard')->with('success', 'Welcome back!');
+    }
+
 public function showPinForm()
 {
     // If no PIN session, redirect back to login
