@@ -13,30 +13,38 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .login-card {
-        background-color: #ffffff10;
-        backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 16px;
-        padding: 30px;
-        width: 100%;
+        border-radius: 20px;
+        padding: 30px 25px;
+        width: 90%;
         max-width: 400px;
         color: white;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         animation: fadeIn 0.6s ease-in-out;
         position: relative;
+        text-align: center;
     }
 
     .login-card h3 {
         font-weight: bold;
+        margin-bottom: 25px;
     }
 
     .form-control {
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: rgba(255, 255, 255, 0.15);
         color: #fff;
         border: none;
+        padding: 12px 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        width: 100%;
+        transition: all 0.3s ease;
     }
 
     .form-control::placeholder {
@@ -44,7 +52,7 @@
     }
 
     .form-control:focus {
-        background-color: rgba(255, 255, 255, 0.2);
+        background-color: rgba(255, 255, 255, 0.25);
         color: #fff;
         border: 1px solid #fff;
         box-shadow: none;
@@ -54,7 +62,10 @@
         background-color: #ffffff;
         color: #0d6efd;
         font-weight: bold;
-        border: none;
+        border-radius: 8px;
+        padding: 10px 0;
+        font-size: 1rem;
+        transition: all 0.3s ease;
     }
 
     .btn-primary:hover {
@@ -92,7 +103,7 @@
     .countdown-timer {
         text-align: center;
         margin-top: 10px;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         color: #ffdddd;
     }
 
@@ -100,19 +111,29 @@
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
+
+    /* Mobile adjustments */
+    @media (max-width: 480px) {
+        .login-card {
+            padding: 25px 15px;
+        }
+
+        .btn-primary {
+            font-size: 0.95rem;
+        }
+    }
 </style>
 
 <a href="javascript:void(0)" onclick="window.history.back(); return false;" class="back-button">← Back</a>
 
 <div class="login-card text-white">
 
-    <h3 class="mb-4 text-center">🚑 Emergency Responder Login</h3>
+    <h3>🚑 Emergency Responder Login</h3>
 
     @if(session('error'))
         <div class="alert alert-danger text-center">{{ session('error') }}</div>
     @endif
 
-    {{-- Show countdown if locked out --}}
     @if(session('lockout'))
         <div class="countdown-timer">
             Too many failed attempts. Try again in <span id="lockout-timer">{{ session('lockout') }}</span> seconds.
@@ -123,21 +144,17 @@
           @if(session('lockout')) style="pointer-events:none; opacity:0.6;" @endif>
         @csrf
 
-        <div class="mb-3">
-            <input type="email" name="email" value="{{ old('email') }}" class="form-control" placeholder="Email Address" required>
-            @error('email')
-                <div class="text-danger mt-1">{{ $message }}</div>
-            @enderror
-        </div>
+        <input type="email" name="email" value="{{ old('email') }}" class="form-control" placeholder="Email Address" required>
+        @error('email')
+            <div class="text-danger mt-1">{{ $message }}</div>
+        @enderror
 
-        <div class="mb-3">
-            <input type="password" name="password" class="form-control" placeholder="Password" required>
-            @error('password')
-                <div class="text-danger mt-1">{{ $message }}</div>
-            @enderror
-        </div>
+        <input type="password" name="password" class="form-control" placeholder="Password" required>
+        @error('password')
+            <div class="text-danger mt-1">{{ $message }}</div>
+        @enderror
 
-        <div class="d-grid">
+        <div class="d-grid mt-3">
             <button type="submit" class="btn btn-primary" @if(session('lockout')) disabled @endif>Login</button>
         </div>
     </form>
