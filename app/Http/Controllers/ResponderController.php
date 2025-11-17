@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
+use App\Models\EmergencyAlert;
 
 class ResponderController extends Controller
 {
