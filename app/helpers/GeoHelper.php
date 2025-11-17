@@ -6,21 +6,32 @@ class GeoHelper
 {
     public static function lookup($ip)
     {
-        $response = @file_get_contents("http://ip-api.com/json/{$ip}");
-
-        if (!$response) {
-            return ['city' => 'Unknown', 'country' => 'Unknown'];
+        if ($ip === '127.0.0.1' || $ip === '::1') {
+            return [
+                'city' => 'Localhost',
+                'country' => 'Local Machine'
+            ];
         }
 
-        $data = json_decode($response, true);
+        try {
+            $json = @file_get_contents("https://ipinfo.io/{$ip}/json");
 
-        if ($data['status'] !== 'success') {
-            return ['city' => 'Unknown', 'country' => 'Unknown'];
+            if ($json) {
+                $data = json_decode($json, true);
+
+                return [
+                    'city' => $data['city'] ?? 'Unknown',
+                    'region' => $data['region'] ?? 'Unknown',
+                    'country' => $data['country'] ?? 'Unknown'
+                ];
+            }
+        } catch (\Exception $e) {
+            // ignore errors
         }
 
         return [
-            'city' => $data['city'] ?? 'Unknown',
-            'country' => $data['country'] ?? 'Unknown'
+            'city' => 'Unknown',
+            'country' => 'Unknown'
         ];
     }
 }
