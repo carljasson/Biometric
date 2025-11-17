@@ -127,7 +127,7 @@ public function verifyPin(Request $request) {
 
     return redirect()->intended('/dashboard');
 }
-}
+
 
 
 
