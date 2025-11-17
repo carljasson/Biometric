@@ -42,84 +42,78 @@
     </div>
 </div>
 
-<!-- Fixed Bottom Navigation -->
-<div class="nav-container">
-    <a href="{{ route('responder.home') }}" class="{{ request()->routeIs('responder.home') ? 'active' : '' }}">
-        <i class="fas fa-home"></i>
-        <span>Home</span>
+{{-- ✅ Bottom Navigation --}}
+<div class="fixed-bottom-nav">
+    <a href="{{ route('responder.dashboard') }}" class="{{ request()->routeIs('responder.dashboard') ? 'active' : '' }}">
+        <i class="fas fa-home"></i><span>Home</span>
     </a>
 
-    <a href="{{ route('responder.announcements') }}" class="{{ request()->routeIs('responder.announcements') ? 'active' : '' }}">
-        <i class="fas fa-bullhorn"></i>
-        <span>Announcements</span>
+    <a href="{{ route('responder.profile') }}" class="{{ request()->routeIs('responder.profile') ? 'active' : '' }}">
+        <i class="fas fa-user-circle"></i><span>Profile</span>
     </a>
 
-    <a href="{{ route('responder.scan.options') }}" class="{{ request()->routeIs('responder.scan.options') ? 'active' : '' }}">
-        <i class="fas fa-qrcode"></i>
-        <span>Scan</span>
+    <a href="{{ route('responder.scan.fingerprint') }}" class="{{ request()->routeIs('responder.scan.fingerprint') ? 'active' : '' }}">
+        <i class="fas fa-fingerprint"></i><span>Fingerprint</span>
     </a>
 
-    {{-- 🚨 Alerts Button with Emergency Icon --}}
+    <a href="{{ route('responder.scan.face') }}" class="{{ request()->routeIs('responder.scan.face') ? 'active' : '' }}">
+        <i class="fas fa-camera"></i><span>Face Scan</span>
+    </a>
+  {{-- 🚨 Alerts Button with Emergency Icon --}}
     <a id="alertIcon" href="{{ route('responder.alerts.view') }}"
        class="alert-notify {{ request()->routeIs('responder.alerts.view') ? 'active' : '' }}">
         <i class="fas fa-triangle-exclamation text-danger"></i>
         <span>Alerts</span>
     </a>
 
-    <a href="{{ route('responder.profile') }}" class="{{ request()->routeIs('responder.profile') ? 'active' : '' }}">
-        <i class="fas fa-user-circle"></i>
-        <span>Profile</span>
+    <a href="{{ route('responder.logout') }}">
+        <i class="fas fa-sign-out-alt text-danger"></i><span>Logout</span>
     </a>
 </div>
 
+{{-- 🌐 Bottom Navigation Styling --}}
 <style>
-.nav-container {
+.fixed-bottom-nav {
     position: fixed;
     bottom: 0;
-    left: 0;
     width: 100%;
-    background: #ffffff;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    border-top: 1px solid #ccc;
     display: flex;
     justify-content: space-around;
-    padding: 10px 0;
-    z-index: 9999;
+    align-items: center;
+    padding: 8px 0;
+    z-index: 1000;
 }
 
-.nav-container a {
-    text-decoration: none;
-    color: #6c757d;
+.fixed-bottom-nav a {
+    color: #333;
     text-align: center;
-    font-size: 13px;
-    flex: 1;
+    text-decoration: none;
+    font-size: 12px;
 }
 
-.nav-container a i {
-    display: block;
+.fixed-bottom-nav a i {
     font-size: 20px;
-    margin-bottom: 3px;
+    display: block;
 }
 
-.nav-container a.active {
-    color: #007bff;
+.fixed-bottom-nav a.active {
+    color: #0d6efd;
+    font-weight: bold;
 }
 
-.nav-container a.active i {
-    color: #007bff;
-}
-
-/* 🔥 Blinking Red Animation for Alerts */
-.alert-notify i {
+/* 🔔 Blink animation */
+.blink-alert {
     animation: blink 1s infinite;
 }
 
 @keyframes blink {
     0% { opacity: 1; }
-    50% { opacity: 0.2; }
+    50% { opacity: 0; }
     100% { opacity: 1; }
 }
 </style>
-
 
 {{-- 🌐 Emergency Alert Script --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
