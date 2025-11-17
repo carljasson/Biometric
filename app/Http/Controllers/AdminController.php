@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\MedicalRecord;
 use Carbon\Carbon;
 use Illuminate\Support\Str; 
-use App\Helpers\GeoHelper;
 
 class AdminController extends Controller
 {
@@ -489,17 +488,17 @@ public function verifyPin(Request $request)
     // ✅ PIN correct — log in the admin
     $adminId = session('admin_pending_id');
     $admin = Auth::guard('admin')->loginUsingId($adminId);
-$location = GeoHelper::lookup($request->ip());
 
-LoginHistory::create([
-    'loggable_id' => $adminId,
-    'loggable_type' => Admin::class,
-    'method' => 'PIN',
-    'ip' => $request->ip(),
-    'device' => $request->userAgent(),
-    'location' => $location,
-    'session_id' => session()->getId(),
-    'logged_in_at' => now(),
+    // ✅ Record login history
+    LoginHistory::create([
+        'loggable_id' => $adminId,
+        'loggable_type' => Admin::class, // polymorphic
+        'method' => 'PIN',
+        'ip' => $request->ip(),
+        'device' => $request->userAgent(),
+        'location' => ['city' => 'Unknown', 'country' => 'Unknown'], // optional: use geolocation
+        'session_id' => session()->getId(),
+        'logged_in_at' => now(),
     ]);
 
     // Set session('admin_id') if your app relies on it
