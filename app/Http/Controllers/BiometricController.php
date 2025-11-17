@@ -115,7 +115,8 @@ Auth::login($user);
 // ✅ 2. Record login history BEFORE clearing session
 LoginHistory::create([
     'loggable_id' => $user->id,
-    'loggable_type' => get_class($user),
+     'loggable_type' => User::class, // explicitly use User class
+    'method' => 'PIN',
     'method' => 'PIN',
     'ip' => $request->ip(),
     'device' => $request->userAgent(),
