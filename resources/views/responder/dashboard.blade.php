@@ -79,7 +79,6 @@
         <i class="fas fa-fingerprint"></i><span>Fingerprint</span>
     </a>
 
-
     {{-- 🚨 Alerts Button --}}
     <a id="alertIcon" href="{{ route('responder.alerts.view') }}"
        class="alert-notify {{ request()->routeIs('responder.alerts.view') ? 'active' : '' }}">
@@ -91,6 +90,9 @@
         <i class="fas fa-sign-out-alt text-danger"></i><span>Logout</span>
     </a>
 </div>
+
+{{-- Emergency Sound --}}
+<audio id="alertSound" src="{{ asset('sounds/emergency.mp3') }}" preload="auto"></audio>
 
 {{-- 🌐 Bottom Navigation Styling --}}
 <style>
@@ -140,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const dropdown = document.getElementById('notificationDropdown');
     const list = document.getElementById('notificationList');
     const wrapper = document.getElementById('notificationBellWrapper');
+    const alertSound = document.getElementById('alertSound');
 
     // Toggle dropdown
     wrapper.addEventListener('click', () => {
@@ -206,31 +209,37 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showNewAlerts(alerts) {
-    alerts.forEach(alert => {
-        // Only show if alert is not seen AND status is not 'resolved'
-        if (!seenAlertIds.includes(alert.id) && alert.status !== 'resolved' && alert.status !== 'read') {
-            Swal.fire({
-                title: "🚨 Emergency Alert",
-                html: `
-                    <strong>Type:</strong> ${alert.type}<br>
-                    <strong>Sender:</strong> ${alert.sender_name}<br>
-                    <strong>Email:</strong> ${alert.sender_email}<br>
-                    <strong>Phone:</strong> ${alert.sender_phone}<br>
-                    <strong>Destination:</strong> ${alert.destination}<br>
-                    <strong>Location:</strong>
-                    <a href="https://www.google.com/maps?q=${alert.latitude},${alert.longitude}" target="_blank">
-                        📍 View Map
-                    </a><br><br>
-                    ${alert.photo ? `<img src="${alert.photo}" class="img-fluid rounded" style="max-height: 250px; border: 1px solid #ccc;">` : ''}
-                `,
-                icon: "warning",
-                timer: 15000,
-                timerProgressBar: true
-            });
-            seenAlertIds.push(alert.id);
-        }
-    });
-}
+        alerts.forEach(alert => {
+            // Only show if alert is not seen AND status is not 'resolved' or 'read'
+            if (!seenAlertIds.includes(alert.id) && alert.status !== 'resolved' && alert.status !== 'read') {
+
+                // Play emergency sound
+                alertSound.currentTime = 0;
+                alertSound.play().catch(e => console.log('Audio play blocked:', e));
+
+                Swal.fire({
+                    title: "🚨 Emergency Alert",
+                    html: `
+                        <strong>Type:</strong> ${alert.type}<br>
+                        <strong>Sender:</strong> ${alert.sender_name}<br>
+                        <strong>Email:</strong> ${alert.sender_email}<br>
+                        <strong>Phone:</strong> ${alert.sender_phone}<br>
+                        <strong>Destination:</strong> ${alert.destination}<br>
+                        <strong>Location:</strong>
+                        <a href="https://www.google.com/maps?q=${alert.latitude},${alert.longitude}" target="_blank">
+                            📍 View Map
+                        </a><br><br>
+                        ${alert.photo ? `<img src="${alert.photo}" class="img-fluid rounded" style="max-height: 250px; border: 1px solid #ccc;">` : ''}
+                    `,
+                    icon: "warning",
+                    timer: 15000,
+                    timerProgressBar: true
+                });
+
+                seenAlertIds.push(alert.id);
+            }
+        });
+    }
 
     function markAlertsAsRead() {
         if (seenAlertIds.length === 0) return;
@@ -246,6 +255,18 @@ document.addEventListener('DOMContentLoaded', function () {
             bell.style.color = "white";
         });
     }
+
+    {{-- SweetAlert logout success --}}
+    @if(session('logout_success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Logged Out',
+            text: '{{ session('logout_success') }}',
+            timer: 2500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
+    @endif
 
 });
 </script>
