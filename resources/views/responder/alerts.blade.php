@@ -56,11 +56,12 @@
 
                 {{-- 📸 PHOTO --}}
                 @if($alert->photo)
-                    <div class="mt-3">
-                        <img src="{{ $alert->photo }}" class="img-fluid rounded"
-                             style="max-height: 250px; border: 1px solid #ccc;">
-                    </div>
-                @endif
+    <div class="mt-3">
+        <img src="{{ asset($alert->photo) }}" class="img-fluid rounded"
+             style="max-height: 250px; border: 1px solid #ccc;">
+    </div>
+@endif
+
 
                 {{-- ✅ MARK AS RESOLVED BUTTON --}}
                 @if($alert->status !== 'Resolved')
