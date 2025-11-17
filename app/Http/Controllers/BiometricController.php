@@ -107,23 +107,24 @@ public function verifyPin(Request $request) {
     }
 
     // ✅ PIN correct, log user in
-    $user = User::find($userId);
-    Auth::login($user);
+// ✅ 1. Find user and log in
+$user = User::find($userId);
+Auth::login($user);
 
-    // ✅ Record login history
-    LoginHistory::create([
-        'loggable_id' => $user->id,
-        'loggable_type' => get_class($user), // App\Models\User
-        'method' => 'PIN',
-        'ip' => $request->ip(),
-        'device' => $request->userAgent(),
-        'location' => ['city'=>'Unknown','country'=>'Unknown'], // you can add geolocation here
-        'session_id' => session()->getId(),
-        'logged_in_at' => now(),
-    ]);
+// ✅ 2. Record login history BEFORE clearing session
+LoginHistory::create([
+    'loggable_id' => $user->id,
+    'loggable_type' => get_class($user),
+    'method' => 'PIN',
+    'ip' => $request->ip(),
+    'device' => $request->userAgent(),
+    'location' => ['city'=>'Unknown','country'=>'Unknown'],
+    'session_id' => session()->getId(),
+    'logged_in_at' => now(),
+]);
 
-    // Clear PIN session
-    session()->forget(['login_pin','login_user_id','pin_expires','showPinModal']);
+// ✅ 3. Now clear temporary PIN session
+session()->forget(['login_pin','login_user_id','pin_expires','showPinModal']);
 
     return redirect()->intended('/dashboard');
 }
