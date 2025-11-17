@@ -345,11 +345,20 @@ public function viewAlerts()
 {
     $responder = auth('responder')->user();
 
-    $alerts = Alert::where('destination', $responder->destination)
-                   ->orderBy('created_at', 'desc')
-                   ->get();
+    // Filter alerts only for the responder's destination
+    $alerts = Alert::where('destination', $responder->assigned_area ?? $responder->location)
+        ->leftJoin('users', 'alerts.user_id', '=', 'users.id')
+        ->select(
+            'alerts.*',
+            'users.name as sender_name',
+            'users.email as sender_email',
+            'users.phone as sender_phone'
+        )
+        ->orderBy('alerts.created_at', 'desc')
+        ->get();
 
     return view('responder.alerts', compact('alerts'));
 }
+
 }
 
