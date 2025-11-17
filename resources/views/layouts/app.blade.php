@@ -92,8 +92,8 @@
             </a>
 
             <!-- ⭐ Backup Manager -->
-            <a href="{{ route('admin.backups.index') }}" 
-               class="flex items-center px-4 py-2 hover:bg-gray-700 {{ request()->routeIs('admin.backups.index') ? 'bg-gray-700 font-bold' : '' }}">
+            <a href="{{ route('admin.backups') }}" 
+               class="flex items-center px-4 py-2 hover:bg-gray-700 {{ request()->routeIs('admin.backups') ? 'bg-gray-700 font-bold' : '' }}">
                 <i class="bi bi-hdd-fill me-2"></i> Backup Manager
             </a>
 
