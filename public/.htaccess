@@ -22,14 +22,6 @@
     RewriteCond %{THE_REQUEST} /public/index\.php [NC]
     RewriteRule ^ - [F,L]
 
-    # Block access to sensitive directories EXCEPT images
-    RewriteCond %{REQUEST_URI} ^/(vendor|bootstrap|config|database|resources|tests) [NC]
-    RewriteRule ^ - [F,L]
-
-    # Allow images in /public/images and /public/storage
-    RewriteCond %{REQUEST_URI} ^/(images|storage)/ [NC]
-    RewriteRule ^ - [L]
-
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
@@ -102,9 +94,11 @@
 </IfModule>
 
 # =========================================================
-#          BLOCK HIDDEN FILES (Dotfiles)
+#          BLOCK ACCESS TO SENSITIVE DIRECTORIES
 # =========================================================
 <FilesMatch "^\.">
     Order allow,deny
     Deny from all
 </FilesMatch>
+
+RedirectMatch 403 ^/(vendor|storage|bootstrap|config|database|resources|routes|tests)(.*)$
