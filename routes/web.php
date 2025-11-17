@@ -346,3 +346,5 @@ Route::post('/validate-email', [RegisterController::class, 'validateEmail']);
     Route::get('/responder/alerts', [ResponderController::class, 'viewAlerts'])
         ->name('responder.alerts.view');
 });
+
+Route::post('/responder/alerts/update-status', [ResponderController::class, 'updateAlertStatus'])->name('responder.alerts.updateStatus');
