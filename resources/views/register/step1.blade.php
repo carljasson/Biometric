@@ -86,6 +86,14 @@
                 <input type="password" name="password_confirmation" id="confirm_password" placeholder="Confirm Password" minlength="8" maxlength="16" required>
                 <label class="toggle-label" onclick="togglePassword('confirm_password',this)">Show Password</label>
             </div>
+
+            <!-- Terms of Use / Privacy Policy -->
+            <div style="margin-top:10px;">
+                <input type="checkbox" id="termsCheckbox" required>
+                <label for="termsCheckbox">
+                    I agree to the <a href="#" id="showTerms">Terms of Use</a> and <a href="#" id="showPrivacy">Privacy Policy</a>
+                </label>
+            </div>
         </div>
 
         <div class="btn-group">
@@ -93,6 +101,14 @@
             <button type="submit" id="submitBtn" style="display:none;">Submit</button>
         </div>
     </form>
+</div>
+
+<!-- Modal -->
+<div id="termsModal" style="display:none; position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center; z-index:9999;">
+    <div style="background:#fff;padding:30px;border-radius:15px;max-width:500px;width:90%;position:relative;">
+        <span id="closeModal" style="position:absolute;top:10px;right:15px;cursor:pointer;font-size:20px;">&times;</span>
+        <div id="modalContent"></div>
+    </div>
 </div>
 
 <script>
@@ -140,15 +156,12 @@ nextBtn.addEventListener('click', async ()=>{
         return;
     }
 
-    // Step 4: Check phone
+    // Step 4: Check phone uniqueness
     if(currentStep === 3){
         const phone = document.getElementById('phone').value.trim();
         const res = await fetch('{{ route("check.phone") }}', {
             method:'POST',
-            headers:{
-                'Content-Type':'application/json',
-                'X-CSRF-TOKEN':'{{ csrf_token() }}'
-            },
+            headers:{'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}'},
             body: JSON.stringify({ phone })
         });
         const data = await res.json();
@@ -166,7 +179,7 @@ nextBtn.addEventListener('click', async ()=>{
             Swal.fire({
                 icon:'error',
                 title:'Weak Password',
-                html:'Password must contain:<br>- 1 uppercase letter<br>- 1 lowercase letter<br>- 1 number<br>- 1 special character (e.g. *@$!%*#?&)<br>- 8-16 characters'
+                html:'Password must contain:<br>- 1 uppercase letter<br>- 1 lowercase letter<br>- 1 number<br>- 1 special character<br>- 8-16 characters'
             });
             return;
         }
@@ -205,10 +218,7 @@ document.getElementById('email').addEventListener('blur', async function(){
     if(email){
         const res = await fetch('{{ route("check.email") }}', {
             method:'POST',
-            headers:{
-                'Content-Type':'application/json',
-                'X-CSRF-TOKEN':'{{ csrf_token() }}'
-            },
+            headers:{'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}'},
             body: JSON.stringify({ email })
         });
         const data = await res.json();
@@ -216,6 +226,46 @@ document.getElementById('email').addEventListener('blur', async function(){
             Swal.fire({icon:'error',title:'Oops...',text:'Email is already in use!'});
             this.value = '';
         }
+    }
+});
+
+// Terms modal logic
+const termsModal = document.getElementById('termsModal');
+const modalContent = document.getElementById('modalContent');
+const closeModal = document.getElementById('closeModal');
+
+document.getElementById('showTerms').addEventListener('click', (e)=>{
+    e.preventDefault();
+    modalContent.innerHTML = `
+        <h3>Terms of Use</h3>
+        <p>Your use of this service is subject to our terms. We handle your personal information securely and only use it for registration purposes.</p>
+    `;
+    termsModal.style.display = 'flex';
+});
+
+document.getElementById('showPrivacy').addEventListener('click', (e)=>{
+    e.preventDefault();
+    modalContent.innerHTML = `
+        <h3>Privacy Policy</h3>
+        <p>We collect your personal data for registration and communication purposes only. Your data will not be shared with third parties without your consent.</p>
+    `;
+    termsModal.style.display = 'flex';
+});
+
+closeModal.addEventListener('click', ()=>termsModal.style.display='none');
+termsModal.addEventListener('click', (e)=>{ if(e.target === termsModal) termsModal.style.display='none'; });
+
+// Validate terms checkbox on submit
+document.getElementById('step1Form').addEventListener('submit', function(e){
+    const termsCheckbox = document.getElementById('termsCheckbox');
+    if(!termsCheckbox.checked){
+        e.preventDefault();
+        Swal.fire({
+            icon:'warning',
+            title:'Agreement Required',
+            text:'You must agree to the Terms of Use and Privacy Policy to register.'
+        });
+        return false;
     }
 });
 
