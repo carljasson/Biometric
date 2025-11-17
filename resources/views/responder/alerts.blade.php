@@ -12,7 +12,7 @@
     @endif
 
     @foreach($alerts as $alert)
-        <div class="card mb-3 shadow-sm" id="alertCard{{ $alert->id }}">
+        <div class="card mb-3 shadow-sm" data-lat="{{ $alert->latitude }}" data-lng="{{ $alert->longitude }}">
             <div class="card-body">
 
                 {{-- 🔥 ALERT TYPE --}}
@@ -34,14 +34,19 @@
                 </p>
 
                 {{-- 🏠 FULL ADDRESS --}}
-                <p class="mb-1"><strong>Full Address:</strong> {{ $alert->address }}</p>
+                <p class="mb-1">
+                    <strong>Full Address:</strong>
+                    <span class="full-address text-primary">Loading...</span>
+                </p>
 
                 {{-- 🟡 STATUS --}}
                 <p class="mb-1">
                     <strong>Status:</strong>
-                    <span class="badge bg-{{ $alert->status == 'pending' ? 'warning' : ($alert->status == 'received' ? 'info' : 'success') }}">
-                        {{ ucfirst($alert->status) }}
-                    </span>
+                    @if($alert->status !== 'Resolved')
+                        <span class="badge bg-warning text-dark">{{ ucfirst($alert->status) }}</span>
+                    @else
+                        <span class="badge bg-success">Resolved</span>
+                    @endif
                 </p>
 
                 {{-- ⏱ SENT TIME --}}
@@ -57,16 +62,15 @@
                     </div>
                 @endif
 
-                {{-- ✅ ACTION BUTTONS --}}
-                @if($alert->status == 'pending')
-                    <div class="mt-3">
-                        <button class="btn btn-sm btn-info me-2" onclick="updateAlertStatus({{ $alert->id }}, 'received')">
-                            ✅ Received
-                        </button>
-                        <button class="btn btn-sm btn-success" onclick="updateAlertStatus({{ $alert->id }}, 'resolved')">
-                            ✔️ Resolve
-                        </button>
-                    </div>
+                {{-- ✅ MARK AS RESOLVED BUTTON --}}
+                @if($alert->status !== 'Resolved')
+                    <form id="resolve-form-{{ $alert->id }}" action="{{ route('responder.alerts.resolve', $alert->id) }}" method="POST" style="display: none;">
+                        @csrf
+                        @method('POST')
+                    </form>
+                    <button class="btn btn-sm btn-success mt-2 resolve-btn" data-id="{{ $alert->id }}">
+                        ✅ Mark as Resolved
+                    </button>
                 @endif
 
             </div>
@@ -74,53 +78,69 @@
     @endforeach
 
 </div>
+@endsection
 
-{{-- AJAX for status update --}}
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-function updateAlertStatus(alertId, status) {
-    fetch("{{ route('responder.alerts.updateStatus') }}", {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': "{{ csrf_token() }}",
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ alert_id: alertId, status: status })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success) {
-            // Update badge in UI
-            const card = document.getElementById('alertCard' + alertId);
-            const badge = card.querySelector('.badge');
-            badge.innerText = status.charAt(0).toUpperCase() + status.slice(1);
-            badge.className = 'badge bg-' + (status == 'received' ? 'info' : 'success');
+document.addEventListener('DOMContentLoaded', function () {
 
-            // Remove buttons if resolved
-            if(status == 'resolved') {
-                card.querySelectorAll('button').forEach(btn => btn.remove());
-            }
-
+    // SweetAlert Resolve Logic
+    document.querySelectorAll('.resolve-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
             Swal.fire({
-                icon: 'success',
-                title: 'Status Updated!',
-                text: `Alert marked as ${status}. Sender has been notified.`
+                title: 'Mark as Resolved?',
+                text: 'This will mark the alert as handled.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, resolve it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('resolve-form-' + id).submit();
+                }
             });
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Failed to update status. Try again.'
-            });
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'An error occurred.'
         });
     });
-}
+
+    @if(session('success'))
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: @json(session('success')),
+        showConfirmButton: false,
+        timer: 2000
+    });
+    @endif
+
+    // Reverse Geocoding to Get Full Address
+    const apiKey = "45c8795c3e094eb8994cc238f809c663"; // Replace with your OpenCage API key
+
+    document.querySelectorAll('.card').forEach(card => {
+        const lat = card.getAttribute('data-lat');
+        const lng = card.getAttribute('data-lng');
+        const locationElement = card.querySelector('.full-address');
+
+        if (lat && lng && locationElement) {
+            fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.results.length > 0) {
+                        locationElement.innerText = data.results[0].formatted;
+                    } else {
+                        locationElement.innerText = "Address not found";
+                    }
+                })
+                .catch(error => {
+                    locationElement.innerText = "Error retrieving address";
+                    console.error("Geocoding error:", error);
+                });
+        }
+    });
+
+});
 </script>
-@endsection
+@endpush

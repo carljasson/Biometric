@@ -360,23 +360,28 @@ public function viewAlerts()
 
     return view('responder.alerts', compact('alerts'));
 }
-
-public function updateAlertStatus(Request $request)
+public function resolveAlert($id)
 {
-    $request->validate([
-        'alert_id' => 'required|exists:alerts,id',
-        'status' => 'required|in:received,resolved',
-    ]);
-
-    $alert = Alert::find($request->alert_id);
-    $alert->status = $request->status;
+    $alert = Alert::findOrFail($id);
+    $alert->status = 'Resolved';
     $alert->save();
 
-    // TODO: Notify sender user via email, SMS, or in-app notification
-    // Example: Notification::send($alert->user, new AlertStatusUpdated($alert));
+    return redirect()->back()->with('success', 'Alert marked as resolved.');
+}
+
+public function markAlertsRead(Request $request)
+{
+    $alertId = $request->id;
+    $alert = Alert::find($alertId);
+
+    if ($alert) {
+        $alert->read = 1;
+        $alert->save();
+    }
 
     return response()->json(['success' => true]);
 }
+
 
 }
 

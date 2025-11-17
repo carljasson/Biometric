@@ -348,3 +348,6 @@ Route::post('/validate-email', [RegisterController::class, 'validateEmail']);
 });
 
 Route::post('/responder/alerts/update-status', [ResponderController::class, 'updateAlertStatus'])->name('responder.alerts.updateStatus');
+
+Route::post('/responder/alerts/{id}/resolve', [ResponderController::class, 'resolveAlert'])
+    ->name('responder.alerts.resolve');
