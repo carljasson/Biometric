@@ -47,15 +47,24 @@
     <a href="{{ route('responder.dashboard') }}" class="{{ request()->routeIs('responder.dashboard') ? 'active' : '' }}">
         <i class="fas fa-home"></i><span>Home</span>
     </a>
+
     <a href="{{ route('responder.profile') }}" class="{{ request()->routeIs('responder.profile') ? 'active' : '' }}">
         <i class="fas fa-user-circle"></i><span>Profile</span>
     </a>
+
     <a href="{{ route('responder.scan.fingerprint') }}" class="{{ request()->routeIs('responder.scan.fingerprint') ? 'active' : '' }}">
         <i class="fas fa-fingerprint"></i><span>Fingerprint</span>
     </a>
+
     <a href="{{ route('responder.scan.face') }}" class="{{ request()->routeIs('responder.scan.face') ? 'active' : '' }}">
         <i class="fas fa-camera"></i><span>Face Scan</span>
     </a>
+
+    {{-- 🔔 Alerts button --}}
+    <a id="alertIcon" href="{{ route('responder.alerts.view') }}" class="{{ request()->routeIs('responder.alerts.view') ? 'active' : '' }}">
+        <i class="fas fa-bell text-danger"></i><span>Alerts</span>
+    </a>
+
     <a href="{{ route('responder.logout') }}">
         <i class="fas fa-sign-out-alt text-danger"></i><span>Logout</span>
     </a>
@@ -92,6 +101,17 @@
     color: #0d6efd;
     font-weight: bold;
 }
+
+/* 🔔 Blink animation */
+.blink-alert {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
 </style>
 
 {{-- 🌐 Emergency Alert Script --}}
@@ -99,38 +119,50 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Poll for new emergency alerts every 10 seconds
     setInterval(checkEmergencyAlerts, 10000);
 
-    function checkEmergencyAlerts() {
-    fetch("{{ route('responder.alerts.check') }}")
-        .then(response => response.json())
-        .then(data => {
-            if (data && data.length > 0) {
-                data.forEach(alert => {
-                    Swal.fire({
-                        title: '🚨 Emergency Alert!',
-                        html: `
-                            <strong>Type:</strong> ${alert.type}<br>
-                            <strong>Sender:</strong> ${alert.sender_name}<br>
-                            <strong>Email:</strong> ${alert.sender_email}<br>
-                            <strong>Phone:</strong> ${alert.sender_phone}<br>
-                            <strong>Destination:</strong> ${alert.destination}<br>
-                            <strong>Location:</strong> 
-                                <a href="https://www.google.com/maps?q=${alert.latitude},${alert.longitude}" target="_blank">📍 View on Map</a><br><br>
-                            ${alert.photo ? `<img src="${alert.photo}" alt="Emergency Photo" style="max-width:100%; border-radius:8px; border:1px solid #ccc;">` : ''}
-                        `,
-                        icon: 'warning',
-                        timer: 20000,
-                        timerProgressBar: true,
-                        showConfirmButton: true
-                    });
-                });
-            }
-        })
-        .catch(err => console.error('Error fetching emergency alerts:', err));
-}
+    function toggleAlertIcon(hasAlerts) {
+        const icon = document.querySelector('#alertIcon i');
+        if (hasAlerts) {
+            icon.classList.add('blink-alert');
+        } else {
+            icon.classList.remove('blink-alert');
+        }
+    }
 
+    function checkEmergencyAlerts() {
+        fetch("{{ route('responder.alerts.check') }}")
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    toggleAlertIcon(true);
+
+                    data.forEach(alert => {
+                        Swal.fire({
+                            title: '🚨 Emergency Alert!',
+                            html: `
+                                <strong>Type:</strong> ${alert.type}<br>
+                                <strong>Sender:</strong> ${alert.sender_name}<br>
+                                <strong>Email:</strong> ${alert.sender_email}<br>
+                                <strong>Phone:</strong> ${alert.sender_phone}<br>
+                                <strong>Destination:</strong> ${alert.destination}<br>
+                                <strong>Location:</strong>
+                                    <a href="https://www.google.com/maps?q=${alert.latitude},${alert.longitude}"
+                                       target="_blank">📍 View on Map</a><br><br>
+                                ${alert.photo ? `<img src="${alert.photo}" alt="Emergency Photo" style="max-width:100%; border-radius:8px; border:1px solid #ccc;">` : ''}
+                            `,
+                            icon: 'warning',
+                            timer: 20000,
+                            timerProgressBar: true,
+                            showConfirmButton: true
+                        });
+                    });
+                } else {
+                    toggleAlertIcon(false);
+                }
+            })
+            .catch(err => console.error('Error fetching emergency alerts:', err));
+    }
 });
 </script>
 @endsection

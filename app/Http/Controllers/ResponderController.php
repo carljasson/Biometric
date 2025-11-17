@@ -338,5 +338,12 @@ public function checkAlerts()
 
         return redirect()->back()->with('success', 'Responder deleted successfully!');
     }
+
+    public function viewAlerts()
+{
+    $alerts = EmergencyAlert::latest()->get();
+    return view('responder.alerts', compact('alerts'));
+}
+
 }
 

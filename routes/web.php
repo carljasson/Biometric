@@ -341,7 +341,8 @@ Route::middleware(['auth', 'can:admin-only'])->prefix('admin')->name('admin.')->
 Route::post('/validate-phone', [RegisterController::class, 'validatePhone']);
 Route::post('/validate-email', [RegisterController::class, 'validateEmail']);
 
-Route::get('/responder/alerts/view/{id}', [ResponderAlertController::class, 'view'])
-    ->name('responder.alerts.view');
 
-    
+    Route::middleware(['auth:responder'])->group(function () {
+    Route::get('/responder/alerts', [ResponderController::class, 'viewAlerts'])
+        ->name('responder.alerts.view');
+});
