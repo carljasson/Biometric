@@ -87,7 +87,6 @@
                 <label class="toggle-label" onclick="togglePassword('confirm_password',this)">Show Password</label>
             </div>
 
-            <!-- Terms of Use / Privacy Policy -->
             <div style="margin-top:10px;">
                 <input type="checkbox" id="termsCheckbox" required>
                 <label for="termsCheckbox">
@@ -98,7 +97,7 @@
 
         <div class="btn-group">
             <button type="button" id="nextBtn">Next</button>
-            <button type="submit" id="submitBtn" style="display:none;">Submit</button>
+            <button type="button" id="submitBtn" style="display:none;">Submit</button>
         </div>
     </form>
 </div>
@@ -120,7 +119,6 @@ const progressBar = document.getElementById('progressBar');
 const progressPercentage = document.getElementById('progressPercentage');
 let currentStep = 0;
 
-// Show step and progress
 function showStep(step){
     steps.forEach((s,i)=>s.classList.toggle('active',i===step));
     nextBtn.style.display = step<steps.length-1?'inline-block':'none';
@@ -130,34 +128,30 @@ function showStep(step){
     progressPercentage.textContent=percent+'%';
 }
 
-// Toggle password visibility
 function togglePassword(id,label){
     const input = document.getElementById(id);
     input.type = input.type==='password' ? 'text' : 'password';
     label.textContent = input.type==='text' ? 'Hide Password' : 'Show Password';
 }
 
-// Next button click
-nextBtn.addEventListener('click', async ()=>{
-    const inputs = steps[currentStep].querySelectorAll('input,select');
+// Validate a step
+async function validateStep(step){
+    const inputs = steps[step].querySelectorAll('input,select');
     let valid = true;
-
     inputs.forEach(input => {
-        if(input.required && input.value.trim() === ''){
+        if(input.required && input.value.trim()===''){
             valid = false;
-            input.style.borderColor = 'red';
-        } else { 
-            input.style.borderColor = '#ccc'; 
-        }
+            input.style.borderColor='red';
+        } else { input.style.borderColor='#ccc'; }
     });
 
     if(!valid){
         Swal.fire({icon:'error',title:'Oops...',text:'Please complete all required fields!'});
-        return;
+        return false;
     }
 
-    // Step 4: Check phone uniqueness
-    if(currentStep === 3){
+    // Step 4 phone uniqueness
+    if(step===3){
         const phone = document.getElementById('phone').value.trim();
         const res = await fetch('{{ route("check.phone") }}', {
             method:'POST',
@@ -167,30 +161,53 @@ nextBtn.addEventListener('click', async ()=>{
         const data = await res.json();
         if(data.exists){
             Swal.fire({icon:'error',title:'Oops...',text:'Phone number is already in use!'});
-            return;
+            return false;
         }
     }
 
-    // Step 6: Password strength check
-    if(currentStep === steps.length-1){
-        const password = document.getElementById('password').value;
-        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&]).{8,16}$/;
-        if(!regex.test(password)){
-            Swal.fire({
-                icon:'error',
-                title:'Weak Password',
-                html:'Password must contain:<br>- 1 uppercase letter<br>- 1 lowercase letter<br>- 1 number<br>- 1 special character<br>- 8-16 characters'
-            });
-            return;
-        }
+    return true;
+}
+
+// Next button
+nextBtn.addEventListener('click', async ()=>{
+    if(await validateStep(currentStep)){
+        currentStep++;
+        showStep(currentStep);
+    }
+});
+
+// Submit button
+submitBtn.addEventListener('click', async ()=>{
+    // Validate all previous steps
+    for(let i=0;i<steps.length;i++){
+        if(!await validateStep(i)) return;
     }
 
-    currentStep++;
-    showStep(currentStep);
+    // Password strength
+    const password = document.getElementById('password').value;
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&]).{8,16}$/;
+    if(!regex.test(password)){
+        Swal.fire({icon:'error',title:'Weak Password',html:'Password must contain:<br>- 1 uppercase<br>- 1 lowercase<br>- 1 number<br>- 1 special char<br>- 8-16 chars'});
+        return;
+    }
+
+    // Password confirmation
+    if(password !== document.getElementById('confirm_password').value){
+        Swal.fire({icon:'error',title:'Mismatch',text:'Passwords do not match!'});
+        return;
+    }
+
+    // Terms checkbox
+    if(!document.getElementById('termsCheckbox').checked){
+        Swal.fire({icon:'warning',title:'Agreement Required',text:'You must agree to the Terms of Use and Privacy Policy.'});
+        return;
+    }
+
+    document.getElementById('step1Form').submit();
 });
 
 // Back button
-topBackBtn.addEventListener('click', (e)=>{
+topBackBtn.addEventListener('click',(e)=>{
     e.preventDefault();
     if(currentStep===0) window.location.href='/';
     else { currentStep--; showStep(currentStep); }
@@ -202,17 +219,15 @@ document.getElementById('birthday').addEventListener('change', function(){
     const today = new Date();
     let age = today.getFullYear() - birthdate.getFullYear();
     const m = today.getMonth() - birthdate.getMonth();
-    if(m < 0 || (m === 0 && today.getDate() < birthdate.getDate())) age--;
+    if(m<0 || (m===0 && today.getDate()<birthdate.getDate())) age--;
     document.getElementById('age').value = age>0 ? age : '';
 });
 
 // Max birthday = today
 const now = new Date();
-document.getElementById('birthday').setAttribute('max',
-    `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`
-);
+document.getElementById('birthday').setAttribute('max',`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`);
 
-// Real-time email uniqueness check
+// Email uniqueness
 document.getElementById('email').addEventListener('blur', async function(){
     const email = this.value.trim();
     if(email){
@@ -224,53 +239,22 @@ document.getElementById('email').addEventListener('blur', async function(){
         const data = await res.json();
         if(data.exists){
             Swal.fire({icon:'error',title:'Oops...',text:'Email is already in use!'});
-            this.value = '';
+            this.value='';
         }
     }
 });
 
 // Terms modal logic
-const termsModal = document.getElementById('termsModal');
-const modalContent = document.getElementById('modalContent');
-const closeModal = document.getElementById('closeModal');
+const termsModal=document.getElementById('termsModal');
+const modalContent=document.getElementById('modalContent');
+const closeModal=document.getElementById('closeModal');
 
-document.getElementById('showTerms').addEventListener('click', (e)=>{
-    e.preventDefault();
-    modalContent.innerHTML = `
-        <h3>Terms of Use</h3>
-        <p>Your use of this service is subject to our terms. We handle your personal information securely and only use it for registration purposes.</p>
-    `;
-    termsModal.style.display = 'flex';
-});
-
-document.getElementById('showPrivacy').addEventListener('click', (e)=>{
-    e.preventDefault();
-    modalContent.innerHTML = `
-        <h3>Privacy Policy</h3>
-        <p>We collect your personal data for registration and communication purposes only. Your data will not be shared with third parties without your consent.</p>
-    `;
-    termsModal.style.display = 'flex';
-});
-
-closeModal.addEventListener('click', ()=>termsModal.style.display='none');
-termsModal.addEventListener('click', (e)=>{ if(e.target === termsModal) termsModal.style.display='none'; });
-
-// Validate terms checkbox on submit
-document.getElementById('step1Form').addEventListener('submit', function(e){
-    const termsCheckbox = document.getElementById('termsCheckbox');
-    if(!termsCheckbox.checked){
-        e.preventDefault();
-        Swal.fire({
-            icon:'warning',
-            title:'Agreement Required',
-            text:'You must agree to the Terms of Use and Privacy Policy to register.'
-        });
-        return false;
-    }
-});
+document.getElementById('showTerms').addEventListener('click',(e)=>{e.preventDefault(); modalContent.innerHTML=`<h3>Terms of Use</h3><p>Your use of this service is subject to our terms...</p>`; termsModal.style.display='flex';});
+document.getElementById('showPrivacy').addEventListener('click',(e)=>{e.preventDefault(); modalContent.innerHTML=`<h3>Privacy Policy</h3><p>We collect your personal data for registration...</p>`; termsModal.style.display='flex';});
+closeModal.addEventListener('click',()=>termsModal.style.display='none');
+termsModal.addEventListener('click',(e)=>{if(e.target===termsModal) termsModal.style.display='none';});
 
 showStep(currentStep);
 </script>
-
 </body>
 </html>
