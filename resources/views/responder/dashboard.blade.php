@@ -221,8 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <a href="https://www.google.com/maps?q=${alert.latitude},${alert.longitude}" target="_blank">
                         📍 View Map
                     </a><br><br>
-                    ${alert.photo ? ` <img src="{{ asset($alert->photo) }}" class="img-fluid rounded"
-             style="max-height: 250px; border: 1px solid #ccc;">` : ''}
+                    ${alert.photo ? `<img src="${alert.photo}" class="img-fluid rounded" style="max-height: 250px; border: 1px solid #ccc;">` : ''}
                 `,
                 icon: "warning",
                 timer: 15000,
