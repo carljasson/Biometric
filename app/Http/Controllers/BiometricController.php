@@ -91,7 +91,6 @@ public function login(Request $request)
         ->with('showPinModal', true)
         ->withInput(['email' => $request->email]);
 }
-
 public function verifyPin(Request $request) {
     $request->validate(['pin'=>'required|digits:6']);
 
@@ -111,7 +110,19 @@ public function verifyPin(Request $request) {
     $user = User::find($userId);
     Auth::login($user);
 
-    // Clear session
+    // ✅ Record login history
+    LoginHistory::create([
+        'loggable_id' => $user->id,
+        'loggable_type' => get_class($user), // App\Models\User
+        'method' => 'PIN',
+        'ip' => $request->ip(),
+        'device' => $request->userAgent(),
+        'location' => ['city'=>'Unknown','country'=>'Unknown'], // you can add geolocation here
+        'session_id' => session()->getId(),
+        'logged_in_at' => now(),
+    ]);
+
+    // Clear PIN session
     session()->forget(['login_pin','login_user_id','pin_expires','showPinModal']);
 
     return redirect()->intended('/dashboard');

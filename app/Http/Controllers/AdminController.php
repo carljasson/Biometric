@@ -484,11 +484,23 @@ public function verifyPin(Request $request)
         return back()->withErrors(['pin' => 'Incorrect PIN.'])->withInput();
     }
 
-    // PIN correct — log in the admin and clear session
+    // ✅ PIN correct — log in the admin
     $adminId = session('admin_pending_id');
-    Auth::guard('admin')->loginUsingId($adminId);
+    $admin = Auth::guard('admin')->loginUsingId($adminId);
 
-    // Set session('admin_id') if your app relies on that
+    // ✅ Record login history
+    LoginHistory::create([
+        'loggable_id' => $adminId,
+        'loggable_type' => Admin::class, // polymorphic
+        'method' => 'PIN',
+        'ip' => $request->ip(),
+        'device' => $request->userAgent(),
+        'location' => ['city' => 'Unknown', 'country' => 'Unknown'], // optional: use geolocation
+        'session_id' => session()->getId(),
+        'logged_in_at' => now(),
+    ]);
+
+    // Set session('admin_id') if your app relies on it
     session(['admin_id' => $adminId]);
 
     // Clear temporary session keys

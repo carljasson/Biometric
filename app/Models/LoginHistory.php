@@ -9,15 +9,17 @@ class LoginHistory extends Model
     protected $table = 'login_histories';
 
     // If your table has created_at, updated_at columns
-    public $timestamps = false; // set to true if you have them
+    public $timestamps = true; // set to true since your table has them
 
     protected $casts = [
         'logged_in_at' => 'datetime',
+        'location' => 'array', // cast JSON to array
     ];
 
     // ✅ Allow mass assignment for these columns
     protected $fillable = [
-        'user_id',
+        'loggable_id',
+        'loggable_type',
         'method',
         'device',
         'ip',
@@ -26,9 +28,9 @@ class LoginHistory extends Model
         'logged_in_at',
     ];
 
-    // Relationship to user
-    public function user()
+    // Polymorphic relationship to User/Admin/Responder
+    public function loggable()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->morphTo();
     }
 }

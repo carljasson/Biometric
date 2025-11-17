@@ -49,6 +49,11 @@
     color: #0d6efd !important;
     font-size: 0.8rem;
 }
+.badge-role {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    padding: 0.25rem 0.5rem;
+}
 </style>
 
 <div id="mainContent">
@@ -68,9 +73,10 @@
                     <thead class="table-light">
                         <tr>
                             <th class="text-center">Date & Time</th>
-                            <th>User</th>
+                            <th>User / Role</th>
                             <th>Method</th>
                             <th>IP Address</th>
+                            <th>Location</th>
                             <th>Device</th>
                         </tr>
                     </thead>
@@ -84,6 +90,9 @@
                                     @if($e->user)
                                         <strong>{{ $e->user->name }}</strong>
                                         <small class="text-muted d-block">ID: #{{ $e->user->id }}</small>
+                                        <span class="badge bg-secondary badge-role">
+                                            {{ ucfirst($e->user->role ?? 'User') }}
+                                        </span>
                                     @else
                                         <span class="text-muted fst-italic">Unknown</span>
                                     @endif
@@ -94,13 +103,20 @@
                                     </span>
                                 </td>
                                 <td><code class="small">{{ $e->ip }}</code></td>
+                                <td>
+                                    @if($e->location)
+                                        {{ $e->location['city'] ?? '' }}, {{ $e->location['country'] ?? '' }}
+                                    @else
+                                        <span class="text-muted fst-italic">Unknown</span>
+                                    @endif
+                                </td>
                                 <td class="text-truncate" style="max-width: 300px;" title="{{ $e->device }}">
                                     {{ $e->device }}
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center text-muted py-4">
+                                <td colspan="6" class="text-center text-muted py-4">
                                     <i class="bi bi-emoji-frown me-1"></i> No login history yet.
                                 </td>
                             </tr>

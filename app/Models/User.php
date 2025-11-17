@@ -67,4 +67,9 @@ public function getNameAttribute()
     return trim("{$this->firstname} {$this->middlename} {$this->lastname}");
 }
 
+public function loginHistories()
+{
+    return $this->morphMany(LoginHistory::class, 'loggable');
+}
+
 }
