@@ -48,7 +48,7 @@
 # Block sensitive directories
 RedirectMatch 403 ^/(vendor|storage|bootstrap|config|database|resources|routes|tests)(.*)$
 
-# Block direct access to images you want private
+# Block direct access to private images
 <FilesMatch "logo\.png">
     Require all denied
 </FilesMatch>
@@ -57,5 +57,31 @@ RedirectMatch 403 ^/(vendor|storage|bootstrap|config|database|resources|routes|t
 <FilesMatch "\.php$">
     <If "%{REQUEST_URI} !~ m#^/index\.php$#">
         Require all denied
-    </If>
+    </IfMatch>
 </FilesMatch>
+
+# ===== SECURITY HEADERS =====
+<IfModule mod_headers.c>
+    # HSTS: Force HTTPS
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+
+    # Clickjacking protection
+    Header always set X-Frame-Options "SAMEORIGIN"
+
+    # Prevent MIME-type sniffing
+    Header always set X-Content-Type-Options "nosniff"
+
+    # Referrer policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Permissions policy (adjust based on your site)
+    Header always set Permissions-Policy "geolocation=(self), camera=(), microphone=()"
+
+    # Remove X-Powered-By
+    Header unset X-Powered-By
+</IfModule>
+
+# ===== CONTENT SECURITY POLICY =====
+<IfModule mod_headers.c>
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+</IfModule>
