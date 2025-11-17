@@ -27,153 +27,113 @@
     <meta http-equiv="Referrer-Policy" content="no-referrer">
     <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-          crossorigin="anonymous" referrerpolicy="no-referrer">
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-          crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 
     <style nonce="{{ $cspNonce }}">
         body {
-            background: url('{{ asset('images/background.png') }}') no-repeat center center fixed;
-            background-size: cover;
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(2px);
-            min-height: 100vh;
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #3498db, #8e44ad);
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-family: Arial, sans-serif;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
         }
-        html, body { touch-action: manipulation; }
-        input, select, textarea { font-size: 16px; }
-        button, input, select, textarea { min-height: 44px; } /* Touch-friendly */
 
-        .login-container {
-            display: flex;
-            background-color: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-            max-width: 900px;
+        .login-wrapper {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.15);
             width: 90%;
-            border-radius: 12px;
+            max-width: 450px;
+            display: flex;
             overflow: hidden;
-            border: 2px solid rgba(255,255,255,0.6);
-            animation: fadeIn 0.6s ease-in-out;
-            position: relative;
-            flex-direction: row;
-        }
-
-        .login-left, .login-right { flex: 1; padding: 40px; }
-        .login-left {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-right: 2px solid rgba(255,255,255,0.6);
-            background-color: rgba(0,0,0,0.1);
-        }
-        .login-left img { max-width: 200px; height: auto; }
-
-        .login-right {
-            display: flex;
+            padding: 40px;
             flex-direction: column;
-            justify-content: center;
-            position: relative;
+            animation: fadeIn 0.6s ease-in-out;
         }
 
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 32px;
-            height: 32px;
-            background-color: rgba(255,255,255,0.8);
-            border-radius: 50%;
+        .login-wrapper h4 {
             text-align: center;
-            line-height: 32px;
-            font-weight: bold;
-            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 25px;
             color: #333;
-            text-decoration: none;
-            transition: 0.3s;
         }
-        .close-btn:hover { background-color: rgba(255,0,0,0.8); color: #fff; }
 
-        .login-right h4 { font-weight: bold; color: #333; margin-bottom: 30px; font-size: 1.2rem; }
-        .form-label { font-weight: 500; }
-        .alert { font-size: 0.9rem; }
-        .extra-links { font-size: 0.95rem; margin-top: 15px; }
+        .form-label { font-weight: 600; }
+
+        .btn-primary {
+            background: #3498db;
+            border: none;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .extra-links { font-size: 0.95rem; margin-top: 15px; text-align: center; }
 
         .disabled-form { opacity: 0.5; pointer-events: none; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Mobile responsiveness */
         @media (max-width: 768px) {
-            .login-container { flex-direction: column; max-width: 95%; margin: 10px; }
-            .login-left { border-right: none; border-bottom: 2px solid rgba(255,255,255,0.6); padding: 20px; }
-            .login-left img { max-width: 150px; }
-            .login-right { padding: 20px; }
-            .login-right h4 { font-size: 1.2rem; }
-            .btn, input { font-size: 1rem; min-height: 44px; }
-            .modal-dialog { max-width: 90%; margin: 1rem auto; }
+            .login-wrapper { padding: 30px 20px; width: 95%; max-width: 400px; }
         }
+
+        * { touch-action: manipulation; user-select: none; }
     </style>
 </head>
 <body>
 
-<div class="login-container">
+<div class="login-wrapper">
 
-    <div class="login-left">
-        <img src="{{ asset('images/logo.png') }}" alt="Logo">
-    </div>
+    <h4>🔒 Login to Access</h4>
 
-    <div class="login-right">
-        <a href="/" class="close-btn">×</a>
+    @if(session('success'))
+        <div class="alert alert-success text-center">{{ session('success') }}</div>
+    @endif
 
-        <h4 class="text-center">🔒 Login to Access</h4>
-
-        @if(session('success'))
-            <div class="alert alert-success text-center">{{ session('success') }}</div>
-        @endif
-
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">@foreach($errors->all() as $error)<li>{{ e($error) }}</li>@endforeach</ul>
-            </div>
-        @endif
-
-        <form id="loginForm" method="POST" action="{{ url('/login') }}" autocomplete="off">
-            @csrf
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" required inputmode="email" autocomplete="username" value="{{ old('email') }}">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" required autocomplete="current-password">
-            </div>
-
-            <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
-            @error('g-recaptcha-response')
-                <div class="alert alert-danger mt-2">{{ $message }}</div>
-            @enderror
-
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-        </form>
-
-        <div class="text-center extra-links">
-            <a href="{{ route('password.request') }}">Forgot password?</a>
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ e($error) }}</li>
+                @endforeach
+            </ul>
         </div>
+    @endif
+
+    <form id="loginForm" method="POST" action="{{ url('/login') }}" autocomplete="off">
+        @csrf
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" required inputmode="email" autocomplete="username" value="{{ old('email') }}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" required autocomplete="current-password">
+        </div>
+
+        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+        @error('g-recaptcha-response')
+            <div class="alert alert-danger mt-2">{{ $message }}</div>
+        @enderror
+
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+
+    <div class="extra-links">
+        <a href="{{ route('password.request') }}">Forgot password?</a>
     </div>
 
 </div>
 
+<!-- Modals -->
 <div class="modal fade" id="registerModal"><div class="modal-dialog"><div class="modal-content p-3">🚫 Registration is only available **at the MDRRMO office**</div></div></div>
 <div class="modal fade" id="tipsModal"><div class="modal-dialog"><div class="modal-content p-3">🚑 This system alerts the nearest responders & provides victim info!</div></div></div>
-
 <div class="modal fade" id="pinModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content p-4">
@@ -227,7 +187,7 @@ if (window.top !== window.self) window.top.location = window.self.location;
 <script nonce="{{ $cspNonce }}">
 document.addEventListener("DOMContentLoaded", () => {
     let seconds = {{ session('lockout') }};
-    let form = document.querySelector(".login-right form");
+    let form = document.querySelector(".login-wrapper form");
     if (form) {
         form.querySelectorAll('input, button').forEach(el => el.disabled = true);
         form.classList.add('disabled-form');
