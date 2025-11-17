@@ -36,10 +36,12 @@ class SecureHeaders
         );
 
         // Permissions Policy
-        $response->headers->set(
-            'Permissions-Policy',
-            "geolocation=(), microphone=(), camera=(), fullscreen=(self), payment=()"
-        );
+        // Permissions Policy
+$response->headers->set(
+    'Permissions-Policy',
+    "geolocation=(self), camera=(self), microphone=(), fullscreen=(self), payment=()"
+);
+
 
         // Cross-Origin Isolation
         $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
@@ -55,39 +57,20 @@ class SecureHeaders
         |--------------------------------------------------------------------------
         */
 
-        $response->headers->set(
-            'Content-Security-Policy',
-            "default-src 'self';
-
-             img-src 'self' data: https:;
-
-             script-src 
-                'self'
-                https://www.gstatic.com
-                https://www.google.com
-                https://www.google-analytics.com
-                https://cdn.jsdelivr.net
-                https://cdnjs.cloudflare.com;
-
-             style-src
-                'self'
-                https://cdn.jsdelivr.net
-                https://cdnjs.cloudflare.com
-                'unsafe-inline';
-
-             frame-src 
-                https://www.google.com 
-                https://www.gstatic.com;
-
-             font-src 'self' data: https:;
-
-             connect-src 'self' https:;
-
-             frame-ancestors 'self';
-
-             base-uri 'self';
-             form-action 'self';"
-        );
+       $response->headers->set(
+    'Content-Security-Policy',
+    "default-src 'self';
+     img-src 'self' data: https:;
+     script-src 'self' https://www.gstatic.com https://www.google.com https://www.google-analytics.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-inline';
+     style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-inline';
+     frame-src https://www.google.com https://www.gstatic.com;
+     font-src 'self' data: https:;
+     connect-src 'self' https:;
+     media-src 'self';
+     frame-ancestors 'self';
+     base-uri 'self';
+     form-action 'self';"
+);
 
         // Remove X-Powered-By (security)
         if (function_exists('header_remove')) {
