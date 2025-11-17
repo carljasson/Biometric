@@ -351,7 +351,7 @@ public function viewAlerts()
         ->leftJoin('users', 'alerts.user_id', '=', 'users.id')
         ->select(
             'alerts.*',
-          DB::raw("CONCAT(users.firstname, ' ', users.lastname) as sender_name"),
+          DB::raw("CONCAT(users.firstname, ' ', users.middle_name, ' ', users.lastname) as sender_name"),
             'users.email as sender_email',
             'users.phone as sender_phone'
         )
