@@ -8,17 +8,18 @@ use App\Models\LoginHistory;
 
 class RecordSuccessfulLogin
 {
-   public function handle(Login $event)
+  public function handle($event)
 {
     $user = $event->user;
 
     // Only log normal users
     if ($user instanceof \App\Models\User) {
         LoginHistory::create([
-            'user_id'     => $user->id,
+            'loggable_id' => $user->id,             // ✅ polymorphic
+            'loggable_type' => get_class($user),   // App\Models\User
             'method'      => 'password',
-            'device'      => substr(Request::header('User-Agent') ?? 'unknown', 0, 255),
-            'ip'          => Request::ip(),
+            'device'      => substr(request()->header('User-Agent') ?? 'unknown', 0, 255),
+            'ip'          => request()->ip(),
             'location'    => null,
             'session_id'  => session()->getId(),
             'logged_in_at'=> now(),
