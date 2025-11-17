@@ -121,46 +121,32 @@ Session::put('responder_pin_expires_at', Carbon::now()->addMinutes(5));
 }
 
  // Verify submitted PIN
-  public function verifyPin(Request $request)
-{
-    $request->validate(['pin' => 'required|digits:6']);
+    public function verifyPin(Request $request)
+    {
+        $request->validate(['pin' => 'required|digits:6']);
 
-    if (!session()->has('responder_id') || !session()->has('responder_pin')) {
-        return redirect()->route('responder.login')->with('error', 'Session expired. Please login again.');
-    }
+        if (!session()->has('responder_id') || !session()->has('responder_pin')) {
+            return redirect()->route('responder.login')->with('error', 'Session expired. Please login again.');
+        }
 
-    $expiresAt = session('responder_pin_expires_at');
-    if (!$expiresAt || now()->greaterThan(Carbon::parse($expiresAt))) {
+        $expiresAt = session('responder_pin_expires_at');
+        if (!$expiresAt || now()->greaterThan(Carbon::parse($expiresAt))) {
+            session()->forget(['responder_id', 'responder_pin', 'responder_pin_expires_at']);
+            return redirect()->route('responder.login')->with('error', 'PIN expired. Please login again.');
+        }
+
+        if ($request->pin != session('responder_pin')) {
+            return back()->with('error', 'Incorrect PIN.')->withInput();
+        }
+
+        // Log in responder
+        $responderId = session('responder_id');
+        Auth::guard('responder')->loginUsingId($responderId);
+
         session()->forget(['responder_id', 'responder_pin', 'responder_pin_expires_at']);
-        return redirect()->route('responder.login')->with('error', 'PIN expired. Please login again.');
+
+        return redirect()->intended('/responder/dashboard')->with('success', 'Welcome back!');
     }
-
-    if ($request->pin != session('responder_pin')) {
-        return back()->with('error', 'Incorrect PIN.')->withInput();
-    }
-
-    // ✅ Log in responder
-    $responderId = session('responder_id');
-    $responder = Auth::guard('responder')->loginUsingId($responderId);
-
-    // ✅ Record login history in polymorphic table
-    LoginHistory::create([
-        'loggable_id' => $responderId,
-        'loggable_type' => Responder::class, // Polymorphic type
-        'method' => 'PIN',
-        'ip' => $request->ip(),
-        'device' => $request->userAgent(),
-        'location' => ['city' => 'Unknown', 'country' => 'Unknown'], // optional: add geolocation
-        'session_id' => session()->getId(),
-        'logged_in_at' => now(),
-    ]);
-
-    // Clear PIN session
-    session()->forget(['responder_id', 'responder_pin', 'responder_pin_expires_at']);
-
-    return redirect()->intended('/responder/dashboard')->with('success', 'Welcome back!');
-}
-
 
 public function showPinForm()
 {
