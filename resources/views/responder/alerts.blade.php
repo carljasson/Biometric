@@ -2,6 +2,12 @@
 
 @section('content')
 <div class="container mt-4 mb-5">
+    {{-- ⬅ Back Button --}}
+    <div class="mb-3">
+        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">
+            &larr; Back
+        </a>
+    </div>
 
     <h3 class="mb-3">🚨 Emergency Alerts</h3>
 
