@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use App\Models\EmergencyAlert;
+use App\Models\Alert;
 
 class ResponderController extends Controller
 {
@@ -340,18 +341,15 @@ public function checkAlerts()
         return redirect()->back()->with('success', 'Responder deleted successfully!');
     }
 
-    public function viewAlerts()
+public function viewAlerts()
 {
-     // Get the logged-in responder
     $responder = auth('responder')->user();
 
-    // Fetch alerts only for the responder's location
-    $alerts = EmergencyAlert::where('destination', $responder->destination)
+    $alerts = Alert::where('destination', $responder->destination)
                    ->orderBy('created_at', 'desc')
                    ->get();
 
     return view('responder.alerts', compact('alerts'));
 }
-
 }
 
