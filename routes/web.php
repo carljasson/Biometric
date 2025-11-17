@@ -332,7 +332,7 @@ Route::get('/pin-login', function () {
 Route::middleware(['auth', 'can:admin-only'])->prefix('admin')->name('admin.')->group(function () {
 
     // Backup Manager (list, upload, download, delete)
-    Route::get('backups', [AdminBackupController::class, 'index'])->name('admin.backups.upload');
+    Route::get('backups', [AdminBackupController::class, 'index'])->name('backups.upload');
     Route::post('backups/upload', [AdminBackupController::class, 'store'])->name('backups.store');
     Route::get('backups/download/{filename}', [AdminBackupController::class, 'download'])->name('backups.download');
     Route::delete('backups/{filename}', [AdminBackupController::class, 'destroy'])->name('backups.destroy');
