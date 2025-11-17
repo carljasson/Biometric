@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function showNewAlerts(alerts) {
     alerts.forEach(alert => {
         // Only show if alert is not seen AND status is not 'resolved'
-        if (!seenAlertIds.includes(alert.id) && alert.status !== 'resolved') {
+        if (!seenAlertIds.includes(alert.id) && alert.status !== 'resolved' && alert.status !== 'read') {
             Swal.fire({
                 title: "🚨 Emergency Alert",
                 html: `
@@ -221,7 +221,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     <a href="https://www.google.com/maps?q=${alert.latitude},${alert.longitude}" target="_blank">
                         📍 View Map
                     </a><br><br>
-                    ${alert.photo ? `<img src="${alert.photo}" style="max-width:100%; border-radius:8px;">` : ''}
+                    ${alert.photo ? ` <img src="{{ asset($alert->photo) }}" class="img-fluid rounded"
+             style="max-height: 250px; border: 1px solid #ccc;">` : ''}
                 `,
                 icon: "warning",
                 timer: 15000,
