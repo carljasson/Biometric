@@ -124,41 +124,41 @@
             </div>
         </div>
 
-        <!-- 🏥 Patient Stats -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card text-white bg-dark shadow">
-                    <div class="card-body text-center">
-                        <h5 class="card-title"><i class="bi bi-person-vcard-fill me-2"></i>Total Patients</h5>
-                        <p class="card-text fs-4">{{ $totalPatients }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card text-white bg-success shadow">
-                    <div class="card-body text-center">
-                        <h5 class="card-title"><i class="bi bi-calendar-week me-2"></i>This Week</h5>
-                        <p class="card-text fs-4">{{ $weeklyPatients }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card text-dark bg-warning shadow">
-                    <div class="card-body text-center">
-                        <h5 class="card-title"><i class="bi bi-calendar-month me-2"></i>This Month</h5>
-                        <p class="card-text fs-4">{{ $monthlyPatients }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card text-white bg-info shadow">
-                    <div class="card-body text-center">
-                        <h5 class="card-title"><i class="bi bi-calendar3 me-2"></i>This Year</h5>
-                        <p class="card-text fs-4">{{ $yearlyPatients }}</p>
-                    </div>
-                </div>
+       <!-- 🏥 Alert Stats -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-dark shadow">
+            <div class="card-body text-center">
+                <h5 class="card-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Total Alerts</h5>
+                <p class="card-text fs-4">{{ $totalAlerts }}</p>
             </div>
         </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-success shadow">
+            <div class="card-body text-center">
+                <h5 class="card-title"><i class="bi bi-calendar-week me-2"></i>This Week</h5>
+                <p class="card-text fs-4">{{ $weeklyAlerts }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-dark bg-warning shadow">
+            <div class="card-body text-center">
+                <h5 class="card-title"><i class="bi bi-calendar-month me-2"></i>This Month</h5>
+                <p class="card-text fs-4">{{ $monthlyAlerts }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-info shadow">
+            <div class="card-body text-center">
+                <h5 class="card-title"><i class="bi bi-calendar3 me-2"></i>This Year</h5>
+                <p class="card-text fs-4">{{ $yearlyAlerts }}</p>
+            </div>
+        </div>
+    </div>
+</div>
 
   </div>
   
