@@ -23,16 +23,17 @@
         "maatwebsite/excel": "^3.1"
 
     },
-    "autoload": {
-        "psr-4": {
-            "App\\": "app/",
-            "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
-        }
-         "files": [
+   "autoload": {
+    "psr-4": {
+        "App\\": "app/",
+        "Database\\Factories\\": "database/factories/",
+        "Database\\Seeders\\": "database/seeders/"
+    },
+    "files": [
         "app/Helpers/GeoHelper.php"
     ]
-    },
+},
+
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
