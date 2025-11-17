@@ -382,6 +382,12 @@ public function markAlertsRead(Request $request)
     return response()->json(['success' => true]);
 }
 
+public function markRead(Request $request)
+{
+    $alertIds = $request->alert_ids ?? [];
+    Alert::whereIn('id', $alertIds)->update(['is_read' => true]);
+    return response()->json(['success' => true]);
+}
 
 }
 

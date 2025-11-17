@@ -13,15 +13,15 @@
             <div class="position-relative" id="notificationBellWrapper" style="cursor:pointer;">
                 <i class="fas fa-bell" id="notificationBell" style="font-size:22px; color:white;"></i>
                 <span id="notificationCount"
-                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                    style="display:none;">
+                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                      style="display:none;">
                 </span>
             </div>
 
             <!-- 🔽 Dropdown List -->
             <div id="notificationDropdown"
-                class="card shadow"
-                style="display:none; position:absolute; right:20px; top:60px; width:260px; z-index:1500;">
+                 class="card shadow"
+                 style="display:none; position:absolute; right:20px; top:60px; width:260px; z-index:1500;">
                 <ul class="list-group" id="notificationList">
                     <!-- Alerts load here -->
                 </ul>
@@ -138,58 +138,52 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* ---------------------------
-       ALERT ICON (BOTTOM NAV) LOGIC
-    -----------------------------*/
-    setInterval(checkEmergencyAlerts, 10000);
-
-    function toggleAlertIcon(hasAlerts) {
-        const icon = document.querySelector('#alertIcon i');
-        if (hasAlerts) icon.classList.add('blink-alert');
-        else icon.classList.remove('blink-alert');
-    }
-
-    function checkEmergencyAlerts() {
-        fetch("{{ route('responder.alerts.check') }}")
-            .then(response => response.json())
-            .then(data => {
-                toggleAlertIcon(data.length > 0);
-            });
-    }
-
-    /* ---------------------------
-       🔔 NOTIFICATION BELL LOGIC
-    -----------------------------*/
-
+    let seenAlertIds = []; // track alerts already shown in SweetAlert
     const bell = document.getElementById('notificationBell');
     const countBadge = document.getElementById('notificationCount');
     const dropdown = document.getElementById('notificationDropdown');
     const list = document.getElementById('notificationList');
     const wrapper = document.getElementById('notificationBellWrapper');
 
+    // Toggle dropdown
     wrapper.addEventListener('click', () => {
         dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        markAlertsAsRead(); // mark alerts as read when bell clicked
     });
 
-    setInterval(fetchBellNotifications, 10000);
+    // Check emergency alerts for bottom nav icon blinking
+    setInterval(checkEmergencyAlerts, 10000);
+    checkEmergencyAlerts();
 
-    fetchBellNotifications();
-
-    function fetchBellNotifications() {
+    function checkEmergencyAlerts() {
         fetch("{{ route('responder.alerts.check') }}")
             .then(response => response.json())
+            .then(data => {
+                const icon = document.querySelector('#alertIcon i');
+                if (data.length > 0) icon.classList.add('blink-alert');
+                else icon.classList.remove('blink-alert');
+            });
+    }
+
+    // Fetch alerts for bell and SweetAlert
+    setInterval(fetchAlerts, 10000);
+    fetchAlerts();
+
+    function fetchAlerts() {
+        fetch("{{ route('responder.alerts.check') }}")
+            .then(res => res.json())
             .then(alerts => {
                 updateBell(alerts);
                 updateDropdown(alerts);
+                showNewAlerts(alerts);
             });
     }
 
     function updateBell(alerts) {
-        let count = alerts.length;
-
-        if (count > 0) {
+        let unreadCount = alerts.filter(a => !seenAlertIds.includes(a.id)).length;
+        if (unreadCount > 0) {
             bell.style.color = "yellow";
-            countBadge.innerText = count;
+            countBadge.innerText = unreadCount;
             countBadge.style.display = "inline-block";
         } else {
             bell.style.color = "white";
@@ -199,27 +193,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateDropdown(alerts) {
         list.innerHTML = "";
-
         if (alerts.length === 0) {
-            list.innerHTML = `
-                <li class="list-group-item text-center text-muted">
-                    No alerts
-                </li>
-            `;
+            list.innerHTML = `<li class="list-group-item text-center text-muted">No alerts</li>`;
             return;
         }
-
         alerts.forEach(alert => {
             let item = document.createElement("li");
             item.className = "list-group-item";
             item.style.cursor = "pointer";
-
-            item.innerHTML = `
-                <strong>🚨 ${alert.type}</strong><br>
-                <small>${alert.created_at}</small>
-            `;
-
+            item.innerHTML = `<strong>🚨 ${alert.type}</strong><br><small>${alert.created_at}</small>`;
             item.addEventListener("click", () => {
+                window.location.href = "{{ route('responder.alerts.view') }}";
+            });
+            list.appendChild(item);
+        });
+    }
+
+    function showNewAlerts(alerts) {
+        alerts.forEach(alert => {
+            if (!seenAlertIds.includes(alert.id)) {
                 Swal.fire({
                     title: "🚨 Emergency Alert",
                     html: `
@@ -234,11 +226,27 @@ document.addEventListener('DOMContentLoaded', function () {
                         </a><br><br>
                         ${alert.photo ? `<img src="${alert.photo}" style="max-width:100%; border-radius:8px;">` : ''}
                     `,
-                    icon: "warning"
+                    icon: "warning",
+                    timer: 15000,
+                    timerProgressBar: true
                 });
-            });
+                seenAlertIds.push(alert.id);
+            }
+        });
+    }
 
-            list.appendChild(item);
+    function markAlertsAsRead() {
+        if (seenAlertIds.length === 0) return;
+        fetch("{{ route('responder.alerts.markRead') }}", {
+            method: "POST",
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ alert_ids: seenAlertIds })
+        }).then(() => {
+            countBadge.style.display = "none";
+            bell.style.color = "white";
         });
     }
 

@@ -351,3 +351,5 @@ Route::post('/responder/alerts/update-status', [ResponderController::class, 'upd
 
 Route::post('/responder/alerts/{id}/resolve', [ResponderController::class, 'resolveAlert'])
     ->name('responder.alerts.resolve');
+
+    Route::post('/responder/alerts/mark-read', [ResponderAlertController::class, 'markRead'])->name('responder.alerts.markRead');
