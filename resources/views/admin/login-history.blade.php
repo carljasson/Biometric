@@ -82,33 +82,43 @@
                     </thead>
                     <tbody>
                         @forelse($entries as $e)
+                            @php
+                                $actor = $e->loggable;
+
+                                // Determine role name by model class
+                                $role = match(class_basename($actor)) {
+                                    'Admin' => 'Admin',
+                                    'Responder' => 'Responder',
+                                    default => 'User',
+                                };
+                            @endphp
+
                             <tr>
                                 <td class="text-center small">
                                     {{ $e->logged_in_at->format('Y-m-d H:i:s') }}
                                 </td>
+
                                 <td>
-                                    @php
-    $actor = $e->loggable; // User, Admin, or Responder
-@endphp
+                                    @if($actor)
+                                        <strong>{{ $actor->name ?? $actor->username ?? 'Unknown' }}</strong>
+                                        <small class="text-muted d-block">ID: #{{ $actor->id }}</small>
 
-@if($actor)
-    <strong>{{ $actor->name ?? $actor->username ?? 'Unknown' }}</strong>
-    <small class="text-muted d-block">ID: #{{ $actor->id }}</small>
-
-    <span class="badge bg-secondary badge-role">
-        {{ class_basename($actor) }} {{-- Shows: User, Admin, Responder --}}
-    </span>
-@else
-    <span class="text-muted fst-italic">Unknown</span>
-@endif
-
+                                        <span class="badge bg-secondary badge-role">
+                                            {{ $role }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted fst-italic">Unknown</span>
+                                    @endif
                                 </td>
+
                                 <td>
                                     <span class="badge bg-primary-subtle px-2 py-1 rounded">
                                         {{ ucfirst($e->method) }}
                                     </span>
                                 </td>
+
                                 <td><code class="small">{{ $e->ip }}</code></td>
+
                                 <td>
                                     @if($e->location)
                                         {{ $e->location['city'] ?? '' }}, {{ $e->location['country'] ?? '' }}
@@ -116,6 +126,7 @@
                                         <span class="text-muted fst-italic">Unknown</span>
                                     @endif
                                 </td>
+
                                 <td class="text-truncate" style="max-width: 300px;" title="{{ $e->device }}">
                                     {{ $e->device }}
                                 </td>

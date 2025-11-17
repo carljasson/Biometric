@@ -443,12 +443,13 @@ public function addResponder()
 
 public function loginHistory()
 {
-    $entries = LoginHistory::with('user')
+    $entries = LoginHistory::with('loggable')
         ->orderBy('logged_in_at', 'desc')
         ->get();
 
     return view('admin.login-history', compact('entries'));
 }
+
 
 
 public function showPinForm()
