@@ -114,11 +114,11 @@ public function login(Request $request)
         $monthlyUsers = User::whereMonth('created_at', now()->month)->count();
         $yearlyUsers = User::whereYear('created_at', now()->year)->count();
         $recentUsers = User::orderBy('created_at', 'desc')->take(5)->get();
-
-        $totalPatients = Patient::count();
-    $weeklyPatients = Patient::whereBetween('admit_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
-    $monthlyPatients = Patient::whereMonth('admit_date', Carbon::now()->month)->count();
-    $yearlyPatients = Patient::whereYear('admit_date', Carbon::now()->year)->count();
+ // Alerts stats
+    $totalAlerts = Alert::count();
+    $weeklyAlerts = Alert::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count();
+    $monthlyAlerts = Alert::whereMonth('created_at', now()->month)->count();
+    $yearlyAlerts = Alert::whereYear('created_at', now()->year)->count();
 $announcements = Announcement::where(function ($query) {
     $query->whereNull('expired_at')
           ->orWhere('expired_at', '>', now());
@@ -130,7 +130,7 @@ $announcements = Announcement::where(function ($query) {
             'admin',
            
             'totalUsers', 'weeklyUsers', 'monthlyUsers', 'yearlyUsers',
-        'totalPatients', 'weeklyPatients', 'monthlyPatients', 'yearlyPatients',
+       'totalAlerts', 'weeklyAlerts', 'monthlyAlerts', 'yearlyAlerts',
         'announcements', 'users', 'patients'
         ));
     }
