@@ -48,7 +48,7 @@ class AlertController extends Controller
             // 🩺 Save alert record
             $alert = Alert::create([
                 'user_id'     => $user->id,
-                'patient_id'  => $user->id, // same person who sends it
+            
                 'type'        => $request->type,
                 'destination' => $request->destination,
                 'photo'       => $photoPath,
