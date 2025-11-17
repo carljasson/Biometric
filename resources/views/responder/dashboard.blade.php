@@ -79,10 +79,6 @@
         <i class="fas fa-fingerprint"></i><span>Fingerprint</span>
     </a>
 
-    <a href="{{ route('responder.scan.face') }}"
-       class="{{ request()->routeIs('responder.scan.face') ? 'active' : '' }}">
-        <i class="fas fa-camera"></i><span>Face Scan</span>
-    </a>
 
     {{-- 🚨 Alerts Button --}}
     <a id="alertIcon" href="{{ route('responder.alerts.view') }}"
@@ -210,30 +206,31 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showNewAlerts(alerts) {
-        alerts.forEach(alert => {
-            if (!seenAlertIds.includes(alert.id)) {
-                Swal.fire({
-                    title: "🚨 Emergency Alert",
-                    html: `
-                        <strong>Type:</strong> ${alert.type}<br>
-                        <strong>Sender:</strong> ${alert.sender_name}<br>
-                        <strong>Email:</strong> ${alert.sender_email}<br>
-                        <strong>Phone:</strong> ${alert.sender_phone}<br>
-                        <strong>Destination:</strong> ${alert.destination}<br>
-                        <strong>Location:</strong>
-                        <a href="https://www.google.com/maps?q=${alert.latitude},${alert.longitude}" target="_blank">
-                            📍 View Map
-                        </a><br><br>
-                        ${alert.photo ? `<img src="${alert.photo}" style="max-width:100%; border-radius:8px;">` : ''}
-                    `,
-                    icon: "warning",
-                    timer: 15000,
-                    timerProgressBar: true
-                });
-                seenAlertIds.push(alert.id);
-            }
-        });
-    }
+    alerts.forEach(alert => {
+        // Only show if alert is not seen AND status is not 'resolved'
+        if (!seenAlertIds.includes(alert.id) && alert.status !== 'resolved') {
+            Swal.fire({
+                title: "🚨 Emergency Alert",
+                html: `
+                    <strong>Type:</strong> ${alert.type}<br>
+                    <strong>Sender:</strong> ${alert.sender_name}<br>
+                    <strong>Email:</strong> ${alert.sender_email}<br>
+                    <strong>Phone:</strong> ${alert.sender_phone}<br>
+                    <strong>Destination:</strong> ${alert.destination}<br>
+                    <strong>Location:</strong>
+                    <a href="https://www.google.com/maps?q=${alert.latitude},${alert.longitude}" target="_blank">
+                        📍 View Map
+                    </a><br><br>
+                    ${alert.photo ? `<img src="${alert.photo}" style="max-width:100%; border-radius:8px;">` : ''}
+                `,
+                icon: "warning",
+                timer: 15000,
+                timerProgressBar: true
+            });
+            seenAlertIds.push(alert.id);
+        }
+    });
+}
 
     function markAlertsAsRead() {
         if (seenAlertIds.length === 0) return;
