@@ -1,46 +1,30 @@
-@extends('layouts.responder')
+@foreach($alerts as $alert)
+<div class="card shadow mb-3">
+    <div class="card-body">
 
-@section('content')
-<div class="container mt-4 mb-5">
+        <h5 class="fw-bold text-danger">🚨 {{ $alert->type }}</h5>
 
-    <h3 class="mb-3">🚨 Emergency Alerts</h3>
+        <p><strong>Sender:</strong> {{ $alert->sender_name }}</p>
+        <p><strong>Email:</strong> {{ $alert->sender_email }}</p>
 
-    @if($alerts->count() == 0)
-        <div class="alert alert-secondary">
-            No emergency alerts at the moment.
-        </div>
-    @endif
+        <p>
+            <strong>Location:</strong>
+            <a href="https://www.google.com/maps?q={{ $alert->latitude }},{{ $alert->longitude }}" 
+               target="_blank" class="text-primary">
+               View on Map
+            </a>
+        </p>
 
-    @foreach($alerts as $alert)
-        <div class="card mb-3 shadow-sm">
-            <div class="card-body">
+        <p><strong>Full Address:</strong> {{ $alert->address }}</p>
 
-                <h5 class="text-danger">
-                    <i class="fas fa-exclamation-triangle"></i> {{ $alert->type }}
-                </h5>
+        <p><strong>Status:</strong> 
+            <span class="badge bg-warning text-dark">{{ ucfirst($alert->status) }}</span>
+        </p>
 
-                <p class="mb-1"><strong>Sender:</strong> {{ $alert->sender_name }}</p>
-                <p class="mb-1"><strong>Email:</strong> {{ $alert->sender_email }}</p>
-                <p class="mb-1"><strong>Phone:</strong> {{ $alert->sender_phone }}</p>
-                <p class="mb-1"><strong>Destination:</strong> {{ $alert->destination }}</p>
+        <p class="text-muted">
+            <strong>Sent:</strong> {{ $alert->created_at->diffForHumans() }}
+        </p>
 
-                <p class="mb-2">
-                    <strong>Location:</strong>
-                    <a href="https://www.google.com/maps?q={{ $alert->latitude }},{{ $alert->longitude }}"
-                       target="_blank" class="text-primary">
-                       📍 Open in Google Maps
-                    </a>
-                </p>
-
-                @if($alert->photo)
-                    <img src="{{ $alert->photo }}" class="img-fluid rounded mb-2"
-                         style="max-height: 250px; border: 1px solid #ccc;">
-                @endif
-
-                <small class="text-muted">Received: {{ $alert->created_at->format('F j, Y h:i A') }}</small>
-            </div>
-        </div>
-    @endforeach
-
+    </div>
 </div>
-@endsection
+@endforeach
