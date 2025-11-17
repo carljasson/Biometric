@@ -346,7 +346,7 @@ public function checkAlerts()
     $responder = auth('responder')->user();
 
     // Fetch alerts only for the responder's location
-    $alerts = Alert::where('destination', $responder->destination)
+    $alerts = EmergencyAlert::where('destination', $responder->destination)
                    ->orderBy('created_at', 'desc')
                    ->get();
 
