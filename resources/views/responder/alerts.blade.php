@@ -12,7 +12,7 @@
     @endif
 
     @foreach($alerts as $alert)
-        <div class="card mb-3 shadow-sm">
+        <div class="card mb-3 shadow-sm" style="cursor:pointer;" onclick="viewAlertDetails({{ $alert->id }})">
             <div class="card-body">
 
                 <h5 class="text-danger">
@@ -27,8 +27,8 @@
                 <p class="mb-2">
                     <strong>Location:</strong>
                     <a href="https://www.google.com/maps?q={{ $alert->latitude }},{{ $alert->longitude }}"
-                       target="_blank" class="text-primary">
-                       📍 Open in Google Maps
+                        target="_blank" class="text-primary">
+                        📍 Open in Google Maps
                     </a>
                 </p>
 
@@ -43,4 +43,35 @@
     @endforeach
 
 </div>
+
+{{-- 🛑 SweetAlert Popup for each alert --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function viewAlertDetails(id) {
+
+    // Find the alert from Blade (Laravel passes entire collection safely)
+    let alerts = @json($alerts);
+
+    let alert = alerts.find(a => a.id === id);
+
+    Swal.fire({
+        title: "🚨 Emergency Alert",
+        html: `
+            <strong>Type:</strong> ${alert.type} <br>
+            <strong>Sender:</strong> ${alert.sender_name} <br>
+            <strong>Email:</strong> ${alert.sender_email} <br>
+            <strong>Phone:</strong> ${alert.sender_phone} <br>
+            <strong>Destination:</strong> ${alert.destination} <br>
+            <strong>Location:</strong>
+            <a href="https://www.google.com/maps?q=${alert.latitude},${alert.longitude}" target="_blank">
+                📍 View Map
+            </a><br><br>
+            ${alert.photo ? `<img src="${alert.photo}" style="max-width:100%; border-radius:8px;">` : ''}
+        `,
+        icon: "warning"
+    });
+}
+</script>
+
 @endsection
