@@ -342,7 +342,14 @@ public function checkAlerts()
 
     public function viewAlerts()
 {
-    $alerts = EmergencyAlert::latest()->get();
+     // Get the logged-in responder
+    $responder = auth('responder')->user();
+
+    // Fetch alerts only for the responder's location
+    $alerts = Alert::where('destination', $responder->destination)
+                   ->orderBy('created_at', 'desc')
+                   ->get();
+
     return view('responder.alerts', compact('alerts'));
 }
 
