@@ -22,10 +22,4 @@ class Responder extends Authenticatable
         'password',
         'remember_token',
     ];
-
-    public function loginHistories()
-{
-    return $this->morphMany(LoginHistory::class, 'loggable');
-}
-
 }
