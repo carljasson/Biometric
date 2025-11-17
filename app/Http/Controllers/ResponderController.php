@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use App\Models\EmergencyAlert;
 use App\Models\Alert;
+use Illuminate\Support\Facades\DB;
 
 class ResponderController extends Controller
 {
@@ -350,7 +351,7 @@ public function viewAlerts()
         ->leftJoin('users', 'alerts.user_id', '=', 'users.id')
         ->select(
             'alerts.*',
-            'users.name as sender_name',
+          DB::raw("CONCAT(users.first_name, ' ', users.last_name) as sender_name"),
             'users.email as sender_email',
             'users.phone as sender_phone'
         )
