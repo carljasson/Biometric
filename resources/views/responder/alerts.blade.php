@@ -12,7 +12,7 @@
     @endif
 
     @foreach($alerts as $alert)
-        <div class="card mb-3 shadow-sm">
+        <div class="card mb-3 shadow-sm" id="alertCard{{ $alert->id }}">
             <div class="card-body">
 
                 {{-- 🔥 ALERT TYPE --}}
@@ -39,7 +39,9 @@
                 {{-- 🟡 STATUS --}}
                 <p class="mb-1">
                     <strong>Status:</strong>
-                    <span class="badge bg-warning text-dark">{{ ucfirst($alert->status) }}</span>
+                    <span class="badge bg-{{ $alert->status == 'pending' ? 'warning' : ($alert->status == 'received' ? 'info' : 'success') }}">
+                        {{ ucfirst($alert->status) }}
+                    </span>
                 </p>
 
                 {{-- ⏱ SENT TIME --}}
@@ -55,9 +57,70 @@
                     </div>
                 @endif
 
+                {{-- ✅ ACTION BUTTONS --}}
+                @if($alert->status == 'pending')
+                    <div class="mt-3">
+                        <button class="btn btn-sm btn-info me-2" onclick="updateAlertStatus({{ $alert->id }}, 'received')">
+                            ✅ Received
+                        </button>
+                        <button class="btn btn-sm btn-success" onclick="updateAlertStatus({{ $alert->id }}, 'resolved')">
+                            ✔️ Resolve
+                        </button>
+                    </div>
+                @endif
+
             </div>
         </div>
     @endforeach
 
 </div>
+
+{{-- AJAX for status update --}}
+<script>
+function updateAlertStatus(alertId, status) {
+    fetch("{{ route('responder.alerts.updateStatus') }}", {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': "{{ csrf_token() }}",
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ alert_id: alertId, status: status })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            // Update badge in UI
+            const card = document.getElementById('alertCard' + alertId);
+            const badge = card.querySelector('.badge');
+            badge.innerText = status.charAt(0).toUpperCase() + status.slice(1);
+            badge.className = 'badge bg-' + (status == 'received' ? 'info' : 'success');
+
+            // Remove buttons if resolved
+            if(status == 'resolved') {
+                card.querySelectorAll('button').forEach(btn => btn.remove());
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Status Updated!',
+                text: `Alert marked as ${status}. Sender has been notified.`
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to update status. Try again.'
+            });
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred.'
+        });
+    });
+}
+</script>
 @endsection
