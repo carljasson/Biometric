@@ -1,9 +1,9 @@
 <?php
+
 namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
 
 class SecureHeaders
 {
@@ -11,36 +11,87 @@ class SecureHeaders
     {
         $response = $next($request);
 
-        // ===== STANDARD SECURITY HEADERS =====
-        $response->headers->set('X-Frame-Options', 'SAMEORIGIN');                  // Clickjacking
-        $response->headers->set('X-Content-Type-Options', 'nosniff');             // MIME sniffing
-        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin'); 
-        $response->headers->set('X-XSS-Protection', '1; mode=block');             // Legacy XSS protection
-        $response->headers->set('Permissions-Policy', 'geolocation=(self), camera=(), microphone=()'); // Permissions
-        $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:;");
+        /*
+        |--------------------------------------------------------------------------
+        | SECURITY HEADERS
+        |--------------------------------------------------------------------------
+        */
 
-        // ===== HSTS =====
-        if ($request->isSecure()) {
-            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
-        }
+        // HSTS (Force HTTPS)
+        $response->headers->set(
+            'Strict-Transport-Security',
+            'max-age=31536000; includeSubDomains'
+        );
 
-        // ===== SECURE COOKIES =====
-        // Force Laravel session cookie to use __Secure- prefix and secure flag
-        if ($request->isSecure()) {
-            $cookieName = Config::get('session.cookie', 'laravel_session');
-            $response->headers->setCookie(
-                cookie(
-                    '__Secure-' . $cookieName,
-                    $request->cookie($cookieName),
-                    120,              // lifetime in minutes
-                    '/',
-                    null,
-                    true,             // Secure
-                    true,             // HttpOnly
-                    false,            // raw
-                    'Lax'             // SameSite
-                )
-            );
+        // Prevent Clickjacking
+        $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
+
+        // Prevent MIME Sniffing
+        $response->headers->set('X-Content-Type-Options', 'nosniff');
+
+        // Referrer Policy
+        $response->headers->set(
+            'Referrer-Policy',
+            'strict-origin-when-cross-origin'
+        );
+
+        // Permissions Policy
+        $response->headers->set(
+            'Permissions-Policy',
+            "geolocation=(), microphone=(), camera=(), fullscreen=(self), payment=()"
+        );
+
+        // Cross-Origin Isolation
+        $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
+        $response->headers->set('Cross-Origin-Embedder-Policy', 'require-corp');
+        $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
+
+        /*
+        |--------------------------------------------------------------------------
+        | CONTENT SECURITY POLICY (CSP)
+        |--------------------------------------------------------------------------
+        | Compatible with Laravel, JS, SweetAlert, Bootstrap,
+        | reCAPTCHA, CDNJS, and JSDelivr.
+        |--------------------------------------------------------------------------
+        */
+
+        $response->headers->set(
+            'Content-Security-Policy',
+            "default-src 'self';
+
+             img-src 'self' data: https:;
+
+             script-src 
+                'self'
+                https://www.gstatic.com
+                https://www.google.com
+                https://www.google-analytics.com
+                https://cdn.jsdelivr.net
+                https://cdnjs.cloudflare.com;
+
+             style-src
+                'self'
+                https://cdn.jsdelivr.net
+                https://cdnjs.cloudflare.com
+                'unsafe-inline';
+
+             frame-src 
+                https://www.google.com 
+                https://www.gstatic.com;
+
+             font-src 'self' data: https:;
+
+             connect-src 'self' https:;
+
+             frame-ancestors 'self';
+
+             base-uri 'self';
+             form-action 'self';"
+        );
+
+        // Remove X-Powered-By (security)
+        if (function_exists('header_remove')) {
+            header_remove('X-Powered-By');
         }
 
         return $response;
