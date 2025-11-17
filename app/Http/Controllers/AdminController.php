@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\MedicalRecord;
 use Carbon\Carbon;
 use Illuminate\Support\Str; 
+use App\Helpers\GeoHelper;
 
 class AdminController extends Controller
 {
