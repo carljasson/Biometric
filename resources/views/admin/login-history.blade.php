@@ -87,15 +87,21 @@
                                     {{ $e->logged_in_at->format('Y-m-d H:i:s') }}
                                 </td>
                                 <td>
-                                    @if($e->user)
-                                        <strong>{{ $e->user->name }}</strong>
-                                        <small class="text-muted d-block">ID: #{{ $e->user->id }}</small>
-                                        <span class="badge bg-secondary badge-role">
-                                            {{ ucfirst($e->user->role ?? 'User') }}
-                                        </span>
-                                    @else
-                                        <span class="text-muted fst-italic">Unknown</span>
-                                    @endif
+                                    @php
+    $actor = $e->loggable; // User, Admin, or Responder
+@endphp
+
+@if($actor)
+    <strong>{{ $actor->name ?? $actor->username ?? 'Unknown' }}</strong>
+    <small class="text-muted d-block">ID: #{{ $actor->id }}</small>
+
+    <span class="badge bg-secondary badge-role">
+        {{ class_basename($actor) }} {{-- Shows: User, Admin, Responder --}}
+    </span>
+@else
+    <span class="text-muted fst-italic">Unknown</span>
+@endif
+
                                 </td>
                                 <td>
                                     <span class="badge bg-primary-subtle px-2 py-1 rounded">

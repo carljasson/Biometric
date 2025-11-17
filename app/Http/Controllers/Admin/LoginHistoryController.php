@@ -11,7 +11,8 @@ class LoginHistoryController extends Controller
     public function index()
     {
         // paginate or limit as needed
-        $entries = LoginHistory::with('user')->orderBy('logged_in_at', 'desc')->paginate(50);
+        $entries = LoginHistory::with('loggable')
+->orderBy('logged_in_at', 'desc')->paginate(50);
 return view('admin.login-history', compact('entries'));
 
     }
