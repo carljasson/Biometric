@@ -53,10 +53,7 @@
         <i class="bi bi-megaphone-fill me-2"></i> Broadcast Messages
     </a>
 
-    <!-- Backup Manager link -->
-    <a href="#" onclick="showBackupManager()" class="text-white px-4 py-2 d-block text-decoration-none">
-        <i class="bi bi-hdd-fill me-2"></i> Backup Manager
-    </a>
+    
 
     <form action="{{ route('admin.logout') }}" method="POST" class="m-3">
         @csrf
