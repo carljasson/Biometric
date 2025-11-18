@@ -27,152 +27,178 @@
     <meta http-equiv="Referrer-Policy" content="no-referrer">
     <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+          crossorigin="anonymous" referrerpolicy="no-referrer">
 
     <style nonce="{{ $cspNonce }}">
         body {
-            margin: 0;
-            height: 100vh;
-            background: linear-gradient(135deg, #3498db, #8e44ad);
+            background: url('{{ asset('images/background.png') }}') no-repeat center center fixed;
+            background-size: cover;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(2px);
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-family: 'Segoe UI', sans-serif;
+            justify-content: center;
+        }
+        html, body {
+            touch-action: manipulation;
+        }
+        input, select, textarea {
+            font-size: 16px;
         }
 
-        .login-wrapper {
-            background: rgba(255, 255, 255, 0.85);
-            border-radius: 20px;
-            box-shadow: 0 10px 35px rgba(0,0,0,0.15);
-            width: 90%;
-            max-width: 450px;
+        .login-container {
             display: flex;
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+            max-width: 900px;
+            width: 90%;
+            border-radius: 12px;
             overflow: hidden;
-            padding: 40px;
-            flex-direction: column;
-            position: relative;
+            border: 2px solid rgba(255,255,255,0.6);
             animation: fadeIn 0.6s ease-in-out;
+            position: relative;
         }
 
+        .login-left, .login-right {
+            flex: 1;
+            padding: 40px;
+        }
+
+        .login-left {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid rgba(255,255,255,0.6);
+            background-color: rgba(0,0,0,0.1);
+        }
+
+        .login-left img {
+            max-width: 200px;
+            height: auto;
+        }
+
+        .login-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* X button */
         .close-btn {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-        .close-btn:hover { color: #e74c3c; }
-
-        .user-icon {
-            width: 80px;
-            height: 80px;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            background-color: rgba(255,255,255,0.8);
             border-radius: 50%;
-            background: #3498db;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            color: #fff;
-            font-weight: bold;
-            margin: 0 auto 20px auto;
-        }
-
-        .login-wrapper h4 {
             text-align: center;
-            font-weight: 700;
-            margin-bottom: 25px;
+            line-height: 32px;
+            font-weight: bold;
+            font-size: 20px;
             color: #333;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .close-btn:hover {
+            background-color: rgba(255,0,0,0.8);
+            color: #fff;
         }
 
-        .form-label { font-weight: 600; }
-
-        .btn-primary {
-            background: #3498db;
-            border: none;
-            transition: background 0.3s ease;
+        .login-right h4 {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
         }
-        .btn-primary:hover { background: #2980b9; }
 
-        .extra-links { font-size: 0.95rem; margin-top: 15px; text-align: center; }
+        .form-label { font-weight: 500; }
+        .alert { font-size: 0.9rem; }
+        .extra-links { font-size: 0.95rem; margin-top: 15px; }
 
-        .disabled-form { opacity: 0.5; pointer-events: none; }
+        /* Dimming effect for disabled form */
+        .disabled-form {
+            opacity: 0.5;
+            pointer-events: none;
+        }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        @media (max-width: 768px) {
-            .login-wrapper { padding: 30px 20px; width: 95%; max-width: 400px; }
-        }
-
-        * { touch-action: manipulation; user-select: none; }
     </style>
 </head>
 <body>
 
-<div class="login-wrapper">
+<div class="login-container">
 
-    <!-- Close button -->
-    <span class="close-btn" onclick="window.location='{{ route('welcome') }}'">&times;</span>
-
-    <!-- User Icon -->
-    <div class="user-icon">
-        <i class="fa-solid fa-user"></i> U
+    <!-- Left side: Logo -->
+    <div class="login-left">
+        <img src="{{ asset('images/logo.png') }}" alt="Logo">
     </div>
 
-    <h4>🔒 Login to Access</h4>
+    <!-- Right side: Login form -->
+    <div class="login-right">
+        <!-- X button -->
+        <a href="/" class="close-btn">×</a>
 
-    @if(session('success'))
-        <div class="alert alert-success text-center">{{ session('success') }}</div>
-    @endif
+        <h4 class="text-center">🔒 Login to Access</h4>
 
-    @if($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach($errors->all() as $error)
-                    <li>{{ e($error) }}</li>
-                @endforeach
-            </ul>
+        @if(session('success'))
+            <div class="alert alert-success text-center">{{ session('success') }}</div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">@foreach($errors->all() as $error)<li>{{ e($error) }}</li>@endforeach</ul>
+            </div>
+        @endif
+
+        <form id="loginForm" method="POST" action="{{ url('/login') }}" autocomplete="off">
+            @csrf
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" required inputmode="email" autocomplete="username" value="{{ old('email') }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required autocomplete="current-password">
+            </div>
+
+            {{-- Google reCAPTCHA v3 --}}
+            <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+            @error('g-recaptcha-response')
+                <div class="alert alert-danger mt-2">{{ $message }}</div>
+            @enderror
+
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+
+        <div class="text-center extra-links">
+            <a href="{{ route('password.request') }}">Forgot password?</a>
         </div>
-    @endif
-
-    <form id="loginForm" method="POST" action="{{ url('/login') }}" autocomplete="off">
-        @csrf
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" required inputmode="email" autocomplete="username" value="{{ old('email') }}">
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input type="password" name="password" class="form-control" required autocomplete="current-password">
-        </div>
-
-        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
-        @error('g-recaptcha-response')
-            <div class="alert alert-danger mt-2">{{ $message }}</div>
-        @enderror
-
-        <button type="submit" class="btn btn-primary w-100">Login</button>
-    </form>
-
-    <div class="extra-links">
-        <a href="{{ route('password.request') }}">Forgot password?</a>
     </div>
 
 </div>
 
-<!-- Modals -->
 <div class="modal fade" id="registerModal"><div class="modal-dialog"><div class="modal-content p-3">🚫 Registration is only available **at the MDRRMO office**</div></div></div>
 <div class="modal fade" id="tipsModal"><div class="modal-dialog"><div class="modal-content p-3">🚑 This system alerts the nearest responders & provides victim info!</div></div></div>
+
+<!-- PIN Modal -->
 <div class="modal fade" id="pinModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content p-4">
             <h5 class="mb-3">Enter the PIN sent to your email</h5>
+
             @if($errors->has('pin'))
                 <div class="alert alert-danger">{{ $errors->first('pin') }}</div>
             @endif
+
             <form id="pinForm" method="POST" action="{{ url('/login/pin') }}">
                 @csrf
                 <div class="mb-3">
@@ -200,6 +226,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
 });
 </script>
 
+<!-- Show PIN modal if session exists -->
 <script nonce="{{ $cspNonce }}">
 document.addEventListener('DOMContentLoaded', () => {
     @if(session('showPinModal'))
@@ -215,15 +242,18 @@ document.addEventListener('DOMContentLoaded', () => {
 if (window.top !== window.self) window.top.location = window.self.location;
 </script>
 
+{{-- Lockout handler --}}
 @if(session('lockout'))
 <script nonce="{{ $cspNonce }}">
 document.addEventListener("DOMContentLoaded", () => {
     let seconds = {{ session('lockout') }};
-    let form = document.querySelector(".login-wrapper form");
+    let form = document.querySelector(".login-right form");
+
     if (form) {
         form.querySelectorAll('input, button').forEach(el => el.disabled = true);
         form.classList.add('disabled-form');
     }
+
     Swal.fire({
         icon: 'error',
         title: 'Too Many Attempts',
@@ -233,8 +263,13 @@ document.addEventListener("DOMContentLoaded", () => {
         didOpen: () => {
             const interval = setInterval(() => {
                 seconds--;
-                Swal.update({ html: `You have been locked out.<br>Wait <b>${seconds}</b> seconds.` });
-                if (seconds <= 0) { clearInterval(interval); window.location.reload(); }
+                Swal.update({
+                    html: `You have been locked out.<br>Wait <b>${seconds}</b> seconds.`
+                });
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    window.location.reload();
+                }
             }, 1000);
         }
     });
