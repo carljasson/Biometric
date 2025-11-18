@@ -21,12 +21,12 @@ body {
 
 .login-container {
     display: flex;
-    background-color: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-    max-width: 900px;
-    width: 90%;
-    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+    max-width: 700px; /* slightly smaller for centering */
+    width: 85%;
+    border-radius: 14px;
     overflow: hidden;
     border: 2px solid rgba(255,255,255,0.6);
     animation: fadeIn 0.6s ease-in-out;
@@ -34,24 +34,21 @@ body {
     position: relative;
 }
 
-.login-left, .login-right { flex: 1; padding: 40px; }
+.login-left, .login-right { flex: 1; padding: 30px; display: flex; flex-direction: column; justify-content: center; }
 .login-left {
-    display: flex;
     align-items: center;
     justify-content: center;
     border-right: 2px solid rgba(255,255,255,0.6);
-    background-color: rgba(0,0,0,0.1);
+    background-color: rgba(0,0,0,0.08);
     font-size: 5rem;
     color: #0d6efd;
 }
 .login-left i { font-size: 5rem; }
 
 .login-right {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    position: relative;
     color: #333;
+    padding: 30px;
+    position: relative;
 }
 
 .close-btn {
@@ -72,14 +69,13 @@ body {
 }
 .close-btn:hover { background-color: rgba(255,0,0,0.8); color: #fff; }
 
-.login-right h4 { font-weight: bold; margin-bottom: 30px; font-size: 1.2rem; text-align: center; }
+.login-right h4 { font-weight: bold; margin-bottom: 25px; font-size: 1.3rem; text-align: center; }
 .form-label { font-weight: 500; }
 .alert { font-size: 0.9rem; }
-.extra-links { font-size: 0.95rem; margin-top: 15px; }
 .disabled-form { opacity: 0.5; pointer-events: none; }
 
 .form-control {
-    background-color: rgba(255,255,255,0.15);
+    background-color: rgba(255,255,255,0.2);
     border: none;
     padding: 12px 15px;
     border-radius: 8px;
@@ -89,7 +85,7 @@ body {
 }
 .form-control::placeholder { color: rgba(0,0,0,0.5); }
 .form-control:focus {
-    background-color: rgba(255,255,255,0.25);
+    background-color: rgba(255,255,255,0.3);
     border: 1px solid #fff;
     box-shadow: none;
 }
@@ -99,7 +95,7 @@ body {
     color: #0d6efd;
     font-weight: bold;
     border-radius: 8px;
-    padding: 10px 0;
+    padding: 12px 0;
     font-size: 1rem;
     transition: all 0.3s ease;
 }
@@ -108,12 +104,12 @@ body {
     color: #0a58ca;
 }
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 768px) {
-    .login-container { flex-direction: column; max-width: 95%; margin: 10px; }
-    .login-left { border-right: none; border-bottom: 2px solid rgba(255,255,255,0.6); padding: 20px; font-size: 4rem; }
-    .login-right { padding: 20px; }
+    .login-container { flex-direction: column; max-width: 90%; margin: 10px; }
+    .login-left { border-right: none; border-bottom: 2px solid rgba(255,255,255,0.6); padding: 25px; font-size: 4rem; }
+    .login-right { padding: 25px; }
     .login-right h4 { font-size: 1.2rem; }
     .btn, input { font-size: 1rem; min-height: 44px; }
 }
