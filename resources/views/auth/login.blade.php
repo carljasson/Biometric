@@ -42,7 +42,7 @@
         }
 
         .login-wrapper {
-            background: #fff;
+            background: rgba(255, 255, 255, 0.85); /* Slightly transparent */
             border-radius: 20px;
             box-shadow: 0 10px 35px rgba(0,0,0,0.15);
             width: 90%;
@@ -51,7 +51,23 @@
             overflow: hidden;
             padding: 40px;
             flex-direction: column;
+            position: relative;
             animation: fadeIn 0.6s ease-in-out;
+        }
+
+        /* Close button */
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .close-btn:hover {
+            color: #e74c3c;
         }
 
         /* User icon */
@@ -104,6 +120,9 @@
 <body>
 
 <div class="login-wrapper">
+
+    <!-- Close button -->
+    <span class="close-btn" onclick="window.location='{{ url('/') }}'">&times;</span>
 
     <!-- User Icon with Letter -->
     <div class="user-icon">
