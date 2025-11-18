@@ -54,6 +54,21 @@
             animation: fadeIn 0.6s ease-in-out;
         }
 
+        /* User icon */
+        .user-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: #fff;
+            font-weight: bold;
+            margin: 0 auto 20px auto;
+        }
+
         .login-wrapper h4 {
             text-align: center;
             font-weight: 700;
@@ -89,6 +104,11 @@
 <body>
 
 <div class="login-wrapper">
+
+    <!-- User Icon with Letter -->
+    <div class="user-icon">
+        <i class="fa-solid fa-user"></i> U
+    </div>
 
     <h4>🔒 Login to Access</h4>
 
