@@ -45,13 +45,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: Arial, sans-serif;
         }
-        html, body {
-            touch-action: manipulation;
-        }
-        input, select, textarea {
-            font-size: 16px;
-        }
+        html, body { touch-action: manipulation; }
+        input, select, textarea { font-size: 16px; }
+        button, input, select, textarea { min-height: 44px; } /* Touch-friendly */
 
         .login-container {
             display: flex;
@@ -65,13 +63,10 @@
             border: 2px solid rgba(255,255,255,0.6);
             animation: fadeIn 0.6s ease-in-out;
             position: relative;
+            flex-direction: row;
         }
 
-        .login-left, .login-right {
-            flex: 1;
-            padding: 40px;
-        }
-
+        .login-left, .login-right { flex: 1; padding: 40px; }
         .login-left {
             display: flex;
             align-items: center;
@@ -79,11 +74,7 @@
             border-right: 2px solid rgba(255,255,255,0.6);
             background-color: rgba(0,0,0,0.1);
         }
-
-        .login-left img {
-            max-width: 200px;
-            height: auto;
-        }
+        .login-left img { max-width: 200px; height: auto; }
 
         .login-right {
             display: flex;
@@ -92,7 +83,6 @@
             position: relative;
         }
 
-        /* X button */
         .close-btn {
             position: absolute;
             top: 10px;
@@ -109,42 +99,38 @@
             text-decoration: none;
             transition: 0.3s;
         }
-        .close-btn:hover {
-            background-color: rgba(255,0,0,0.8);
-            color: #fff;
-        }
+        .close-btn:hover { background-color: rgba(255,0,0,0.8); color: #fff; }
 
-        .login-right h4 {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 30px;
-        }
-
+        .login-right h4 { font-weight: bold; color: #333; margin-bottom: 30px; font-size: 1.2rem; }
         .form-label { font-weight: 500; }
         .alert { font-size: 0.9rem; }
         .extra-links { font-size: 0.95rem; margin-top: 15px; }
 
-        /* Dimming effect for disabled form */
-        .disabled-form {
-            opacity: 0.5;
-            pointer-events: none;
-        }
+        .disabled-form { opacity: 0.5; pointer-events: none; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .login-container { flex-direction: column; max-width: 95%; margin: 10px; }
+            .login-left { border-right: none; border-bottom: 2px solid rgba(255,255,255,0.6); padding: 20px; }
+            .login-left img { max-width: 150px; }
+            .login-right { padding: 20px; }
+            .login-right h4 { font-size: 1.2rem; }
+            .btn, input { font-size: 1rem; min-height: 44px; }
+            .modal-dialog { max-width: 90%; margin: 1rem auto; }
+        }
     </style>
 </head>
 <body>
 
 <div class="login-container">
 
-    <!-- Left side: Logo -->
     <div class="login-left">
         <img src="{{ asset('images/logo.png') }}" alt="Logo">
     </div>
 
-    <!-- Right side: Login form -->
     <div class="login-right">
-        <!-- X button -->
         <a href="/" class="close-btn">×</a>
 
         <h4 class="text-center">🔒 Login to Access</h4>
@@ -170,7 +156,6 @@
                 <input type="password" name="password" class="form-control" required autocomplete="current-password">
             </div>
 
-            {{-- Google reCAPTCHA v3 --}}
             <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
             @error('g-recaptcha-response')
                 <div class="alert alert-danger mt-2">{{ $message }}</div>
@@ -189,16 +174,13 @@
 <div class="modal fade" id="registerModal"><div class="modal-dialog"><div class="modal-content p-3">🚫 Registration is only available **at the MDRRMO office**</div></div></div>
 <div class="modal fade" id="tipsModal"><div class="modal-dialog"><div class="modal-content p-3">🚑 This system alerts the nearest responders & provides victim info!</div></div></div>
 
-<!-- PIN Modal -->
 <div class="modal fade" id="pinModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content p-4">
             <h5 class="mb-3">Enter the PIN sent to your email</h5>
-
             @if($errors->has('pin'))
                 <div class="alert alert-danger">{{ $errors->first('pin') }}</div>
             @endif
-
             <form id="pinForm" method="POST" action="{{ url('/login/pin') }}">
                 @csrf
                 <div class="mb-3">
@@ -226,7 +208,6 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
 });
 </script>
 
-<!-- Show PIN modal if session exists -->
 <script nonce="{{ $cspNonce }}">
 document.addEventListener('DOMContentLoaded', () => {
     @if(session('showPinModal'))
@@ -242,18 +223,15 @@ document.addEventListener('DOMContentLoaded', () => {
 if (window.top !== window.self) window.top.location = window.self.location;
 </script>
 
-{{-- Lockout handler --}}
 @if(session('lockout'))
 <script nonce="{{ $cspNonce }}">
 document.addEventListener("DOMContentLoaded", () => {
     let seconds = {{ session('lockout') }};
     let form = document.querySelector(".login-right form");
-
     if (form) {
         form.querySelectorAll('input, button').forEach(el => el.disabled = true);
         form.classList.add('disabled-form');
     }
-
     Swal.fire({
         icon: 'error',
         title: 'Too Many Attempts',
@@ -263,13 +241,8 @@ document.addEventListener("DOMContentLoaded", () => {
         didOpen: () => {
             const interval = setInterval(() => {
                 seconds--;
-                Swal.update({
-                    html: `You have been locked out.<br>Wait <b>${seconds}</b> seconds.`
-                });
-                if (seconds <= 0) {
-                    clearInterval(interval);
-                    window.location.reload();
-                }
+                Swal.update({ html: `You have been locked out.<br>Wait <b>${seconds}</b> seconds.` });
+                if (seconds <= 0) { clearInterval(interval); window.location.reload(); }
             }, 1000);
         }
     });
