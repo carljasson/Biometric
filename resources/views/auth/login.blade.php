@@ -42,7 +42,7 @@
         }
 
         .login-wrapper {
-            background: rgba(255, 255, 255, 0.85); /* Slightly transparent */
+            background: rgba(255, 255, 255, 0.85);
             border-radius: 20px;
             box-shadow: 0 10px 35px rgba(0,0,0,0.15);
             width: 90%;
@@ -55,7 +55,6 @@
             animation: fadeIn 0.6s ease-in-out;
         }
 
-        /* Close button */
         .close-btn {
             position: absolute;
             top: 15px;
@@ -66,11 +65,8 @@
             cursor: pointer;
             transition: color 0.3s ease;
         }
-        .close-btn:hover {
-            color: #e74c3c;
-        }
+        .close-btn:hover { color: #e74c3c; }
 
-        /* User icon */
         .user-icon {
             width: 80px;
             height: 80px;
@@ -99,10 +95,7 @@
             border: none;
             transition: background 0.3s ease;
         }
-
-        .btn-primary:hover {
-            background: #2980b9;
-        }
+        .btn-primary:hover { background: #2980b9; }
 
         .extra-links { font-size: 0.95rem; margin-top: 15px; text-align: center; }
 
@@ -122,9 +115,9 @@
 <div class="login-wrapper">
 
     <!-- Close button -->
-    <span class="close-btn" onclick="window.location='{{ url('/') }}'">&times;</span>
+    <span class="close-btn" onclick="window.location='{{ route('welcome') }}'">&times;</span>
 
-    <!-- User Icon with Letter -->
+    <!-- User Icon -->
     <div class="user-icon">
         <i class="fa-solid fa-user"></i> U
     </div>
