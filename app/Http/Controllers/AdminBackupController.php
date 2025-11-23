@@ -44,7 +44,7 @@ class AdminBackupController extends Controller
         // store in local storage 'backups' folder
         $path = $file->storeAs('backups', $filename);
 
-        return redirect()->route('admin.backups.upload')->with('success', 'Backup uploaded: ' . $filename);
+        return redirect()->route('admin.backup.upload')->with('success', 'Backup uploaded: ' . $filename);
     }
 
     // Download file
@@ -55,7 +55,7 @@ class AdminBackupController extends Controller
         $path = 'backups/' . $filename;
 
         if (!Storage::exists($path)) {
-            return redirect()->route('admin.backups.upload')->withErrors('File not found.');
+            return redirect()->route('admin.backup.upload')->withErrors('File not found.');
         }
 
         return Storage::download($path, $filename);
@@ -68,11 +68,11 @@ class AdminBackupController extends Controller
         $path = 'backups/' . $filename;
 
         if (!Storage::exists($path)) {
-            return redirect()->route('admin.backups.upload')->withErrors('File not found.');
+            return redirect()->route('admin.backup.upload')->withErrors('File not found.');
         }
 
         Storage::delete($path);
 
-        return redirect()->route('admin.backups.upload')->with('success', 'Deleted: ' . $filename);
+        return redirect()->route('admin.backup.upload')->with('success', 'Deleted: ' . $filename);
     }
 }
