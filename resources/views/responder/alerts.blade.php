@@ -82,7 +82,6 @@
                     @if($alert->status !== 'Resolved')
                         <form id="resolve-form-{{ $alert->id }}" action="{{ route('responder.alerts.resolve', $alert->id) }}" method="POST" style="display: none;">
                             @csrf
-                            @method('POST')
                         </form>
                         <button class="btn btn-success btn-sm resolve-btn"
                                 data-id="{{ $alert->id }}">
@@ -136,9 +135,10 @@
                                 <input type="text" class="form-control" id="lastname{{ $alert->id }}" value="{{ $alert->lastname }}">
                             </div>
 
+                            {{-- ⭐ NEW — Patient Address --}}
                             <div class="col-md-12 mb-2">
-                                <label class="form-label">Address</label>
-                                <input type="text" class="form-control" id="address{{ $alert->id }}" value="{{ $alert->address }}">
+                                <label class="form-label">Full Address</label>
+                                <input type="text" class="form-control" id="patient_full_address{{ $alert->id }}" value="{{ $alert->address }}">
                             </div>
 
                             <div class="col-md-4 mb-2">
@@ -202,7 +202,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-/* ✅ FIXED PRINT FUNCTION */
+/* ⭐ UPDATED PRINT FUNCTION */
 function printReport(id) {
     let html = `
         <h2>Accident Report</h2>
@@ -212,7 +212,9 @@ function printReport(id) {
         <p><strong>Firstname:</strong> ${document.getElementById('firstname' + id).value}</p>
         <p><strong>Middlename:</strong> ${document.getElementById('middlename' + id).value}</p>
         <p><strong>Lastname:</strong> ${document.getElementById('lastname' + id).value}</p>
-        <p><strong>Address:</strong> ${document.getElementById('address' + id).value}</p>
+
+        <p><strong>Full Address:</strong> ${document.getElementById('patient_full_address' + id).value}</p>  <!-- ⭐ NEW -->
+
         <p><strong>Age:</strong> ${document.getElementById('age' + id).value}</p>
         <p><strong>Gender:</strong> ${document.getElementById('gender' + id).value}</p>
         <p><strong>Birthday:</strong> ${document.getElementById('birthday' + id).value}</p>
