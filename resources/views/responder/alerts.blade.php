@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="container mt-4 mb-5">
+
     {{-- ⬅ Back Button --}}
     <div class="mb-3">
         <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">
@@ -12,9 +13,7 @@
     <h3 class="mb-3">🚨 Emergency Alerts</h3>
 
     @if($alerts->count() == 0)
-        <div class="alert alert-secondary">
-            No emergency alerts at the moment.
-        </div>
+        <div class="alert alert-secondary">No emergency alerts at the moment.</div>
     @endif
 
     @foreach($alerts as $alert)
@@ -22,9 +21,7 @@
             <div class="card-body">
 
                 {{-- 🔥 ALERT TYPE --}}
-                <h5 class="text-danger fw-bold">
-                    🚨 {{ $alert->type }}
-                </h5>
+                <h5 class="text-danger fw-bold">🚨 {{ $alert->type }}</h5>
 
                 {{-- 👤 SENDER INFO --}}
                 <p class="mb-1"><strong>Sender:</strong> {{ $alert->sender_name }}</p>
@@ -34,15 +31,13 @@
                 <p class="mb-2">
                     <strong>Location:</strong>
                     <a href="https://www.google.com/maps?q={{ $alert->latitude }},{{ $alert->longitude }}"
-                       target="_blank" class="text-primary">
-                       View on Map
-                    </a>
+                       target="_blank" class="text-primary">View on Map</a>
                 </p>
 
-                {{-- 🏠 FULL ADDRESS --}}
+                {{-- 🏠 ACCIDENT ADDRESS (NOT INPUT, AUTO DETECTED) --}}
                 <p class="mb-1">
-                    <strong>Detected Address:</strong>
-                    <span class="full-address text-primary">Loading...</span>
+                    <strong>Accident Address:</strong>
+                    <span class="accident-address text-primary">Loading...</span>
                 </p>
 
                 {{-- 🟡 STATUS --}}
@@ -56,37 +51,34 @@
                 </p>
 
                 {{-- ⏱ SENT TIME --}}
-                <small class="text-muted">
-                    <strong>Sent:</strong> {{ $alert->created_at->diffForHumans() }}
-                </small>
+                <small class="text-muted"><strong>Sent:</strong> {{ $alert->created_at->diffForHumans() }}</small>
 
                 {{-- 📸 PHOTO --}}
                 @if($alert->photo)
-                    <div class="mt-3">
-                        <img src="{{ asset($alert->photo) }}" class="img-fluid rounded"
-                             style="max-height: 250px; border: 1px solid #ccc;">
-                    </div>
+                <div class="mt-3">
+                    <img src="{{ asset($alert->photo) }}" class="img-fluid rounded" style="max-height:250px; border:1px solid #ccc;">
+                </div>
                 @endif
 
                 {{-- BUTTONS --}}
                 <div class="d-flex gap-2 mt-3">
 
-                    {{-- 🖨 PRINT REPORT BUTTON --}}
+                    {{-- PRINT --}}
                     <button class="btn btn-primary btn-sm"
-                            data-bs-toggle="modal"
-                            data-bs-target="#reportModal{{ $alert->id }}">
+                            data-bs-toggle="modal" data-bs-target="#reportModal{{ $alert->id }}">
                         🖨 Print Report
                     </button>
 
-                    {{-- ✅ MARK AS RESOLVED --}}
+                    {{-- RESOLVE --}}
                     @if($alert->status !== 'Resolved')
-                        <form id="resolve-form-{{ $alert->id }}" action="{{ route('responder.alerts.resolve', $alert->id) }}" method="POST" style="display: none;">
-                            @csrf
-                        </form>
-                        <button class="btn btn-success btn-sm resolve-btn"
-                                data-id="{{ $alert->id }}">
-                            ✅ Mark as Resolved
-                        </button>
+                    <form id="resolve-form-{{ $alert->id }}" method="POST"
+                          action="{{ route('responder.alerts.resolve', $alert->id) }}" style="display:none;">
+                        @csrf
+                    </form>
+
+                    <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">
+                        ✅ Mark as Resolved
+                    </button>
                     @endif
                 </div>
 
@@ -108,11 +100,15 @@
                         <h4 class="text-danger fw-bold">🚨 {{ $alert->type }}</h4>
                         <hr>
 
-                        <h5>📌 Alert Details</h5>
+                        {{-- ⭐ ACCIDENT ADDRESS MOVED TO TOP --}}
+                        <h5>📍 Accident Location</h5>
+                        <p><strong>Accident Address:</strong> 
+                            <span class="accident-address"></span>
+                        </p>
+
+                        <p><strong>Coordinates:</strong> {{ $alert->latitude }}, {{ $alert->longitude }}</p>
                         <p><strong>Sender:</strong> {{ $alert->sender_name }}</p>
                         <p><strong>Email:</strong> {{ $alert->sender_email }}</p>
-                        <p><strong>Coordinates:</strong> {{ $alert->latitude }}, {{ $alert->longitude }}</p>
-                        <p><strong>Detected Address:</strong> <span class="full-address"></span></p>
                         <p><strong>Sent:</strong> {{ $alert->created_at }}</p>
 
                         <hr>
@@ -135,10 +131,10 @@
                                 <input type="text" class="form-control" id="lastname{{ $alert->id }}" value="{{ $alert->lastname }}">
                             </div>
 
-                            {{-- ⭐ NEW — Patient Address --}}
+                            {{-- ⭐ NEW — PATIENT ADDRESS (INPUT FIELD) --}}
                             <div class="col-md-12 mb-2">
-                                <label class="form-label">Full Address</label>
-                                <input type="text" class="form-control" id="patient_full_address{{ $alert->id }}" value="{{ $alert->address }}">
+                                <label class="form-label">Patient Address</label>
+                                <input type="text" class="form-control" id="patient_address{{ $alert->id }}" value="{{ $alert->address }}">
                             </div>
 
                             <div class="col-md-4 mb-2">
@@ -182,11 +178,7 @@
 
                     <div class="modal-footer">
                         <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-
-                        {{-- PRINT BUTTON --}}
-                        <button onclick="printReport({{ $alert->id }})" class="btn btn-primary">
-                            🖨 Print
-                        </button>
+                        <button onclick="printReport({{ $alert->id }})" class="btn btn-primary">🖨 Print</button>
                     </div>
 
                 </div>
@@ -204,16 +196,23 @@
 <script>
 /* ⭐ UPDATED PRINT FUNCTION */
 function printReport(id) {
+
+    let accidentAddress = document.querySelector(`#reportModal${id} .accident-address`).innerText;
+
     let html = `
         <h2>Accident Report</h2>
+        <hr>
+
+        <h4>Accident Location</h4>
+        <p><strong>Accident Address:</strong> ${accidentAddress}</p>
+
         <hr>
 
         <h4>Patient Information</h4>
         <p><strong>Firstname:</strong> ${document.getElementById('firstname' + id).value}</p>
         <p><strong>Middlename:</strong> ${document.getElementById('middlename' + id).value}</p>
         <p><strong>Lastname:</strong> ${document.getElementById('lastname' + id).value}</p>
-
-        <p><strong>Full Address:</strong> ${document.getElementById('patient_full_address' + id).value}</p>  <!-- ⭐ NEW -->
+        <p><strong>Patient Address:</strong> ${document.getElementById('patient_address' + id).value}</p>
 
         <p><strong>Age:</strong> ${document.getElementById('age' + id).value}</p>
         <p><strong>Gender:</strong> ${document.getElementById('gender' + id).value}</p>
@@ -221,22 +220,15 @@ function printReport(id) {
         <p><strong>Phone:</strong> ${document.getElementById('phone' + id).value}</p>
         <p><strong>Emergency Contact:</strong> ${document.getElementById('contact_name' + id).value}</p>
         <p><strong>Contact Number:</strong> ${document.getElementById('contact_number' + id).value}</p>
-
-        <hr>
-        <h4>Alert Details</h4>
     `;
-
-    let addr = document.querySelector(`#reportModal${id} .full-address`);
-    if (addr) html += `<p><strong>Detected Address:</strong> ${addr.innerText}</p>`;
 
     let newWin = window.open('', '', 'width=800,height=900');
     newWin.document.write(`<html><head><title>Print Report</title></head><body>${html}</body></html>`);
     newWin.document.close();
-
     setTimeout(() => newWin.print(), 300);
 }
 
-/* Mark As Resolved */
+/* Resolve Button */
 document.querySelectorAll('.resolve-btn').forEach(btn => {
     btn.addEventListener('click', function () {
         const id = this.getAttribute('data-id');
@@ -248,7 +240,7 @@ document.querySelectorAll('.resolve-btn').forEach(btn => {
             confirmButtonColor: '#198754',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, resolve it!'
-        }).then((result) => {
+        }).then(result => {
             if (result.isConfirmed) {
                 document.getElementById('resolve-form-' + id).submit();
             }
@@ -256,22 +248,25 @@ document.querySelectorAll('.resolve-btn').forEach(btn => {
     });
 });
 
-/* Reverse Geocoding */
+/* Reverse Geocoding -> Accident Address */
 const apiKey = "45c8795c3e094eb8994cc238f809c663";
 
 document.querySelectorAll('.card').forEach(card => {
     const lat = card.getAttribute('data-lat');
     const lng = card.getAttribute('data-lng');
-    const locationElement = card.querySelector('.full-address');
+    const addressEl = card.querySelector('.accident-address');
 
-    if (lat && lng && locationElement) {
+    if (lat && lng && addressEl) {
         fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
-                locationElement.innerText =
+                addressEl.innerText =
                     data?.results?.length ? data.results[0].formatted : "Address not found";
+
+                // copy to modal also
+                document.querySelectorAll('#reportModal{{ $alert->id }} .accident-address')
             })
-            .catch(() => locationElement.innerText = "Error retrieving address");
+            .catch(() => addressEl.innerText = "Error retrieving address");
     }
 });
 </script>
