@@ -234,9 +234,7 @@ function printReport(id) {
     setTimeout(() => printWindow.print(), 300);
 }
 
-function exportPDF(id) {
-    const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
-    if (!modalBody) return;
+window.exportPDF = function(id) { const modalBody = document.querySelector(`#reportModal${id} .modal-body`); if (!modalBody) return;
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'pt', 'a4');
