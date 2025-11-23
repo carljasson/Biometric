@@ -33,7 +33,7 @@
                 <a href="https://www.google.com/maps?q={{ $alert->latitude }},{{ $alert->longitude }}" target="_blank" class="text-primary">View on Map</a>
             </p>
 
-            {{-- 🏠 ACCIDENT ADDRESS (AUTOMATIC) --}}
+            {{-- 🏠 ACCIDENT ADDRESS --}}
             <p class="mb-1">
                 <strong>Accident Address:</strong>
                 <span class="accident-address text-primary">Loading...</span>
@@ -54,9 +54,9 @@
 
             {{-- 📸 PHOTO --}}
             @if($alert->photo)
-            <div class="mt-3">
-                <img src="{{ asset($alert->photo) }}" class="img-fluid rounded" style="max-height:250px; border:1px solid #ccc;">
-            </div>
+                <div class="mt-3">
+                    <img src="{{ asset($alert->photo) }}" class="img-fluid rounded" style="max-height:250px; border:1px solid #ccc;">
+                </div>
             @endif
 
             {{-- BUTTONS --}}
@@ -66,11 +66,11 @@
 
                 {{-- RESOLVE --}}
                 @if($alert->status !== 'Resolved')
-                <form id="resolve-form-{{ $alert->id }}" method="POST" action="{{ route('responder.alerts.resolve', $alert->id) }}" style="display:none;">
-                    @csrf
-                </form>
+                    <form id="resolve-form-{{ $alert->id }}" method="POST" action="{{ route('responder.alerts.resolve', $alert->id) }}" style="display:none;">
+                        @csrf
+                    </form>
 
-                <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">✅ Mark as Resolved</button>
+                    <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">✅ Mark as Resolved</button>
                 @endif
             </div>
 
@@ -117,7 +117,6 @@
                             <input type="text" class="form-control" id="lastname{{ $alert->id }}" value="{{ $alert->lastname }}">
                         </div>
 
-                        {{-- PATIENT ADDRESS INPUT --}}
                         <div class="col-md-12 mb-2">
                             <label class="form-label">Patient Address</label>
                             <input type="text" class="form-control" id="patient_address{{ $alert->id }}" placeholder="Enter patient address">
@@ -150,9 +149,9 @@
                     </div>
 
                     @if($alert->photo)
-                    <hr>
-                    <h5>📸 Attached Photo</h5>
-                    <img src="{{ asset($alert->photo) }}" class="img-fluid rounded" style="max-height:250px;">
+                        <hr>
+                        <h5>📸 Attached Photo</h5>
+                        <img src="{{ asset($alert->photo) }}" class="img-fluid rounded" style="max-height:250px;">
                     @endif
 
                 </div>
@@ -177,75 +176,79 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-/* PRINT REPORT */
+/* PRINT REPORT - FULL MODAL CONTENT */
 function printReport(id) {
-    const accidentAddress = document.querySelector(`#reportModal${id} .accident-address`).innerText;
-    const html = `
-        <h2>Accident Report</h2>
-        <hr>
-        <h4>Accident Location</h4>
-        <p><strong>Accident Address:</strong> ${accidentAddress}</p>
-        <hr>
-        <h4>Patient Information</h4>
-        <p><strong>Firstname:</strong> ${document.getElementById('firstname' + id).value}</p>
-        <p><strong>Middlename:</strong> ${document.getElementById('middlename' + id).value}</p>
-        <p><strong>Lastname:</strong> ${document.getElementById('lastname' + id).value}</p>
-        <p><strong>Patient Address:</strong> ${document.getElementById('patient_address' + id).value}</p>
-        <p><strong>Age:</strong> ${document.getElementById('age' + id).value}</p>
-        <p><strong>Gender:</strong> ${document.getElementById('gender' + id).value}</p>
-        <p><strong>Birthday:</strong> ${document.getElementById('birthday' + id).value}</p>
-        <p><strong>Phone:</strong> ${document.getElementById('phone' + id).value}</p>
-        <p><strong>Emergency Contact:</strong> ${document.getElementById('contact_name' + id).value}</p>
-        <p><strong>Contact Number:</strong> ${document.getElementById('contact_number' + id).value}</p>
-    `;
-    const newWin = window.open('', '', 'width=800,height=900');
-    newWin.document.write(`<html><head><title>Print Report</title></head><body>${html}</body></html>`);
-    newWin.document.close();
-    setTimeout(() => newWin.print(), 300);
+    const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
+    if (!modalBody) return;
+
+    const printWindow = window.open('', '', 'width=900,height=700');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Accident Report</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    h2, h4 { color: #dc3545; }
+                    hr { border: 1px solid #ccc; margin: 10px 0; }
+                    p { margin: 5px 0; }
+                    .bold { font-weight: bold; }
+                </style>
+
+```
+        </head>
+        <body>
+            ${modalBody.innerHTML}
+        </body>
+    </html>
+`);
+printWindow.document.close();
+printWindow.focus();
+setTimeout(() => printWindow.print(), 300);
+```
+
 }
 
 /* RESOLVE BUTTON */
 document.querySelectorAll('.resolve-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-        const id = this.getAttribute('data-id');
-        Swal.fire({
-            title: 'Mark as Resolved?',
-            text: 'This will mark the alert as handled.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#198754',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, resolve it!'
-        }).then(result => {
-            if (result.isConfirmed) {
-                document.getElementById('resolve-form-' + id).submit();
-            }
-        });
-    });
+btn.addEventListener('click', function () {
+const id = this.getAttribute('data-id');
+Swal.fire({
+title: 'Mark as Resolved?',
+text: 'This will mark the alert as handled.',
+icon: 'warning',
+showCancelButton: true,
+confirmButtonColor: '#198754',
+cancelButtonColor: '#d33',
+confirmButtonText: 'Yes, resolve it!'
+}).then(result => {
+if (result.isConfirmed) {
+document.getElementById('resolve-form-' + id).submit();
+}
+});
+});
 });
 
 /* REVERSE GEOCODING FOR ACCIDENT ADDRESS */
 const apiKey = "45c8795c3e094eb8994cc238f809c663";
-
 document.querySelectorAll('.card').forEach(card => {
-    const lat = card.getAttribute('data-lat');
-    const lng = card.getAttribute('data-lng');
-    const alertId = card.getAttribute('data-alert-id');
-    const addressEl = card.querySelector('.accident-address');
+const lat = card.getAttribute('data-lat');
+const lng = card.getAttribute('data-lng');
+const alertId = card.getAttribute('data-alert-id');
+const addressEl = card.querySelector('.accident-address');
 
-    if (lat && lng && addressEl) {
-        fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
-            .then(res => res.json())
-            .then(data => {
-                const formattedAddress = data?.results?.length ? data.results[0].formatted : "Address not found";
-                addressEl.innerText = formattedAddress;
-                // Update modal also
-                const modalAddressEl = document.querySelector(`#reportModal${alertId} .accident-address`);
-                if(modalAddressEl) modalAddressEl.innerText = formattedAddress;
-            })
-            .catch(() => addressEl.innerText = "Error retrieving address");
-    }
-});
-</script>
+```
+if (lat && lng && addressEl) {
+    fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
+        .then(res => res.json())
+        .then(data => {
+            const formattedAddress = data?.results?.length ? data.results[0].formatted : "Address not found";
+            addressEl.innerText = formattedAddress;
+            const modalAddressEl = document.querySelector(`#reportModal${alertId} .accident-address`);
+            if(modalAddressEl) modalAddressEl.innerText = formattedAddress;
+        })
+        .catch(() => addressEl.innerText = "Error retrieving address");
+}
+```
 
+}); </script>
 @endpush
