@@ -42,12 +42,11 @@
             {{-- 🟡 STATUS --}}
             <p class="mb-1">
                 <strong>Status:</strong>
-                @if($alert->status !== 'Received')
-    <span class="badge bg-warning text-dark">{{ ucfirst($alert->status) }}</span>
-@else
-    <span class="badge bg-success">Received</span>
-@endif
-
+                @if($alert->status !== 'Resolved')
+                    <span class="badge bg-warning text-dark">{{ ucfirst($alert->status) }}</span>
+                @else
+                    <span class="badge bg-success">Resolved</span>
+                @endif
             </p>
 
             {{-- ⏱ SENT TIME --}}
@@ -65,13 +64,13 @@
                 {{-- PRINT --}}
                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal{{ $alert->id }}">🖨 Print Report</button>
 
-              @if($alert->status !== 'Received')
+                {{-- RESOLVE --}}
+                @if($alert->status !== 'Resolved')
                     <form id="resolve-form-{{ $alert->id }}" method="POST" action="{{ route('responder.alerts.resolve', $alert->id) }}" style="display:none;">
                         @csrf
                     </form>
 
-                    <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">📥 Mark as Received</button>
-
+                    <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">✅ Mark as Resolved</button>
                 @endif
             </div>
 
@@ -239,13 +238,13 @@ document.querySelectorAll('.resolve-btn').forEach(btn => {
 btn.addEventListener('click', function () {
 const id = this.getAttribute('data-id');
 Swal.fire({
-title: 'Mark as Received?',
-text: 'This will mark the alert as received by the responder.',
+title: 'Mark as Resolved?',
+text: 'This will mark the alert as handled.',
 icon: 'warning',
 showCancelButton: true,
 confirmButtonColor: '#198754',
 cancelButtonColor: '#d33',
-confirmButtonText: 'Yes,  receive it!'
+confirmButtonText: 'Yes, resolve it!'
 }).then(result => {
 if (result.isConfirmed) {
 document.getElementById('resolve-form-' + id).submit();
