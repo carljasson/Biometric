@@ -3,26 +3,7 @@
 @push('styles')
 
 <style>
-/* Modal should be above everything */
-.modal,
-.modal-backdrop {
-    z-index: 1050; /* Bootstrap default modal z-index */
-}
-
-.modal-dialog,
-.modal-content {
-    z-index: 1060;
-    position: relative;
-}
-
-/* Modal buttons above modal content */
-.modal-footer button,
-.modal-body button {
-    z-index: 1070;
-    position: relative;
-}
-
-/* Sidebar overlay stays below modals */
+/* Sidebar overlay stays below alerts */
 .offcanvas,
 .sidebar,
 .overlay,
@@ -79,100 +60,15 @@
                 </div>
             @endif
 
-            {{-- BUTTONS --}}
-            <div class="d-flex gap-2 mt-3">
-                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal{{ $alert->id }}">🖨 Print Report</button>
-
-                @if($alert->status !== 'Resolved')
-                    <form id="resolve-form-{{ $alert->id }}" method="POST" action="{{ route('responder.alerts.resolve', $alert->id) }}" style="display:none;">
-                        @csrf
-                    </form>
-                    <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">✅ Mark as Resolved</button>
-                @endif
-            </div>
+            {{-- Resolve Button --}}
+            @if($alert->status !== 'Resolved')
+                <form id="resolve-form-{{ $alert->id }}" method="POST" action="{{ route('responder.alerts.resolve', $alert->id) }}" style="display:none;">
+                    @csrf
+                </form>
+                <button class="btn btn-success btn-sm mt-3 resolve-btn" data-id="{{ $alert->id }}">✅ Mark as Resolved</button>
+            @endif
         </div>
     </div>
-
-    {{-- 📄 REPORT MODAL --}}
-    <div class="modal fade" id="reportModal{{ $alert->id }}" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Accident Report</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body" id="printArea{{ $alert->id }}">
-                    <h4 class="text-danger fw-bold">🚨 {{ $alert->type }}</h4>
-                    <hr>
-                    <h5>📍 Accident Location</h5>
-                    <p><strong>Accident Address:</strong> <span class="accident-address"></span></p>
-                    <p><strong>Coordinates:</strong> {{ $alert->latitude }}, {{ $alert->longitude }}</p>
-                    <p><strong>Sender:</strong> {{ $alert->sender_name }}</p>
-                    <p><strong>Email:</strong> {{ $alert->sender_email }}</p>
-                    <p><strong>Sent:</strong> {{ $alert->created_at }}</p>
-
-                    <hr>
-                    <h5>👤 Patient Information (Editable)</h5>
-                    <div class="row">
-                        <div class="col-md-4 mb-2">
-                            <label class="form-label">Firstname</label>
-                            <input type="text" class="form-control" id="firstname{{ $alert->id }}" value="{{ $alert->firstname }}">
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <label class="form-label">Middlename</label>
-                            <input type="text" class="form-control" id="middlename{{ $alert->id }}" value="{{ $alert->middlename }}">
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <label class="form-label">Lastname</label>
-                            <input type="text" class="form-control" id="lastname{{ $alert->id }}" value="{{ $alert->lastname }}">
-                        </div>
-                        <div class="col-md-12 mb-2">
-                            <label class="form-label">Patient Address</label>
-                            <input type="text" class="form-control" id="patient_address{{ $alert->id }}" placeholder="Enter patient address">
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <label class="form-label">Age</label>
-                            <input type="number" class="form-control" id="age{{ $alert->id }}" value="{{ $alert->age }}">
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <label class="form-label">Gender</label>
-                            <input type="text" class="form-control" id="gender{{ $alert->id }}" value="{{ $alert->gender }}">
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <label class="form-label">Birthday</label>
-                            <input type="date" class="form-control" id="birthday{{ $alert->id }}" value="{{ $alert->birthday }}">
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label">Phone</label>
-                            <input type="text" class="form-control" id="phone{{ $alert->id }}" value="{{ $alert->phone }}">
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label">Emergency Contact Name</label>
-                            <input type="text" class="form-control" id="contact_name{{ $alert->id }}" value="{{ $alert->contact_name }}">
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label">Emergency Contact Number</label>
-                            <input type="text" class="form-control" id="contact_number{{ $alert->id }}" value="{{ $alert->contact_number }}">
-                        </div>
-                    </div>
-
-                    @if($alert->photo)
-                        <hr>
-                        <h5>📸 Attached Photo</h5>
-                        <img src="{{ asset($alert->photo) }}" class="img-fluid rounded" style="max-height:250px;">
-                    @endif
-                </div>
-
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button onclick="printReport({{ $alert->id }})" class="btn btn-primary">🖨 Print</button>
-                    <button onclick="exportPDF({{ $alert->id }})" class="btn btn-danger">📄 Export PDF</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 @endforeach
 ```
 
@@ -183,94 +79,46 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    function printReport(id) {
-        const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
-        if (!modalBody) return;
-        const printWindow = window.open('', '', 'width=900,height=700');
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Accident Report</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
-                        h2, h4 { color: #dc3545; }
-                        hr { border: 1px solid #ccc; margin: 10px 0; }
-                        p { margin: 5px 0; }
-                        .bold { font-weight: bold; }
-                    </style>
-
-```
-            </head>
-            <body>${modalBody.innerHTML}</body>
-        </html>
-    `);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => printWindow.print(), 300);
-}
-
-function exportPDF(id) {
-    const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
-    if (!modalBody) return;
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'pt', 'a4');
-    doc.html(modalBody, {
-        callback: function (pdf) {
-            pdf.save(`Accident_Report_${id}.pdf`);
-        },
-        x: 20,
-        y: 20,
-        width: 555,
-        windowWidth: modalBody.scrollWidth,
-    });
-}
-
-document.querySelectorAll('.resolve-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-        const id = this.getAttribute('data-id');
-        Swal.fire({
-            title: 'Mark as Resolved?',
-            text: 'This will mark the alert as handled.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#198754',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, resolve it!'
-        }).then(result => {
-            if (result.isConfirmed) {
-                document.getElementById('resolve-form-' + id).submit();
-            }
+    document.querySelectorAll('.resolve-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
+            Swal.fire({
+                title: 'Mark as Resolved?',
+                text: 'This will mark the alert as handled.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, resolve it!'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    document.getElementById('resolve-form-' + id).submit();
+                }
+            });
         });
     });
+
+    // Fetch accident addresses
+    const apiKey = "45c8795c3e094eb8994cc238f809c663";
+    document.querySelectorAll('.card').forEach(card => {
+        const lat = card.getAttribute('data-lat');
+        const lng = card.getAttribute('data-lng');
+        const addressEl = card.querySelector('.accident-address');
+        if (lat && lng && addressEl) {
+            fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
+                .then(res => res.json())
+                .then(data => {
+                    const formattedAddress = data?.results?.length ? data.results[0].formatted : "Address not found";
+                    addressEl.innerText = formattedAddress;
+                })
+                .catch(() => addressEl.innerText = "Error retrieving address");
+        }
+    });
+
 });
+</script>
 
-const apiKey = "45c8795c3e094eb8994cc238f809c663";
-document.querySelectorAll('.card').forEach(card => {
-    const lat = card.getAttribute('data-lat');
-    const lng = card.getAttribute('data-lng');
-    const alertId = card.getAttribute('data-alert-id');
-    const addressEl = card.querySelector('.accident-address');
-    if (lat && lng && addressEl) {
-        fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
-            .then(res => res.json())
-            .then(data => {
-                const formattedAddress = data?.results?.length ? data.results[0].formatted : "Address not found";
-                addressEl.innerText = formattedAddress;
-                const modalAddressEl = document.querySelector(`#reportModal${alertId} .accident-address`);
-                if (modalAddressEl) modalAddressEl.innerText = formattedAddress;
-            })
-            .catch(() => addressEl.innerText = "Error retrieving address");
-    }
-});
-
-window.printReport = printReport;
-window.exportPDF = exportPDF;
-```
-
-}); </script>
 @endpush
