@@ -10,42 +10,62 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
-        body {
-            background-color: #f8f9fa;
-            color: #000;
-            padding-bottom: 70px; /* for bottom nav */
-        }
+    body {
+        background-color: #f8f9fa;
+        color: #000;
+        padding-bottom: 70px; /* for bottom nav */
+    }
 
-        .fixed-bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background-color: #fff;
-            border-top: 1px solid #ccc;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            z-index: 1000;
-        }
+    .fixed-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: #fff;
+        border-top: 1px solid #ccc;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        z-index: 1000; /* lower than modal */
+    }
 
-        .fixed-bottom-nav a {
-            color: #333;
-            font-size: 14px;
-            text-decoration: none;
-            text-align: center;
-        }
+    .fixed-bottom-nav a {
+        color: #333;
+        font-size: 14px;
+        text-decoration: none;
+        text-align: center;
+    }
 
-        .fixed-bottom-nav a.active {
-            color: #0d6efd;
-            font-weight: bold;
-        }
+    .fixed-bottom-nav a.active {
+        color: #0d6efd;
+        font-weight: bold;
+    }
 
-        .fixed-bottom-nav i {
-            font-size: 20px;
-            display: block;
-            margin-bottom: 2px;
-        }
-    </style>
+    .fixed-bottom-nav i {
+        font-size: 20px;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    /* Modal z-index fixes */
+    .modal,
+    .modal-backdrop {
+        z-index: 11000 !important;
+    }
+
+    .modal-dialog,
+    .modal-content {
+        position: relative;
+        z-index: 11001 !important;
+    }
+
+    .modal-footer button,
+    .modal-body button,
+    .btn {
+        position: relative;
+        z-index: 11002 !important;
+    }
+</style>
+
 </head>
 <body>
     <div class="min-vh-100 d-flex flex-column">
