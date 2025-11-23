@@ -131,10 +131,16 @@
                                 <input type="text" class="form-control" id="lastname{{ $alert->id }}" value="{{ $alert->lastname }}">
                             </div>
 
-                            {{-- ⭐ NEW — PATIENT ADDRESS (INPUT FIELD) --}}
+                            {{-- ⭐ PATIENT ADDRESS 1 (Editable) --}}
                             <div class="col-md-12 mb-2">
                                 <label class="form-label">Patient Address</label>
                                 <input type="text" class="form-control" id="patient_address{{ $alert->id }}" value="{{ $alert->address }}">
+                            </div>
+
+                            {{-- ⭐ PATIENT ADDRESS 2 (NEW Editable Field) --}}
+                            <div class="col-md-12 mb-2">
+                                <label class="form-label">Alternate Patient Address</label>
+                                <input type="text" class="form-control" id="patient_address2{{ $alert->id }}" value="{{ $alert->alternate_address ?? '' }}">
                             </div>
 
                             <div class="col-md-4 mb-2">
@@ -213,6 +219,7 @@ function printReport(id) {
         <p><strong>Middlename:</strong> ${document.getElementById('middlename' + id).value}</p>
         <p><strong>Lastname:</strong> ${document.getElementById('lastname' + id).value}</p>
         <p><strong>Patient Address:</strong> ${document.getElementById('patient_address' + id).value}</p>
+        <p><strong>Alternate Patient Address:</strong> ${document.getElementById('patient_address2' + id).value}</p>
 
         <p><strong>Age:</strong> ${document.getElementById('age' + id).value}</p>
         <p><strong>Gender:</strong> ${document.getElementById('gender' + id).value}</p>
@@ -262,9 +269,6 @@ document.querySelectorAll('.card').forEach(card => {
             .then(data => {
                 addressEl.innerText =
                     data?.results?.length ? data.results[0].formatted : "Address not found";
-
-                // copy to modal also
-                document.querySelectorAll('#reportModal{{ $alert->id }} .accident-address')
             })
             .catch(() => addressEl.innerText = "Error retrieving address");
     }
