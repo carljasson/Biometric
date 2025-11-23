@@ -212,7 +212,7 @@ function printReport(id) {
         <p><strong>Firstname:</strong> ${document.getElementById('firstname' + id).value}</p>
         <p><strong>Middlename:</strong> ${document.getElementById('middlename' + id).value}</p>
         <p><strong>Lastname:</strong> ${document.getElementById('lastname' + id).value}</p>
-        <p><strong>Accident Address:</strong> ${document.getElementById('address' + id).value}</p>
+        <p><strong>Accident Address:</strong> ${document.getElementById('patient_address' + id).value}</p>
 
         <p><strong>Age:</strong> ${document.getElementById('age' + id).value}</p>
         <p><strong>Gender:</strong> ${document.getElementById('gender' + id).value}</p>
