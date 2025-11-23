@@ -4,7 +4,7 @@
 
 <div class="container mt-4 mb-5">
 
-```
+
 {{-- ⬅ Back Button --}}
 <div class="mb-3">
     <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">&larr; Back</a>
@@ -273,7 +273,6 @@ if (lat && lng && addressEl) {
         })
         .catch(() => addressEl.innerText = "Error retrieving address");
 }
-```
 
 }); </script>
 @endpush
