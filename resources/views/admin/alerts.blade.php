@@ -35,7 +35,7 @@
                 @method('POST') {{-- Your route should support POST --}}
             </form>
             <button class="btn btn-sm btn-success mt-2 resolve-btn" data-id="{{ $alert->id }}">
-                ✅ Mark as Recieved
+                ✅ Mark as Recieved 
             </button>
             @else
             <span class="badge bg-success mt-2">Resolved</span>
