@@ -41,7 +41,7 @@
 
                 {{-- 🏠 FULL ADDRESS --}}
                 <p class="mb-1">
-                    <strong>Full Address:</strong>
+                    <strong>Detected Address:</strong>
                     <span class="full-address text-primary">Loading...</span>
                 </p>
 
@@ -71,14 +71,14 @@
                 {{-- BUTTONS --}}
                 <div class="d-flex gap-2 mt-3">
 
-                    {{-- ✅ PRINT REPORT BUTTON --}}
+                    {{-- 🖨 PRINT REPORT BUTTON --}}
                     <button class="btn btn-primary btn-sm"
                             data-bs-toggle="modal"
                             data-bs-target="#reportModal{{ $alert->id }}">
                         🖨 Print Report
                     </button>
 
-                    {{-- ✅ MARK AS RESOLVED BUTTON --}}
+                    {{-- ✅ MARK AS RESOLVED --}}
                     @if($alert->status !== 'Resolved')
                         <form id="resolve-form-{{ $alert->id }}" action="{{ route('responder.alerts.resolve', $alert->id) }}" method="POST" style="display: none;">
                             @csrf
@@ -107,31 +107,70 @@
                     <div class="modal-body" id="printArea{{ $alert->id }}">
 
                         <h4 class="text-danger fw-bold">🚨 {{ $alert->type }}</h4>
-
                         <hr>
 
                         <h5>📌 Alert Details</h5>
                         <p><strong>Sender:</strong> {{ $alert->sender_name }}</p>
                         <p><strong>Email:</strong> {{ $alert->sender_email }}</p>
                         <p><strong>Coordinates:</strong> {{ $alert->latitude }}, {{ $alert->longitude }}</p>
-                        <p><strong>Address:</strong> <span class="full-address"></span></p>
+                        <p><strong>Detected Address:</strong> <span class="full-address"></span></p>
                         <p><strong>Sent:</strong> {{ $alert->created_at }}</p>
 
                         <hr>
 
-                        <h5>👤 User Information</h5>
+                        <h5>👤 Patient Information (Editable)</h5>
 
-                        <p><strong>Firstname:</strong> {{ $alert->firstname }}</p>
-                        <p><strong>Middlename:</strong> {{ $alert->middlename }}</p>
-                        <p><strong>Lastname:</strong> {{ $alert->lastname }}</p>
-                        <p><strong>Address:</strong> {{ $alert->address }}</p>
-                        <p><strong>Age:</strong> {{ $alert->age }}</p>
-                        <p><strong>Gender:</strong> {{ $alert->gender }}</p>
-                        <p><strong>Status:</strong> {{ $alert->status }}</p>
-                        <p><strong>Birthday:</strong> {{ $alert->birthday }}</p>
-                        <p><strong>Phone:</strong> {{ $alert->phone }}</p>
-                        <p><strong>Contact Person:</strong> {{ $alert->contact_name }}</p>
-                        <p><strong>Contact Number:</strong> {{ $alert->contact_number }}</p>
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Firstname</label>
+                                <input type="text" class="form-control" id="firstname{{ $alert->id }}" value="{{ $alert->firstname }}">
+                            </div>
+
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Middlename</label>
+                                <input type="text" class="form-control" id="middlename{{ $alert->id }}" value="{{ $alert->middlename }}">
+                            </div>
+
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Lastname</label>
+                                <input type="text" class="form-control" id="lastname{{ $alert->id }}" value="{{ $alert->lastname }}">
+                            </div>
+
+                            <div class="col-md-12 mb-2">
+                                <label class="form-label">Address</label>
+                                <input type="text" class="form-control" id="address{{ $alert->id }}" value="{{ $alert->address }}">
+                            </div>
+
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Age</label>
+                                <input type="number" class="form-control" id="age{{ $alert->id }}" value="{{ $alert->age }}">
+                            </div>
+
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Gender</label>
+                                <input type="text" class="form-control" id="gender{{ $alert->id }}" value="{{ $alert->gender }}">
+                            </div>
+
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Birthday</label>
+                                <input type="date" class="form-control" id="birthday{{ $alert->id }}" value="{{ $alert->birthday }}">
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="phone{{ $alert->id }}" value="{{ $alert->phone }}">
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label">Emergency Contact Name</label>
+                                <input type="text" class="form-control" id="contact_name{{ $alert->id }}" value="{{ $alert->contact_name }}">
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label">Emergency Contact Number</label>
+                                <input type="text" class="form-control" id="contact_number{{ $alert->id }}" value="{{ $alert->contact_number }}">
+                            </div>
+                        </div>
 
                         @if($alert->photo)
                         <hr>
@@ -145,7 +184,7 @@
                         <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
                         {{-- PRINT BUTTON --}}
-                        <button onclick="printReport('printArea{{ $alert->id }}')" class="btn btn-primary">
+                        <button onclick="printReport({{ $alert->id }})" class="btn btn-primary">
                             🖨 Print
                         </button>
                     </div>
@@ -163,77 +202,75 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-function printReport(areaId) {
-    let content = document.getElementById(areaId).innerHTML;
-    let printWindow = window.open('', '', 'height=900,width=800');
-    printWindow.document.write('<html><head><title>Accident Report</title>');
-    printWindow.document.write('</head><body>');
-    printWindow.document.write(content);
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    printWindow.print();
+/* ✅ FIXED PRINT FUNCTION */
+function printReport(id) {
+    let html = `
+        <h2>Accident Report</h2>
+        <hr>
+
+        <h4>Patient Information</h4>
+        <p><strong>Firstname:</strong> ${document.getElementById('firstname' + id).value}</p>
+        <p><strong>Middlename:</strong> ${document.getElementById('middlename' + id).value}</p>
+        <p><strong>Lastname:</strong> ${document.getElementById('lastname' + id).value}</p>
+        <p><strong>Address:</strong> ${document.getElementById('address' + id).value}</p>
+        <p><strong>Age:</strong> ${document.getElementById('age' + id).value}</p>
+        <p><strong>Gender:</strong> ${document.getElementById('gender' + id).value}</p>
+        <p><strong>Birthday:</strong> ${document.getElementById('birthday' + id).value}</p>
+        <p><strong>Phone:</strong> ${document.getElementById('phone' + id).value}</p>
+        <p><strong>Emergency Contact:</strong> ${document.getElementById('contact_name' + id).value}</p>
+        <p><strong>Contact Number:</strong> ${document.getElementById('contact_number' + id).value}</p>
+
+        <hr>
+        <h4>Alert Details</h4>
+    `;
+
+    let addr = document.querySelector(`#reportModal${id} .full-address`);
+    if (addr) html += `<p><strong>Detected Address:</strong> ${addr.innerText}</p>`;
+
+    let newWin = window.open('', '', 'width=800,height=900');
+    newWin.document.write(`<html><head><title>Print Report</title></head><body>${html}</body></html>`);
+    newWin.document.close();
+
+    setTimeout(() => newWin.print(), 300);
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-
-    // SweetAlert Resolve Logic
-    document.querySelectorAll('.resolve-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const id = this.getAttribute('data-id');
-            Swal.fire({
-                title: 'Mark as Resolved?',
-                text: 'This will mark the alert as handled.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#198754',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, resolve it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('resolve-form-' + id).submit();
-                }
-            });
+/* Mark As Resolved */
+document.querySelectorAll('.resolve-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const id = this.getAttribute('data-id');
+        Swal.fire({
+            title: 'Mark as Resolved?',
+            text: 'This will mark the alert as handled.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#198754',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, resolve it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('resolve-form-' + id).submit();
+            }
         });
     });
+});
 
-    // Success Toast
-    @if(session('success'))
-    Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: 'success',
-        title: @json(session('success')),
-        showConfirmButton: false,
-        timer: 2000
-    });
-    @endif
+/* Reverse Geocoding */
+const apiKey = "45c8795c3e094eb8994cc238f809c663";
 
-    // Reverse Geocoding to Get Full Address
-    const apiKey = "45c8795c3e094eb8994cc238f809c663";
+document.querySelectorAll('.card').forEach(card => {
+    const lat = card.getAttribute('data-lat');
+    const lng = card.getAttribute('data-lng');
+    const locationElement = card.querySelector('.full-address');
 
-    document.querySelectorAll('.card').forEach(card => {
-        const lat = card.getAttribute('data-lat');
-        const lng = card.getAttribute('data-lng');
-        const locationElement = card.querySelector('.full-address');
-
-        if (lat && lng && locationElement) {
-            fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.results.length > 0) {
-                        locationElement.innerText = data.results[0].formatted;
-                    } else {
-                        locationElement.innerText = "Address not found";
-                    }
-                })
-                .catch(error => {
-                    locationElement.innerText = "Error retrieving address";
-                    console.error("Geocoding error:", error);
-                });
-        }
-    });
-
+    if (lat && lng && locationElement) {
+        fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
+            .then(response => response.json())
+            .then(data => {
+                locationElement.innerText =
+                    data?.results?.length ? data.results[0].formatted : "Address not found";
+            })
+            .catch(() => locationElement.innerText = "Error retrieving address");
+    }
 });
 </script>
 @endpush
-
