@@ -159,6 +159,7 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button onclick="printReport({{ $alert->id }})" class="btn btn-primary">🖨 Print</button>
+                    <button onclick="exportPDF({{ $alert->id }})" class="btn btn-danger">📄 Export PDF</button>
                 </div>
 
             </div>
@@ -174,6 +175,8 @@
 @push('scripts')
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
 /* PRINT REPORT - FULL MODAL CONTENT */
@@ -204,6 +207,28 @@ function printReport(id) {
 printWindow.document.close();
 printWindow.focus();
 setTimeout(() => printWindow.print(), 300);
+```
+
+}
+
+/* EXPORT PDF */
+function exportPDF(id) {
+const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
+if (!modalBody) return;
+
+```
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF('p', 'pt', 'a4');
+
+doc.html(modalBody, {
+    callback: function (pdf) {
+        pdf.save(`Accident_Report_${id}.pdf`);
+    },
+    x: 20,
+    y: 20,
+    width: 555,
+    windowWidth: modalBody.scrollWidth,
+});
 ```
 
 }
