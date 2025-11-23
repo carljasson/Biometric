@@ -4,6 +4,7 @@
 
 <div class="container mt-4 mb-5">
 
+```
 {{-- ⬅ Back Button --}}
 <div class="mb-3">
     <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">&larr; Back</a>
@@ -42,10 +43,11 @@
             <p class="mb-1">
                 <strong>Status:</strong>
                 @if($alert->status !== 'Received')
-                    <span class="badge bg-warning text-dark">{{ ucfirst($alert->status) }}</span>
-                @else
-                    <span class="badge bg-success">Received</span>
-                @endif
+    <span class="badge bg-warning text-dark">{{ ucfirst($alert->status) }}</span>
+@else
+    <span class="badge bg-success">Received</span>
+@endif
+
             </p>
 
             {{-- ⏱ SENT TIME --}}
@@ -60,17 +62,16 @@
 
             {{-- BUTTONS --}}
             <div class="d-flex gap-2 mt-3">
-
                 {{-- PRINT --}}
                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal{{ $alert->id }}">🖨 Print Report</button>
 
-                {{-- MARK AS RECEIVED --}}
-                @if($alert->status !== 'Received')
+              @if($alert->status !== 'Received')
                     <form id="resolve-form-{{ $alert->id }}" method="POST" action="{{ route('responder.alerts.resolve', $alert->id) }}" style="display:none;">
                         @csrf
                     </form>
 
                     <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">📥 Mark as Received</button>
+
                 @endif
             </div>
 
@@ -167,6 +168,7 @@
     </div>
 
 @endforeach
+```
 
 </div>
 @endsection
@@ -178,7 +180,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-/* PRINT REPORT */
+/* PRINT REPORT - FULL MODAL CONTENT */
 function printReport(id) {
     const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
     if (!modalBody) return;
@@ -193,75 +195,86 @@ function printReport(id) {
                     h2, h4 { color: #dc3545; }
                     hr { border: 1px solid #ccc; margin: 10px 0; }
                     p { margin: 5px 0; }
+                    .bold { font-weight: bold; }
                 </style>
-            </head>
-            <body>
-                ${modalBody.innerHTML}
-            </body>
-        </html>
-    `);
-    printWindow.document.close();
-    setTimeout(() => printWindow.print(), 300);
+
+```
+        </head>
+        <body>
+            ${modalBody.innerHTML}
+        </body>
+    </html>
+`);
+printWindow.document.close();
+printWindow.focus();
+setTimeout(() => printWindow.print(), 300);
+```
+
 }
 
 /* EXPORT PDF */
 function exportPDF(id) {
-    const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
-    if (!modalBody) return;
+const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
+if (!modalBody) return;
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'pt', 'a4');
+```
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF('p', 'pt', 'a4');
 
-    doc.html(modalBody, {
-        callback: function (pdf) {
-            pdf.save(`Accident_Report_${id}.pdf`);
-        },
-        x: 20,
-        y: 20,
-        width: 555,
-        windowWidth: modalBody.scrollWidth,
-    });
+doc.html(modalBody, {
+    callback: function (pdf) {
+        pdf.save(`Accident_Report_${id}.pdf`);
+    },
+    x: 20,
+    y: 20,
+    width: 555,
+    windowWidth: modalBody.scrollWidth,
+});
+```
+
 }
 
-/* RECEIVE BUTTON */
+/* RESOLVE BUTTON */
 document.querySelectorAll('.resolve-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-        const id = this.getAttribute('data-id');
-        Swal.fire({
-            title: 'Mark as Received?',
-            text: 'This will mark the alert as received by the responder.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#198754',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, receive it!'
-        }).then(result => {
-            if (result.isConfirmed) {
-                document.getElementById('resolve-form-' + id).submit();
-            }
-        });
-    });
+btn.addEventListener('click', function () {
+const id = this.getAttribute('data-id');
+Swal.fire({
+title: 'Mark as Received?',
+text: 'This will mark the alert as received by the responder.',
+icon: 'warning',
+showCancelButton: true,
+confirmButtonColor: '#198754',
+cancelButtonColor: '#d33',
+confirmButtonText: 'Yes,  receive it!'
+}).then(result => {
+if (result.isConfirmed) {
+document.getElementById('resolve-form-' + id).submit();
+}
+});
+});
 });
 
-/* REVERSE GEOCODING */
+/* REVERSE GEOCODING FOR ACCIDENT ADDRESS */
 const apiKey = "45c8795c3e094eb8994cc238f809c663";
 document.querySelectorAll('.card').forEach(card => {
-    const lat = card.getAttribute('data-lat');
-    const lng = card.getAttribute('data-lng');
-    const alertId = card.getAttribute('data-alert-id');
-    const addressEl = card.querySelector('.accident-address');
+const lat = card.getAttribute('data-lat');
+const lng = card.getAttribute('data-lng');
+const alertId = card.getAttribute('data-alert-id');
+const addressEl = card.querySelector('.accident-address');
 
-    if (lat && lng && addressEl) {
-        fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
-            .then(res => res.json())
-            .then(data => {
-                const formattedAddress = data?.results?.length ? data.results[0].formatted : "Address not found";
-                addressEl.innerText = formattedAddress;
-                const modalAddressEl = document.querySelector(`#reportModal${alertId} .accident-address`);
-                if (modalAddressEl) modalAddressEl.innerText = formattedAddress;
-            })
-            .catch(() => addressEl.innerText = "Error retrieving address");
-    }
-});
-</script>
+```
+if (lat && lng && addressEl) {
+    fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
+        .then(res => res.json())
+        .then(data => {
+            const formattedAddress = data?.results?.length ? data.results[0].formatted : "Address not found";
+            addressEl.innerText = formattedAddress;
+            const modalAddressEl = document.querySelector(`#reportModal${alertId} .accident-address`);
+            if(modalAddressEl) modalAddressEl.innerText = formattedAddress;
+        })
+        .catch(() => addressEl.innerText = "Error retrieving address");
+}
+```
+
+}); </script>
 @endpush
