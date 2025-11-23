@@ -1,5 +1,37 @@
 @extends('layouts.responder')
 
+@push('styles')
+<style>
+/* Force modal above everything */
+.modal,
+.modal-backdrop {
+    z-index: 99999 !important;
+}
+
+.modal-dialog,
+.modal-content {
+    position: relative;
+    z-index: 999999 !important;
+}
+
+/* Ensure modal buttons are clickable */
+.modal-footer button,
+.modal-body button,
+.btn {
+    position: relative;
+    z-index: 1000000 !important;
+}
+
+/* Fix sidebar overlay blocking click events */
+.offcanvas,
+.sidebar,
+.overlay,
+.side-overlay {
+    z-index: 500 !important;
+}
+</style>
+@endpush
+
 @section('content')
 
 <div class="container mt-4 mb-5">
@@ -171,12 +203,10 @@
 @endsection
 
 @push('scripts')
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-// PRINT REPORT
 function printReport(id) {
     const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
     if (!modalBody) return;
@@ -204,7 +234,6 @@ function printReport(id) {
     setTimeout(() => printWindow.print(), 300);
 }
 
-// EXPORT PDF
 function exportPDF(id) {
     const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
     if (!modalBody) return;
@@ -223,7 +252,6 @@ function exportPDF(id) {
     });
 }
 
-// RESOLVE BUTTON
 document.querySelectorAll('.resolve-btn').forEach(btn => {
     btn.addEventListener('click', function () {
         const id = this.getAttribute('data-id');
@@ -243,7 +271,6 @@ document.querySelectorAll('.resolve-btn').forEach(btn => {
     });
 });
 
-// REVERSE GEOCODING
 const apiKey = "45c8795c3e094eb8994cc238f809c663";
 document.querySelectorAll('.card').forEach(card => {
     const lat = card.getAttribute('data-lat');
