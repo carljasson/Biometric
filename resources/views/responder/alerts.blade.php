@@ -101,7 +101,7 @@
                         @csrf
                     </form>
 
-                    <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">✅ Mark as Resolved</button>
+                    <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">✅ Mark as Recieved</button>
                 @endif
             </div>
 
