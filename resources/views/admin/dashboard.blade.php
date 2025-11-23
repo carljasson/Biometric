@@ -53,11 +53,10 @@
         <i class="bi bi-megaphone-fill me-2"></i> Broadcast Messages
     </a>
 
-   <a href="{{ route('admin.backups.upload') }}" 
-   class="text-white px-4 py-2 d-block text-decoration-none {{ request()->routeIs('admin.backups.*') ? 'bg-secondary fw-bold' : '' }}">
+   <a href="{{ route('backups.upload') }}" 
+   class="text-white px-4 py-2 d-block text-decoration-none {{ request()->routeIs('backups.*') ? 'bg-secondary fw-bold' : '' }}">
     <i class="bi bi-hdd-fill me-2"></i> Backup
 </a>
-
 
 
     <form action="{{ route('admin.logout') }}" method="POST" class="m-3">
