@@ -1,41 +1,43 @@
 @extends('layouts.responder')
 
 @push('styles')
+
 <style>
-/* Force modal above everything */
+/* Modal should be above everything */
 .modal,
 .modal-backdrop {
-    z-index: 99999 !important;
+    z-index: 1050; /* Bootstrap default modal z-index */
 }
 
 .modal-dialog,
 .modal-content {
+    z-index: 1060;
     position: relative;
-    z-index: 999999 !important;
 }
 
-/* Ensure modal buttons are clickable */
+/* Modal buttons above modal content */
 .modal-footer button,
-.modal-body button,
-.btn {
+.modal-body button {
+    z-index: 1070;
     position: relative;
-    z-index: 1000000 !important;
 }
 
-/* Fix sidebar overlay blocking click events */
+/* Sidebar overlay stays below modals */
 .offcanvas,
 .sidebar,
 .overlay,
 .side-overlay {
-    z-index: 500 !important;
+    z-index: 1040;
 }
 </style>
+
 @endpush
 
 @section('content')
 
 <div class="container mt-4 mb-5">
 
+```
 {{-- ⬅ Back Button --}}
 <div class="mb-3">
     <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">&larr; Back</a>
@@ -50,27 +52,17 @@
 @foreach($alerts as $alert)
     <div class="card mb-3 shadow-sm" data-lat="{{ $alert->latitude }}" data-lng="{{ $alert->longitude }}" data-alert-id="{{ $alert->id }}">
         <div class="card-body">
-
-            {{-- 🔥 ALERT TYPE --}}
             <h5 class="text-danger fw-bold">🚨 {{ $alert->type }}</h5>
-
-            {{-- 👤 SENDER INFO --}}
             <p class="mb-1"><strong>Sender:</strong> {{ $alert->sender_name }}</p>
             <p class="mb-1"><strong>Email:</strong> {{ $alert->sender_email }}</p>
-
-            {{-- 📍 LOCATION --}}
             <p class="mb-2">
                 <strong>Location:</strong>
                 <a href="https://www.google.com/maps?q={{ $alert->latitude }},{{ $alert->longitude }}" target="_blank" class="text-primary">View on Map</a>
             </p>
-
-            {{-- 🏠 ACCIDENT ADDRESS --}}
             <p class="mb-1">
                 <strong>Accident Address:</strong>
                 <span class="accident-address text-primary">Loading...</span>
             </p>
-
-            {{-- 🟡 STATUS --}}
             <p class="mb-1">
                 <strong>Status:</strong>
                 @if($alert->status !== 'Resolved')
@@ -79,11 +71,8 @@
                     <span class="badge bg-success">Resolved</span>
                 @endif
             </p>
-
-            {{-- ⏱ SENT TIME --}}
             <small class="text-muted"><strong>Sent:</strong> {{ $alert->created_at->diffForHumans() }}</small>
 
-            {{-- 📸 PHOTO --}}
             @if($alert->photo)
                 <div class="mt-3">
                     <img src="{{ asset($alert->photo) }}" class="img-fluid rounded" style="max-height:250px; border:1px solid #ccc;">
@@ -92,19 +81,15 @@
 
             {{-- BUTTONS --}}
             <div class="d-flex gap-2 mt-3">
-                {{-- PRINT --}}
                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal{{ $alert->id }}">🖨 Print Report</button>
 
-                {{-- RESOLVE --}}
                 @if($alert->status !== 'Resolved')
                     <form id="resolve-form-{{ $alert->id }}" method="POST" action="{{ route('responder.alerts.resolve', $alert->id) }}" style="display:none;">
                         @csrf
                     </form>
-
                     <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">✅ Mark as Resolved</button>
                 @endif
             </div>
-
         </div>
     </div>
 
@@ -112,18 +97,14 @@
     <div class="modal fade" id="reportModal{{ $alert->id }}" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-
                 <div class="modal-header">
                     <h5 class="modal-title">Accident Report</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body" id="printArea{{ $alert->id }}">
-
                     <h4 class="text-danger fw-bold">🚨 {{ $alert->type }}</h4>
                     <hr>
-
-                    {{-- ACCIDENT ADDRESS --}}
                     <h5>📍 Accident Location</h5>
                     <p><strong>Accident Address:</strong> <span class="accident-address"></span></p>
                     <p><strong>Coordinates:</strong> {{ $alert->latitude }}, {{ $alert->longitude }}</p>
@@ -132,7 +113,6 @@
                     <p><strong>Sent:</strong> {{ $alert->created_at }}</p>
 
                     <hr>
-
                     <h5>👤 Patient Information (Editable)</h5>
                     <div class="row">
                         <div class="col-md-4 mb-2">
@@ -147,12 +127,10 @@
                             <label class="form-label">Lastname</label>
                             <input type="text" class="form-control" id="lastname{{ $alert->id }}" value="{{ $alert->lastname }}">
                         </div>
-
                         <div class="col-md-12 mb-2">
                             <label class="form-label">Patient Address</label>
                             <input type="text" class="form-control" id="patient_address{{ $alert->id }}" placeholder="Enter patient address">
                         </div>
-
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Age</label>
                             <input type="number" class="form-control" id="age{{ $alert->id }}" value="{{ $alert->age }}">
@@ -184,7 +162,6 @@
                         <h5>📸 Attached Photo</h5>
                         <img src="{{ asset($alert->photo) }}" class="img-fluid rounded" style="max-height:250px;">
                     @endif
-
                 </div>
 
                 <div class="modal-footer">
@@ -192,41 +169,44 @@
                     <button onclick="printReport({{ $alert->id }})" class="btn btn-primary">🖨 Print</button>
                     <button onclick="exportPDF({{ $alert->id }})" class="btn btn-danger">📄 Export PDF</button>
                 </div>
-
             </div>
         </div>
     </div>
 
 @endforeach
+```
 
 </div>
 @endsection
 
 @push('scripts')
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-function printReport(id) {
-    const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
-    if (!modalBody) return;
+document.addEventListener('DOMContentLoaded', function() {
 
-    const printWindow = window.open('', '', 'width=900,height=700');
-    printWindow.document.write(`
-        <html>
-            <head>
-                <title>Accident Report</title>
-                <style>
-                    body { font-family: Arial, sans-serif; padding: 20px; }
-                    h2, h4 { color: #dc3545; }
-                    hr { border: 1px solid #ccc; margin: 10px 0; }
-                    p { margin: 5px 0; }
-                    .bold { font-weight: bold; }
-                </style>
+    function printReport(id) {
+        const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
+        if (!modalBody) return;
+        const printWindow = window.open('', '', 'width=900,height=700');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Accident Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        h2, h4 { color: #dc3545; }
+                        hr { border: 1px solid #ccc; margin: 10px 0; }
+                        p { margin: 5px 0; }
+                        .bold { font-weight: bold; }
+                    </style>
+
+```
             </head>
-            <body>
-                ${modalBody.innerHTML}
-            </body>
+            <body>${modalBody.innerHTML}</body>
         </html>
     `);
     printWindow.document.close();
@@ -237,10 +217,8 @@ function printReport(id) {
 function exportPDF(id) {
     const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
     if (!modalBody) return;
-
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'pt', 'a4');
-
     doc.html(modalBody, {
         callback: function (pdf) {
             pdf.save(`Accident_Report_${id}.pdf`);
@@ -277,7 +255,6 @@ document.querySelectorAll('.card').forEach(card => {
     const lng = card.getAttribute('data-lng');
     const alertId = card.getAttribute('data-alert-id');
     const addressEl = card.querySelector('.accident-address');
-
     if (lat && lng && addressEl) {
         fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
             .then(res => res.json())
@@ -290,5 +267,10 @@ document.querySelectorAll('.card').forEach(card => {
             .catch(() => addressEl.innerText = "Error retrieving address");
     }
 });
-</script>
+
+window.printReport = printReport;
+window.exportPDF = exportPDF;
+```
+
+}); </script>
 @endpush
