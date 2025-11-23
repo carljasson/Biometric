@@ -332,7 +332,7 @@ Route::get('/pin-login', function () {
 Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('backups', [AdminBackupController::class, 'index'])
-        ->name('backup-upload');
+        ->name('backup.upload');
 
     Route::post('backups/upload', [AdminBackupController::class, 'store'])
         ->name('backups.store');
