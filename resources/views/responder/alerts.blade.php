@@ -82,6 +82,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
+    // Mark as resolved
     document.querySelectorAll('.resolve-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             const id = this.getAttribute('data-id');
