@@ -42,11 +42,12 @@
             {{-- 🟡 STATUS --}}
             <p class="mb-1">
                 <strong>Status:</strong>
-                @if($alert->status !== 'Resolved')
-                    <span class="badge bg-warning text-dark">{{ ucfirst($alert->status) }}</span>
-                @else
-                    <span class="badge bg-success">Resolved</span>
-                @endif
+                @if($alert->status !== 'Received')
+    <span class="badge bg-warning text-dark">{{ ucfirst($alert->status) }}</span>
+@else
+    <span class="badge bg-success">Received</span>
+@endif
+
             </p>
 
             {{-- ⏱ SENT TIME --}}
@@ -70,7 +71,8 @@
                         @csrf
                     </form>
 
-                    <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">✅ Mark as Resolved</button>
+                    <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">📥 Mark as Received</button>
+
                 @endif
             </div>
 
@@ -233,18 +235,18 @@ doc.html(modalBody, {
 
 }
 
-/* RESOLVE BUTTON */
+/* Recieved BUTTON */
 document.querySelectorAll('.resolve-btn').forEach(btn => {
 btn.addEventListener('click', function () {
 const id = this.getAttribute('data-id');
 Swal.fire({
-title: 'Mark as Resolved?',
-text: 'This will mark the alert as handled.',
+title: 'Mark as Received?',
+text: 'This will mark the alert as received by the responder.',
 icon: 'warning',
 showCancelButton: true,
 confirmButtonColor: '#198754',
 cancelButtonColor: '#d33',
-confirmButtonText: 'Yes, resolve it!'
+confirmButtonText: 'Yes, receive it!'
 }).then(result => {
 if (result.isConfirmed) {
 document.getElementById('resolve-form-' + id).submit();
