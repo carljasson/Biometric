@@ -53,7 +53,7 @@
         <i class="bi bi-megaphone-fill me-2"></i> Broadcast Messages
     </a>
 
-   <a href="{{ route('admin.backup-upload') }}" 
+  <form action="{{ route('admin.backup-upload') }}" method="POST" enctype="multipart/form-data">
    class="text-white px-4 py-2 d-block text-decoration-none {{ request()->routeIs('admin.backups.*') ? 'bg-secondary fw-bold' : '' }}">
     <i class="bi bi-hdd-fill me-2"></i> Backup
 </a>
