@@ -2,30 +2,40 @@
 
 @push('styles')
 <style>
+/* Force modal and backdrop on top of everything */
 .modal,
 .modal-backdrop {
-    z-index: 2000 !important;
+    z-index: 9999 !important;
 }
 
 .modal-dialog,
 .modal-content {
-    z-index: 2001 !important;
+    z-index: 10000 !important;
+    position: relative;
 }
 
-.btn {
-    z-index: auto !important;
+/* Make sure buttons are clickable */
+.modal .btn {
+    position: relative;
+    z-index: 10001 !important;
 }
 
-/* Sidebar */
+/* Sidebar below modal */
 .sidebar {
     z-index: 1000 !important;
 }
 
-/* 🔥 FIX: Transparent overlay blocking clicks */
+/* Bottom nav below modal */
+.fixed-bottom-nav {
+    z-index: 500 !important;
+}
+
+/* Transparent overlays do not block clicks */
 .side-overlay {
     pointer-events: none !important;
     z-index: 0 !important;
 }
+
 </style>
 @endpush
 
