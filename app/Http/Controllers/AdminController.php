@@ -387,11 +387,15 @@ public function showAlerts()
 public function resolveAlert($id)
 {
     $alert = Alert::findOrFail($id);
-    $alert->status = 'Resolved';
+
+    // NEW STATUS MESSAGE (as requested)
+    $alert->status = "Your report was received and confirmed by a responder. The responder is on the way.";
+
     $alert->save();
 
-    return redirect()->back()->with('success', 'Alert marked as resolved.');
+    return redirect()->back()->with('success', 'Alert marked as received and responder is on the way.');
 }
+
 public function index()
 {
     $alerts = Alert::with('patient')->latest()->get(); // eager load patient info
