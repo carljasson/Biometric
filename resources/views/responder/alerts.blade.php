@@ -32,7 +32,7 @@
 
 <div class="container mt-4 mb-5">
 
-
+```
 {{-- ⬅ Back Button --}}
 <div class="mb-3">
     <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">&larr; Back</a>
@@ -85,7 +85,7 @@
         </div>
     </div>
 @endforeach
-
+```
 
 </div>
 @endsection
@@ -95,42 +95,43 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-// Mark as Received
-document.querySelectorAll('.resolve-btn').forEach(btn=>{
-    btn.addEventListener('click', function(){
-        const id = this.dataset.id;
-        Swal.fire({
-            title:'Mark as Received?',
-            text:'This will update the status to: Responder is on the way.',
-            icon:'warning',
-            showCancelButton:true,
-            confirmButtonColor:'#198754',
-            cancelButtonColor:'#d33',
-            confirmButtonText:'Yes, update it!'
-        }).then(result=>{
-            if(result.isConfirmed){
-                document.getElementById('resolve-form-'+id).submit();
-            }
+document.addEventListener('DOMContentLoaded', function() {
+    // Mark as Received
+    document.querySelectorAll('.resolve-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            Swal.fire({
+                title: 'Mark as Received?',
+                text: 'This will update the status to: Responder is on the way.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, update it!'
+            }).then(result => {
+                if(result.isConfirmed){
+                    document.getElementById('resolve-form-' + id).submit();
+                }
+            });
         });
     });
-});
 
-// Reverse Geocoding (still active)
-const apiKey = "45c8795c3e094eb8994cc238f809c663";
-document.querySelectorAll('.card').forEach(card=>{
-    const lat = card.dataset.lat;
-    const lng = card.dataset.lng;
-    const alertId = card.dataset.alertId;
-    const addressEl = card.querySelector('.accident-address');
-    if(lat && lng && addressEl){
-        fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
-        .then(res=>res.json())
-        .then(data=>{
-            const formattedAddress = data?.results?.length ? data.results[0].formatted : "Address not found";
-            addressEl.innerText = formattedAddress;
-        })
-        .catch(()=>addressEl.innerText="Error retrieving address");
-    }
+    // Reverse Geocoding
+    const apiKey = "45c8795c3e094eb8994cc238f809c663";
+    document.querySelectorAll('.card').forEach(card => {
+        const lat = card.dataset.lat;
+        const lng = card.dataset.lng;
+        const addressEl = card.querySelector('.accident-address');
+        if(lat && lng && addressEl){
+            fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
+            .then(res => res.json())
+            .then(data => {
+                const formattedAddress = data?.results?.length ? data.results[0].formatted : "Address not found";
+                addressEl.innerText = formattedAddress;
+            })
+            .catch(() => addressEl.innerText = "Error retrieving address");
+        }
+    });
 });
 </script>
 
