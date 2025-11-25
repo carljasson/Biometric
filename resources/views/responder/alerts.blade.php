@@ -79,7 +79,7 @@
                     <form id="resolve-form-{{ $alert->id }}" method="POST" action="{{ route('responder.alerts.resolve', $alert->id) }}" style="display:none;">
                         @csrf
                     </form>
-                    <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">✅ Mark as Received</button>
+                    <button type="button" class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">✅ Mark as Received</button>
                 @endif
             </div>
         </div>
