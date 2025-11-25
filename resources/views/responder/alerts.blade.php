@@ -73,10 +73,11 @@
             {{-- 🟡 STATUS --}}
             <p class="mb-1">
                 <strong>Status:</strong>
-                @if($alert->status !== 'Resolved')
-                    <span class="badge bg-warning text-dark">{{ ucfirst($alert->status) }}</span>
+
+                @if($alert->status === 'Responder_on_the_way')
+                    <span class="badge bg-success">Responder On The Way</span>
                 @else
-                    <span class="badge bg-success">Resolved</span>
+                    <span class="badge bg-warning text-dark">{{ ucfirst($alert->status) }}</span>
                 @endif
             </p>
 
@@ -92,16 +93,21 @@
 
             {{-- BUTTONS --}}
             <div class="d-flex gap-2 mt-3">
+
                 {{-- PRINT --}}
                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#reportModal{{ $alert->id }}">🖨 Print Report</button>
 
                 {{-- RESOLVE --}}
-                @if($alert->status !== 'Resolved')
+                @if($alert->status !== 'Responder_on_the_way')
+
                     <form id="resolve-form-{{ $alert->id }}" method="POST" action="{{ route('responder.alerts.resolve', $alert->id) }}" style="display:none;">
                         @csrf
                     </form>
 
-                    <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">✅ Mark as Recieved</button>
+                    <button class="btn btn-success btn-sm resolve-btn" data-id="{{ $alert->id }}">
+                        ✅ Mark as Received
+                    </button>
+
                 @endif
             </div>
 
@@ -134,48 +140,53 @@
                     <hr>
 
                     <h5>👤 Patient Information (Editable)</h5>
+
                     <div class="row">
+
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Firstname</label>
-                            <input type="text" class="form-control" id="firstname{{ $alert->id }}" value="{{ $alert->firstname }}">
+                            <input type="text" class="form-control" value="{{ $alert->firstname }}">
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Middlename</label>
-                            <input type="text" class="form-control" id="middlename{{ $alert->id }}" value="{{ $alert->middlename }}">
+                            <input type="text" class="form-control" value="{{ $alert->middlename }}">
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Lastname</label>
-                            <input type="text" class="form-control" id="lastname{{ $alert->id }}" value="{{ $alert->lastname }}">
+                            <input type="text" class="form-control" value="{{ $alert->lastname }}">
                         </div>
 
                         <div class="col-md-12 mb-2">
                             <label class="form-label">Patient Address</label>
-                            <input type="text" class="form-control" id="patient_address{{ $alert->id }}" placeholder="Enter patient address">
+                            <input type="text" class="form-control" placeholder="Enter patient address">
                         </div>
 
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Age</label>
-                            <input type="number" class="form-control" id="age{{ $alert->id }}" value="{{ $alert->age }}">
+                            <input type="number" class="form-control" value="{{ $alert->age }}">
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Gender</label>
-                            <input type="text" class="form-control" id="gender{{ $alert->id }}" value="{{ $alert->gender }}">
+                            <input type="text" class="form-control" value="{{ $alert->gender }}">
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Birthday</label>
-                            <input type="date" class="form-control" id="birthday{{ $alert->id }}" value="{{ $alert->birthday }}">
+                            <input type="date" class="form-control" value="{{ $alert->birthday }}">
                         </div>
+
                         <div class="col-md-6 mb-2">
                             <label class="form-label">Phone</label>
-                            <input type="text" class="form-control" id="phone{{ $alert->id }}" value="{{ $alert->phone }}">
+                            <input type="text" class="form-control" value="{{ $alert->phone }}">
                         </div>
+
                         <div class="col-md-6 mb-2">
                             <label class="form-label">Emergency Contact Name</label>
-                            <input type="text" class="form-control" id="contact_name{{ $alert->id }}" value="{{ $alert->contact_name }}">
+                            <input type="text" class="form-control" value="{{ $alert->contact_name }}">
                         </div>
+
                         <div class="col-md-6 mb-2">
                             <label class="form-label">Emergency Contact Number</label>
-                            <input type="text" class="form-control" id="contact_number{{ $alert->id }}" value="{{ $alert->contact_number }}">
+                            <input type="text" class="form-control" value="{{ $alert->contact_number }}">
                         </div>
                     </div>
 
@@ -230,11 +241,12 @@ function printReport(id) {
         </html>
     `);
     printWindow.document.close();
-    printWindow.focus();
     setTimeout(() => printWindow.print(), 300);
 }
 
-window.exportPDF = function(id) { const modalBody = document.querySelector(`#reportModal${id} .modal-body`); if (!modalBody) return;
+window.exportPDF = function(id) {
+    const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
+    if (!modalBody) return;
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'pt', 'a4');
@@ -253,14 +265,15 @@ window.exportPDF = function(id) { const modalBody = document.querySelector(`#rep
 document.querySelectorAll('.resolve-btn').forEach(btn => {
     btn.addEventListener('click', function () {
         const id = this.getAttribute('data-id');
+
         Swal.fire({
-            title: 'Mark as Resolved?',
-            text: 'This will mark the alert as handled.',
+            title: 'Mark as Received?',
+            text: 'This will update the status to: Responder is on the way.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#198754',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, resolve it!'
+            confirmButtonText: 'Yes, update it!'
         }).then(result => {
             if (result.isConfirmed) {
                 document.getElementById('resolve-form-' + id).submit();
@@ -269,7 +282,10 @@ document.querySelectorAll('.resolve-btn').forEach(btn => {
     });
 });
 
+
+// Reverse Geocoding
 const apiKey = "45c8795c3e094eb8994cc238f809c663";
+
 document.querySelectorAll('.card').forEach(card => {
     const lat = card.getAttribute('data-lat');
     const lng = card.getAttribute('data-lng');
@@ -282,6 +298,8 @@ document.querySelectorAll('.card').forEach(card => {
             .then(data => {
                 const formattedAddress = data?.results?.length ? data.results[0].formatted : "Address not found";
                 addressEl.innerText = formattedAddress;
+
+                // Also fill the modal
                 const modalAddressEl = document.querySelector(`#reportModal${alertId} .accident-address`);
                 if (modalAddressEl) modalAddressEl.innerText = formattedAddress;
             })
