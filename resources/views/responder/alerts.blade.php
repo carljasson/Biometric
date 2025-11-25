@@ -127,8 +127,8 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button onclick="printReport({{ $alert->id }})" class="btn btn-primary">🖨 Print</button>
-                    <button onclick="exportPDF({{ $alert->id }})" class="btn btn-danger">📄 Export PDF</button>
+                    <button type="button" onclick="printReport({{ $alert->id }})" class="btn btn-primary">🖨 Print</button>
+                    <button type="button" onclick="exportPDF({{ $alert->id }})" class="btn btn-danger">📄 Export PDF</button>
                 </div>
             </div>
         </div>
@@ -147,36 +147,36 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-function printReport(id) {
+function printReport(id){
     const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
-    if (!modalBody) return;
-    const printWindow = window.open('', '', 'width=900,height=700');
+    if(!modalBody) return;
+    const printWindow = window.open('','', 'width=900,height=700');
     printWindow.document.write(`<html><head><title>Accident Report</title><style>
         body{font-family:Arial,sans-serif;padding:20px;}
-        h2,h4{color:#dc3545;} hr{border:1px solid #ccc;margin:10px 0;} p{margin:5px 0;}</style></head>
+        h2,h4{color:#dc3545;} hr{border:1px solid #ccc;margin:10px 0;} p{margin:5px 0;}
+    </style></head><body>${modalBody.innerHTML}</body></html>`);
 
 ```
-    <body>${modalBody.innerHTML}</body></html>`);
 printWindow.document.close();
 setTimeout(()=>printWindow.print(), 300);
 ```
 
 }
 
-window.exportPDF = function(id) {
+window.exportPDF = function(id){
 const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
-if (!modalBody) return;
+if(!modalBody) return;
 const { jsPDF } = window.jspdf;
 const doc = new jsPDF('p','pt','a4');
 doc.html(modalBody,{
-callback:function(pdf){pdf.save(`Accident_Report_${id}.pdf`);},
+callback: function(pdf){ pdf.save(`Accident_Report_${id}.pdf`); },
 x:20, y:20, width:555, windowWidth: modalBody.scrollWidth
 });
 }
 
 document.querySelectorAll('.resolve-btn').forEach(btn=>{
 btn.addEventListener('click', function(){
-const id = this.getAttribute('data-id');
+const id = this.dataset.id;
 Swal.fire({
 title:'Mark as Received?',
 text:'This will update the status to: Responder is on the way.',
@@ -196,9 +196,9 @@ document.getElementById('resolve-form-'+id).submit();
 // Reverse Geocoding
 const apiKey = "45c8795c3e094eb8994cc238f809c663";
 document.querySelectorAll('.card').forEach(card=>{
-const lat = card.getAttribute('data-lat');
-const lng = card.getAttribute('data-lng');
-const alertId = card.getAttribute('data-alert-id');
+const lat = card.dataset.lat;
+const lng = card.dataset.lng;
+const alertId = card.dataset.alertId;
 const addressEl = card.querySelector('.accident-address');
 if(lat && lng && addressEl){
 fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${apiKey}`)
