@@ -388,7 +388,7 @@ public function resolveAlert($id)
 {
     $alert = Alert::findOrFail($id);
 
-    // NEW STATUS MESSAGE (as requested)
+    // NEW STATUS MESSAGE (as requested
     $alert->status = "Your report was received and confirmed by a responder. The responder is on the way.";
 
     $alert->save();
