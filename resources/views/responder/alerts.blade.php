@@ -2,33 +2,28 @@
 
 @push('styles')
 <style>
-/* Force modal above everything */
 .modal,
 .modal-backdrop {
-    z-index: 99999 !important;
+    z-index: 1050 !important;
 }
 
 .modal-dialog,
 .modal-content {
-    position: relative;
-    z-index: 999999 !important;
+    z-index: 1060 !important;
 }
 
-/* Ensure modal buttons are clickable */
-.modal-footer button,
-.modal-body button,
 .btn {
-    position: relative;
-    z-index: 1000000 !important;
+    z-index: auto !important; /* REMOVE giant z-index */
 }
 
-/* Fix sidebar overlay blocking click events */
+/* Sidebar stays below modal */
 .offcanvas,
 .sidebar,
 .overlay,
 .side-overlay {
     z-index: 500 !important;
 }
+
 </style>
 @endpush
 
