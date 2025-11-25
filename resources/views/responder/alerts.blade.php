@@ -4,28 +4,31 @@
 <style>
 .modal,
 .modal-backdrop {
-    z-index: 1050 !important;
+    z-index: 2000 !important;
 }
 
 .modal-dialog,
 .modal-content {
-    z-index: 1060 !important;
+    z-index: 2001 !important;
 }
 
 .btn {
-    z-index: auto !important; /* REMOVE giant z-index */
+    z-index: auto !important;
 }
 
-/* Sidebar stays below modal */
-.offcanvas,
-.sidebar,
-.overlay,
+/* Sidebar */
+.sidebar {
+    z-index: 1000 !important;
+}
+
+/* 🔥 FIX: Transparent overlay blocking clicks */
 .side-overlay {
-    z-index: 500 !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
 }
-
 </style>
 @endpush
+
 
 @section('content')
 
