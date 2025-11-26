@@ -261,7 +261,7 @@ window.exportPDF = async function(id) {
     const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
     if (!modalBody) return;
 
-    // Clone content and replace input values
+    // Clone content and replace inputs with their values
     const content = modalBody.cloneNode(true);
     content.querySelectorAll('input, textarea, select').forEach(el => {
         const span = document.createElement('span');
@@ -269,16 +269,21 @@ window.exportPDF = async function(id) {
         el.parentNode.replaceChild(span, el);
     });
 
-    const doc = new window.jspdf.jsPDF('p', 'pt', 'a4');
+    // Use html2canvas to render the content
+    html2canvas(content, { scale: 2 }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new window.jspdf.jsPDF('p', 'pt', 'a4');
 
-    await doc.html(content, {
-        callback: function (pdf) {
-            pdf.save(`Accident_Report_${id}.pdf`);
-        },
-        x: 20,
-        y: 20,
-        width: 555,
-        windowWidth: content.scrollWidth
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = pageWidth - 40; // padding
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+
+        pdf.addImage(imgData, 'PNG', 20, 20, imgWidth, imgHeight);
+        pdf.save(`Accident_Report_${id}.pdf`);
+    }).catch(err => {
+        console.error("PDF export failed:", err);
+        alert("Failed to export PDF. Check console for details.");
     });
 };
 
