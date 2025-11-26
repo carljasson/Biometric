@@ -214,9 +214,25 @@
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <script>
+function getModalContentForPrint(modalBody) {
+    const clone = modalBody.cloneNode(true);
+
+    // Replace inputs with their values
+    clone.querySelectorAll('input, textarea, select').forEach(el => {
+        const span = document.createElement('span');
+        span.innerText = el.value || '';
+        el.parentNode.replaceChild(span, el);
+    });
+
+    return clone;
+}
+
+// Print function
 function printReport(id) {
     const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
     if (!modalBody) return;
+
+    const content = getModalContentForPrint(modalBody);
 
     const printWindow = window.open('', '', 'width=900,height=700');
     printWindow.document.write(`
@@ -232,7 +248,7 @@ function printReport(id) {
                 </style>
             </head>
             <body>
-                ${modalBody.innerHTML}
+                ${content.innerHTML}
             </body>
         </html>
     `);
@@ -240,23 +256,27 @@ function printReport(id) {
     setTimeout(() => printWindow.print(), 300);
 }
 
+// Export PDF function
 window.exportPDF = async function(id) {
     const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
     if (!modalBody) return;
 
+    const content = getModalContentForPrint(modalBody);
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'pt', 'a4');
 
-    await doc.html(modalBody, {
+    await doc.html(content, {
         callback: function (pdf) {
             pdf.save(`Accident_Report_${id}.pdf`);
         },
         x: 20,
         y: 20,
         width: 555,
-        windowWidth: modalBody.scrollWidth
+        windowWidth: content.scrollWidth
     });
 }
+
 
 
 document.querySelectorAll('.resolve-btn').forEach(btn => {
