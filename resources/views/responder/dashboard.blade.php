@@ -147,9 +147,25 @@ document.addEventListener('DOMContentLoaded', function () {
     const alertSound = document.getElementById('alertSound');
 
     wrapper.addEventListener('click', () => {
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-        markAlertsAsRead();
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    
+    // Mark current visible alerts as acknowledged
+    const currentAlerts = Array.from(list.children).map(li => parseInt(li.dataset.id));
+    currentAlerts.forEach(id => {
+        if (!acknowledgedAlertIds.includes(id)) {
+            acknowledgedAlertIds.push(id);
+        }
     });
+    sessionStorage.setItem('acknowledgedAlertIds', JSON.stringify(acknowledgedAlertIds));
+
+    // Update bell count immediately
+    fetch("{{ route('responder.alerts.check') }}")
+        .then(res => res.json())
+        .then(alerts => updateBell(alerts));
+
+    markAlertsAsRead();
+});
+
 
     setInterval(checkEmergencyAlerts, 10000);
     checkEmergencyAlerts();
@@ -195,16 +211,18 @@ document.addEventListener('DOMContentLoaded', function () {
             list.innerHTML = `<li class="list-group-item text-center text-muted">No alerts</li>`;
             return;
         }
-        alerts.forEach(alert => {
-            let item = document.createElement("li");
-            item.className = "list-group-item";
-            item.style.cursor = "pointer";
-            item.innerHTML = `<strong>🚨 ${alert.type}</strong><br><small>${alert.created_at}</small>`;
-            item.addEventListener("click", () => {
-                window.location.href = "{{ route('responder.alerts.view') }}";
-            });
-            list.appendChild(item);
-        });
+       alerts.forEach(alert => {
+    let item = document.createElement("li");
+    item.className = "list-group-item";
+    item.style.cursor = "pointer";
+    item.dataset.id = alert.id; // <-- important for tracking
+    item.innerHTML = `<strong>🚨 ${alert.type}</strong><br><small>${alert.created_at}</small>`;
+    item.addEventListener("click", () => {
+        window.location.href = "{{ route('responder.alerts.view') }}";
+    });
+    list.appendChild(item);
+});
+
     }
 
     function showNewAlerts(alerts) {
