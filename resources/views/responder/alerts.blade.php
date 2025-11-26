@@ -211,6 +211,7 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <script>
 function printReport(id) {
@@ -239,23 +240,24 @@ function printReport(id) {
     setTimeout(() => printWindow.print(), 300);
 }
 
-window.exportPDF = function(id) {
+window.exportPDF = async function(id) {
     const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
     if (!modalBody) return;
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'pt', 'a4');
 
-    doc.html(modalBody, {
+    await doc.html(modalBody, {
         callback: function (pdf) {
             pdf.save(`Accident_Report_${id}.pdf`);
         },
         x: 20,
         y: 20,
         width: 555,
-        windowWidth: modalBody.scrollWidth,
+        windowWidth: modalBody.scrollWidth
     });
 }
+
 
 document.querySelectorAll('.resolve-btn').forEach(btn => {
     btn.addEventListener('click', function () {
