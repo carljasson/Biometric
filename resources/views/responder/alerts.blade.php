@@ -18,6 +18,10 @@
     position: relative;
     z-index: 1062 !important;
 }
+.modal-footer .btn {
+    position: relative;
+    z-index: 1065 !important;
+}
 
 /* Bottom nav below modal */
 .fixed-bottom-nav {
@@ -196,7 +200,8 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button onclick="printReport({{ $alert->id }})" class="btn btn-primary">🖨 Print</button>
-                    <button onclick="exportPDF({{ $alert->id }})" class="btn btn-danger">📄 Export PDF</button>
+                    <button class="btn btn-danger">📄 Export PDF</button>
+
                 </div>
 
             </div>
