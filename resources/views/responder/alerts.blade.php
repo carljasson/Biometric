@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.responder')
 @section('title', 'Emergency Alerts')
 
 @push('styles')
