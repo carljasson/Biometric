@@ -208,38 +208,52 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function showNewAlerts(alerts) {
-        alerts.forEach(alert => {
-            // Only show if alert is not seen AND status is not 'resolved' or 'read'
-            if (!seenAlertIds.includes(alert.id) && alert.status !== 'resolved' && alert.status !== 'read') {
+function showNewAlerts(alerts) {
+    if (alerts.length === 0) return;
 
-                // Play emergency sound
-                alertSound.currentTime = 0;
-                alertSound.play().catch(e => console.log('Audio play blocked:', e));
+    // Get the latest alert (newest by created_at)
+    const latestAlert = alerts
+        .filter(a => a.status !== 'resolved' && a.status !== 'read')
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
 
-                Swal.fire({
-                    title: "🚨 Emergency Alert",
-                    html: `
-                        <strong>Type:</strong> ${alert.type}<br>
-                        <strong>Sender:</strong> ${alert.sender_name}<br>
-                        <strong>Email:</strong> ${alert.sender_email}<br>
-                        <strong>Phone:</strong> ${alert.sender_phone}<br>
-                        <strong>Destination:</strong> ${alert.destination}<br>
-                        <strong>Location:</strong>
-                        <a href="https://www.google.com/maps?q=${alert.latitude},${alert.longitude}" target="_blank">
-                            📍 View Map
-                        </a><br><br>
-                        ${alert.photo ? `<img src="${alert.photo}" class="img-fluid rounded" style="max-height: 250px; border: 1px solid #ccc;">` : ''}
-                    `,
-                    icon: "warning",
-                    timer: 15000,
-                    timerProgressBar: true
-                });
+    if (!latestAlert) return;
 
-                seenAlertIds.push(alert.id);
-            }
-        });
+    // Check if this latest alert was already dismissed
+    const dismissedAlertId = localStorage.getItem('dismissedAlertId');
+    if (dismissedAlertId == latestAlert.id) return; // already dismissed
+
+    // Play emergency sound
+    alertSound.currentTime = 0;
+    alertSound.play().catch(e => console.log('Audio play blocked:', e));
+
+    Swal.fire({
+        title: "🚨 Emergency Alert",
+        html: `
+            <strong>Type:</strong> ${latestAlert.type}<br>
+            <strong>Sender:</strong> ${latestAlert.sender_name}<br>
+            <strong>Email:</strong> ${latestAlert.sender_email}<br>
+            <strong>Phone:</strong> ${latestAlert.sender_phone}<br>
+            <strong>Destination:</strong> ${latestAlert.destination}<br>
+            <strong>Location:</strong>
+            <a href="https://www.google.com/maps?q=${latestAlert.latitude},${latestAlert.longitude}" target="_blank">
+                📍 View Map
+            </a><br><br>
+            ${latestAlert.photo ? `<img src="${latestAlert.photo}" class="img-fluid rounded" style="max-height: 250px; border: 1px solid #ccc;">` : ''}
+        `,
+        icon: "warning",
+        timer: 15000,
+        timerProgressBar: true
+    }).then(() => {
+        // Mark this alert as dismissed so it doesn't show again
+        localStorage.setItem('dismissedAlertId', latestAlert.id);
+    });
+
+    // Add it to seen alerts to update bell badge
+    if (!seenAlertIds.includes(latestAlert.id)) {
+        seenAlertIds.push(latestAlert.id);
     }
+}
+
 
     function markAlertsAsRead() {
         if (seenAlertIds.length === 0) return;
