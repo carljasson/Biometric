@@ -2,29 +2,26 @@
 
 @push('styles')
 <style>
-.modal,
+/* Modal and backdrop above everything */
 .modal-backdrop {
-    z-index: 2000 !important;
+    z-index: 1050 !important;
 }
-
+.modal {
+    z-index: 1060 !important;
+}
 .modal-dialog,
 .modal-content {
-    z-index: 2001 !important;
+    position: relative;
+    z-index: 1061 !important;
+}
+.modal .btn {
+    position: relative;
+    z-index: 1062 !important;
 }
 
-.btn {
-    z-index: auto !important;
-}
-
-/* Sidebar */
-.sidebar {
+/* Bottom nav below modal */
+.fixed-bottom-nav {
     z-index: 1000 !important;
-}
-
-/* 🔥 FIX: Transparent overlay blocking clicks */
-.side-overlay {
-    pointer-events: none !important;
-    z-index: 0 !important;
 }
 </style>
 @endpush
