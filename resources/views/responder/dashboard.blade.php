@@ -226,6 +226,7 @@ function showNewAlerts(alerts) {
     alertSound.currentTime = 0;
     alertSound.play().catch(e => console.log('Audio play blocked:', e));
 
+    // Show SweetAlert
     Swal.fire({
         title: "🚨 Emergency Alert",
         html: `
@@ -253,6 +254,7 @@ function showNewAlerts(alerts) {
         seenAlertIds.push(latestAlert.id);
     }
 }
+
 
 
     function markAlertsAsRead() {
