@@ -136,7 +136,9 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    let seenAlertIds = JSON.parse(sessionStorage.getItem('seenAlertIds') || '[]'); // track alerts acknowledged in this session
+    // Track alerts acknowledged this session
+    let acknowledgedAlertIds = JSON.parse(sessionStorage.getItem('acknowledgedAlertIds') || '[]');
+    let lastAlertId = sessionStorage.getItem('lastAlertId') || 0; // track highest alert id already seen
     const bell = document.getElementById('notificationBell');
     const countBadge = document.getElementById('notificationCount');
     const dropdown = document.getElementById('notificationDropdown');
@@ -144,7 +146,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const wrapper = document.getElementById('notificationBellWrapper');
     const alertSound = document.getElementById('alertSound');
 
-    // Toggle dropdown
     wrapper.addEventListener('click', () => {
         dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
         markAlertsAsRead();
@@ -177,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateBell(alerts) {
-        let unreadCount = alerts.filter(a => !seenAlertIds.includes(a.id)).length;
+        let unreadCount = alerts.filter(a => !acknowledgedAlertIds.includes(a.id)).length;
         if (unreadCount > 0) {
             bell.style.color = "yellow";
             countBadge.innerText = unreadCount;
@@ -207,11 +208,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showNewAlerts(alerts) {
+        // Only show alerts with ID greater than lastAlertId
         alerts.forEach(alert => {
-            // Only show if alert is NOT in sessionStorage AND status not resolved/read
-            if (!seenAlertIds.includes(alert.id) && alert.status !== 'resolved' && alert.status !== 'read') {
+            if (alert.id > lastAlertId && !acknowledgedAlertIds.includes(alert.id) && alert.status !== 'resolved' && alert.status !== 'read') {
 
-                // Play emergency sound
                 alertSound.currentTime = 0;
                 alertSound.play().catch(e => console.log('Audio play blocked:', e));
 
@@ -233,23 +233,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     showCancelButton: false,
                     confirmButtonText: "OK",
                 }).then(() => {
-                    // Mark this alert as acknowledged in sessionStorage
-                    seenAlertIds.push(alert.id);
-                    sessionStorage.setItem('seenAlertIds', JSON.stringify(seenAlertIds));
+                    acknowledgedAlertIds.push(alert.id);
+                    sessionStorage.setItem('acknowledgedAlertIds', JSON.stringify(acknowledgedAlertIds));
+                    if (alert.id > lastAlertId) lastAlertId = alert.id;
+                    sessionStorage.setItem('lastAlertId', lastAlertId);
                 });
             }
         });
     }
 
     function markAlertsAsRead() {
-        if (seenAlertIds.length === 0) return;
+        if (acknowledgedAlertIds.length === 0) return;
         fetch("{{ route('responder.alerts.markRead') }}", {
             method: "POST",
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ alert_ids: seenAlertIds })
+            body: JSON.stringify({ alert_ids: acknowledgedAlertIds })
         }).then(() => {
             countBadge.style.display = "none";
             bell.style.color = "white";
@@ -268,6 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
     @endif
 
 });
+
 
 </script>
 @endsection
