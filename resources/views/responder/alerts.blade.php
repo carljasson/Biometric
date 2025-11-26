@@ -24,6 +24,13 @@
 .fixed-bottom-nav {
     z-index: 1000 !important;
 }
+
+/* Ensure Resolve buttons are clickable above all overlays */
+.resolve-btn {
+    position: relative;
+    z-index: 110000 !important;
+}
+
 </style>
 
 @endpush
