@@ -136,7 +136,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    let seenAlertIds = []; // track alerts already shown in SweetAlert
+    let seenAlertIds = JSON.parse(sessionStorage.getItem('seenAlertIds') || '[]'); // track alerts acknowledged in this session
     const bell = document.getElementById('notificationBell');
     const countBadge = document.getElementById('notificationCount');
     const dropdown = document.getElementById('notificationDropdown');
@@ -147,10 +147,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Toggle dropdown
     wrapper.addEventListener('click', () => {
         dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-        markAlertsAsRead(); // mark alerts as read when bell clicked
+        markAlertsAsRead();
     });
 
-    // Check emergency alerts for bottom nav icon blinking
     setInterval(checkEmergencyAlerts, 10000);
     checkEmergencyAlerts();
 
@@ -164,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    // Fetch alerts for bell and SweetAlert
     setInterval(fetchAlerts, 10000);
     fetchAlerts();
 
@@ -210,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function showNewAlerts(alerts) {
         alerts.forEach(alert => {
-            // Only show if alert is not seen AND status is not 'resolved' or 'read'
+            // Only show if alert is NOT in sessionStorage AND status not resolved/read
             if (!seenAlertIds.includes(alert.id) && alert.status !== 'resolved' && alert.status !== 'read') {
 
                 // Play emergency sound
@@ -232,11 +230,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         ${alert.photo ? `<img src="${alert.photo}" class="img-fluid rounded" style="max-height: 250px; border: 1px solid #ccc;">` : ''}
                     `,
                     icon: "warning",
-                    timer: 15000,
-                    timerProgressBar: true
+                    showCancelButton: false,
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    // Mark this alert as acknowledged in sessionStorage
+                    seenAlertIds.push(alert.id);
+                    sessionStorage.setItem('seenAlertIds', JSON.stringify(seenAlertIds));
                 });
-
-                seenAlertIds.push(alert.id);
             }
         });
     }
@@ -256,7 +256,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    {{-- SweetAlert logout success --}}
     @if(session('logout_success'))
         Swal.fire({
             icon: 'success',
@@ -269,5 +268,6 @@ document.addEventListener('DOMContentLoaded', function () {
     @endif
 
 });
+
 </script>
 @endsection
