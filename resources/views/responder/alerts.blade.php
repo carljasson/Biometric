@@ -15,6 +15,11 @@
     z-index: 10600 !important;
 }
 
+.card {
+    position: relative; /* ensures .resolve-btn z-index works */
+}
+
+
 /* Resolve buttons above everything */
 .resolve-btn {
     position: relative;
