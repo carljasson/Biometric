@@ -200,8 +200,7 @@
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button onclick="printReport({{ $alert->id }})" class="btn btn-primary">🖨 Print</button>
-                    <button class="btn btn-danger">📄 Export PDF</button>
-
+                    <button onclick="exportPDF({{ $alert->id }})" class="btn btn-danger">📄 Export PDF</button>
                 </div>
 
             </div>
