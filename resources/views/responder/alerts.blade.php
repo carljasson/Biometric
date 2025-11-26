@@ -294,26 +294,49 @@ window.exportPDF = async function(id) {
 
 
 
+// Export PDF function
+window.exportPDF = async function(id) {
+    const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
+    if (!modalBody) return;
 
-document.querySelectorAll('.resolve-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-        const id = this.getAttribute('data-id');
+    // Clone content and replace inputs with their values
+    const content = modalBody.cloneNode(true);
+    content.querySelectorAll('input, textarea, select').forEach(el => {
+        const span = document.createElement('span');
+        span.innerText = el.value || '';
+        el.parentNode.replaceChild(span, el);
+    });
 
-        Swal.fire({
-            title: 'Mark as Received?',
-            text: 'This will update the status to: Responder is on the way.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#198754',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, update it!'
-        }).then(result => {
-            if (result.isConfirmed) {
-                document.getElementById('resolve-form-' + id).submit();
-            }
-        });
+    // Use html2canvas to render the content
+    html2canvas(content, { scale: 2 }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new window.jspdf.jsPDF('p', 'pt', 'a4');
+
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const imgWidth = pageWidth - 40; // padding
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+
+        pdf.addImage(imgData, 'PNG', 20, 20, imgWidth, imgHeight);
+        pdf.save(`Accident_Report_${id}.pdf`);
+    }).catch(err => {
+        console.error("PDF export failed:", err);
+        alert("Failed to export PDF. Check console for details.");
+    });
+};
+
+// ------------------------
+// BIND EXPORT PDF BUTTONS
+// ------------------------
+document.querySelectorAll('.btn-danger').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const modal = btn.closest('.modal');
+        if (!modal) return;
+
+        const id = modal.id.replace('reportModal',''); // extract alert id
+        exportPDF(id);
     });
 });
+
 
 
 // Reverse Geocoding
