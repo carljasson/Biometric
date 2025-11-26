@@ -261,10 +261,15 @@ window.exportPDF = async function(id) {
     const modalBody = document.querySelector(`#reportModal${id} .modal-body`);
     if (!modalBody) return;
 
-    const content = getModalContentForPrint(modalBody);
+    // Clone content and replace input values
+    const content = modalBody.cloneNode(true);
+    content.querySelectorAll('input, textarea, select').forEach(el => {
+        const span = document.createElement('span');
+        span.innerText = el.value || '';
+        el.parentNode.replaceChild(span, el);
+    });
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'pt', 'a4');
+    const doc = new window.jspdf.jsPDF('p', 'pt', 'a4');
 
     await doc.html(content, {
         callback: function (pdf) {
@@ -275,7 +280,8 @@ window.exportPDF = async function(id) {
         width: 555,
         windowWidth: content.scrollWidth
     });
-}
+};
+
 
 
 
