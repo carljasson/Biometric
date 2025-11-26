@@ -96,12 +96,38 @@
 
 {{-- 🌐 Bottom Navigation Styling --}}
 <style>
-.fixed-bottom-nav { position: fixed; bottom: 0; width: 100%; background-color: #fff; border-top: 1px solid #ccc; display: flex; justify-content: space-around; align-items: center; padding: 8px 0; z-index: 1000; }
-.fixed-bottom-nav a { color: #333; text-align: center; text-decoration: none; font-size: 12px; }
-.fixed-bottom-nav a i { font-size: 20px; display: block; }
-.fixed-bottom-nav a.active { color: #0d6efd; font-weight: bold; }
+.fixed-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 0;
+    z-index: 1000;
+}
+.fixed-bottom-nav a {
+    color: #333;
+    text-align: center;
+    text-decoration: none;
+    font-size: 12px;
+}
+.fixed-bottom-nav a i {
+    font-size: 20px;
+    display: block;
+}
+.fixed-bottom-nav a.active {
+    color: #0d6efd;
+    font-weight: bold;
+}
 .blink-alert { animation: blink 1s infinite; }
-@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
 </style>
 
 {{-- 🌐 Emergency + Notification Bell Script --}}
@@ -110,10 +136,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Track alerts acknowledged this session
-    let acknowledgedAlertIds = JSON.parse(sessionStorage.getItem('acknowledgedAlertIds') || '[]');
-    let lastAlertId = parseInt(sessionStorage.getItem('lastAlertId') || 0);
-
+    let seenAlertIds = []; // track alerts already shown in SweetAlert
     const bell = document.getElementById('notificationBell');
     const countBadge = document.getElementById('notificationCount');
     const dropdown = document.getElementById('notificationDropdown');
@@ -124,10 +147,24 @@ document.addEventListener('DOMContentLoaded', function () {
     // Toggle dropdown
     wrapper.addEventListener('click', () => {
         dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-        markVisibleAlertsAsRead();
+        markAlertsAsRead(); // mark alerts as read when bell clicked
     });
 
-    // Poll alerts
+    // Check emergency alerts for bottom nav icon blinking
+    setInterval(checkEmergencyAlerts, 10000);
+    checkEmergencyAlerts();
+
+    function checkEmergencyAlerts() {
+        fetch("{{ route('responder.alerts.check') }}")
+            .then(response => response.json())
+            .then(data => {
+                const icon = document.querySelector('#alertIcon i');
+                if (data.length > 0) icon.classList.add('blink-alert');
+                else icon.classList.remove('blink-alert');
+            });
+    }
+
+    // Fetch alerts for bell and SweetAlert
     setInterval(fetchAlerts, 10000);
     fetchAlerts();
 
@@ -138,12 +175,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 updateBell(alerts);
                 updateDropdown(alerts);
                 showNewAlerts(alerts);
-                checkEmergencyBlink(alerts);
             });
     }
 
     function updateBell(alerts) {
-        const unreadCount = alerts.filter(a => !acknowledgedAlertIds.includes(a.id)).length;
+        let unreadCount = alerts.filter(a => !seenAlertIds.includes(a.id)).length;
         if (unreadCount > 0) {
             bell.style.color = "yellow";
             countBadge.innerText = unreadCount;
@@ -161,10 +197,9 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
         alerts.forEach(alert => {
-            const item = document.createElement("li");
+            let item = document.createElement("li");
             item.className = "list-group-item";
             item.style.cursor = "pointer";
-            item.dataset.id = alert.id;
             item.innerHTML = `<strong>🚨 ${alert.type}</strong><br><small>${alert.created_at}</small>`;
             item.addEventListener("click", () => {
                 window.location.href = "{{ route('responder.alerts.view') }}";
@@ -175,8 +210,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function showNewAlerts(alerts) {
         alerts.forEach(alert => {
-            if (alert.id > lastAlertId && !acknowledgedAlertIds.includes(alert.id) && alert.status !== 'resolved' && alert.status !== 'read') {
+            // Only show if alert is not seen AND status is not 'resolved' or 'read'
+            if (!seenAlertIds.includes(alert.id) && alert.status !== 'resolved' && alert.status !== 'read') {
 
+                // Play emergency sound
                 alertSound.currentTime = 0;
                 alertSound.play().catch(e => console.log('Audio play blocked:', e));
 
@@ -189,77 +226,46 @@ document.addEventListener('DOMContentLoaded', function () {
                         <strong>Phone:</strong> ${alert.sender_phone}<br>
                         <strong>Destination:</strong> ${alert.destination}<br>
                         <strong>Location:</strong>
-                        <a href="https://www.google.com/maps?q=${alert.latitude},${alert.longitude}" target="_blank">📍 View Map</a><br><br>
+                        <a href="https://www.google.com/maps?q=${alert.latitude},${alert.longitude}" target="_blank">
+                            📍 View Map
+                        </a><br><br>
                         ${alert.photo ? `<img src="${alert.photo}" class="img-fluid rounded" style="max-height: 250px; border: 1px solid #ccc;">` : ''}
                     `,
                     icon: "warning",
-                    showCancelButton: false,
-                    confirmButtonText: "OK",
-                    didOpen: () => {
-                        const swalPopup = Swal.getHtmlContainer();
-                        let flash = true;
-                        const flashInterval = setInterval(() => {
-                            if (swalPopup) swalPopup.style.backgroundColor = flash ? '#ff0000' : '#ff4d4d';
-                            flash = !flash;
-                        }, 500);
-
-                        Swal.getConfirmButton().addEventListener('click', () => {
-                            clearInterval(flashInterval);
-                            alertSound.pause();
-                            alertSound.currentTime = 0;
-                        });
-                    }
+                    timer: 15000,
+                    timerProgressBar: true
                 });
 
-                acknowledgedAlertIds.push(alert.id);
-                if (alert.id > lastAlertId) lastAlertId = alert.id;
-                sessionStorage.setItem('acknowledgedAlertIds', JSON.stringify(acknowledgedAlertIds));
-                sessionStorage.setItem('lastAlertId', lastAlertId);
+                seenAlertIds.push(alert.id);
             }
         });
     }
 
-    function markVisibleAlertsAsRead() {
-        const visibleIds = Array.from(list.children)
-            .map(li => parseInt(li.dataset.id))
-            .filter(Boolean);
-
-        visibleIds.forEach(id => {
-            if (!acknowledgedAlertIds.includes(id)) acknowledgedAlertIds.push(id);
-        });
-
-        if (acknowledgedAlertIds.length === 0) return;
-
+    function markAlertsAsRead() {
+        if (seenAlertIds.length === 0) return;
         fetch("{{ route('responder.alerts.markRead') }}", {
             method: "POST",
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ alert_ids: acknowledgedAlertIds })
+            body: JSON.stringify({ alert_ids: seenAlertIds })
         }).then(() => {
             countBadge.style.display = "none";
             bell.style.color = "white";
         });
-
-        sessionStorage.setItem('acknowledgedAlertIds', JSON.stringify(acknowledgedAlertIds));
     }
 
-    function checkEmergencyBlink(alerts) {
-        const icon = document.querySelector('#alertIcon i');
-        if (alerts.length > 0) icon.classList.add('blink-alert');
-        else icon.classList.remove('blink-alert');
-    }
-
+    {{-- SweetAlert logout success --}}
     @if(session('logout_success'))
-    Swal.fire({
-        icon: 'success',
-        title: 'Logged Out',
-        text: '{{ session('logout_success') }}',
-        timer: 2500,
-        showConfirmButton: false,
-        timerProgressBar: true
-    });
+        Swal.fire({
+            icon: 'success',
+            title: 'Logged Out',
+            text: '{{ session('logout_success') }}',
+            timer: 2500,
+            showConfirmButton: false,
+            timerProgressBar: true
+        });
     @endif
 
 });
