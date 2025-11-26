@@ -209,18 +209,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 function showNewAlerts(alerts) {
-    if (alerts.length === 0) return;
+    if (!alerts || alerts.length === 0) return;
 
-    // Get the latest alert (newest by created_at)
-    const latestAlert = alerts
-        .filter(a => a.status !== 'resolved' && a.status !== 'read')
-        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+    // Filter only unresolved/unread alerts
+    const newAlerts = alerts.filter(a => a.status !== 'resolved' && a.status !== 'read');
+    if (newAlerts.length === 0) return;
+
+    // Sort by created_at (ensure proper Date parsing)
+    const latestAlert = newAlerts.sort((a, b) => new Date(b.created_at.replace(' ', 'T')) - new Date(a.created_at.replace(' ', 'T')))[0];
 
     if (!latestAlert) return;
 
     // Check if this latest alert was already dismissed
     const dismissedAlertId = localStorage.getItem('dismissedAlertId');
-    if (dismissedAlertId == latestAlert.id) return; // already dismissed
+    if (dismissedAlertId == latestAlert.id) return;
 
     // Play emergency sound
     alertSound.currentTime = 0;
@@ -245,14 +247,12 @@ function showNewAlerts(alerts) {
         timer: 15000,
         timerProgressBar: true
     }).then(() => {
-        // Mark this alert as dismissed so it doesn't show again
+        // Save dismissed alert in localStorage
         localStorage.setItem('dismissedAlertId', latestAlert.id);
     });
 
-    // Add it to seen alerts to update bell badge
-    if (!seenAlertIds.includes(latestAlert.id)) {
-        seenAlertIds.push(latestAlert.id);
-    }
+    // Add to seen alerts
+    if (!seenAlertIds.includes(latestAlert.id)) seenAlertIds.push(latestAlert.id);
 }
 
 
